@@ -118,21 +118,7 @@ doas make install
 
 ```bash
 # Make sure you're in the project root folder
-
-#
-# Create and cd into the `build` folder
-#
-mkdir build && cd build
-
-#
-# Generate make files into `build` folder
-#
-# Generate the `compile_commands.json` for `clangd_extensions` neovim plugin
-#
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-    -DCMAKE_CXX_FLAGS="-std=gnu++17" \
-    -DCMAKE_BUILD_TYPE=Debug \
-    ..
+./configure.sh
 
 # -- The C compiler identification is Clang 14.0.5
 # -- The CXX compiler identification is Clang 14.0.5
@@ -162,6 +148,14 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
 # -- Generating done
 ```
 
+</br>
+
+It Generates everything needs into `build` folder and the `compile_commands.json`
+for `clangd_extensions` neovim plugin
+
+</br>
+
+
 Pay attention to the following output:
 
 ```bash
@@ -174,10 +168,26 @@ the header files and link `GTest::gtest` and `GTest::gtest_main` libraries.
 
 </br>
 
-Run all unit test
+Compile and run all unit test:
 
 ```bash
-cd build && make && ./c-utils
+./build_and_run.sh
+
+# [ 25%] Building C object CMakeFiles/c-utils.dir/src/utils/collections/single_link_list.c.o
+# [ 50%] Linking CXX executable c-utils
+# [100%] Built target c-utils
+# [==========] Running 2 tests from 1 test suite.
+# [----------] Global test environment set-up.
+# [----------] 2 tests from SingleLinkList
+# [ RUN      ] SingleLinkList.CreateEmptyList
+# [       OK ] SingleLinkList.CreateEmptyList (0 ms)
+# [ RUN      ] SingleLinkList.CreateCustomStructList
+# [       OK ] SingleLinkList.CreateCustomStructList (0 ms)
+# [----------] 2 tests from SingleLinkList (0 ms total)
+# 
+# [----------] Global test environment tear-down
+# [==========] 2 tests from 1 test suite ran. (0 ms total)
+# [  PASSED  ] 2 tests.
 ```
 
 </br>
