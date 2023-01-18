@@ -1,5 +1,9 @@
 #include "single_link_list.h"
 
+#if ENABLE_LINK_LIST_DEBUG
+#include <stdio.h>
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -196,6 +200,9 @@ LinkListIterator *LinkList_iter(const LinkList *self) {
 
 void LinkList_free_iter(LinkListIterator *iter) {
     if (iter != NULL) {
+#ifdef ENABLE_LINK_LIST_DEBUG
+        printf("\n>>> LinkList_free_iter, iter address: %p", iter);
+#endif
         free(iter);
     }
 }
@@ -215,6 +222,11 @@ LinkListNode *LinkList_find(const void *query);
 void LinkList_free(LinkList *self, FreeFunc free_func) {
     if (self == NULL) return;
 
+#ifdef ENABLE_LINK_LIST_DEBUG
+    size_t free_node_data_amount = 0;
+    size_t free_node_amount = 0;
+#endif
+
     // Current node
     LinkListNode *current = self->_head;
 
@@ -226,6 +238,9 @@ void LinkList_free(LinkList *self, FreeFunc free_func) {
             } else {
                 free(current->_data);
             }
+#ifdef ENABLE_LINK_LIST_DEBUG
+            free_node_data_amount++;
+#endif
             current->_data = NULL;
         }
 
@@ -236,9 +251,19 @@ void LinkList_free(LinkList *self, FreeFunc free_func) {
 
         // Free current node
         free(node_to_free);
+#ifdef ENABLE_LINK_LIST_DEBUG
+        free_node_amount++;
+#endif
     }
 
     self->_len = 0;
     self->_head = NULL;
     self->_tail = NULL;
+
+#ifdef ENABLE_LINK_LIST_DEBUG
+    printf(
+        "\n>>> LinkListFree - list address: %p, total free node amount: %lu, "
+        "total free node data amount: %lu",
+        self, free_node_amount, free_node_data_amount);
+#endif
 }
