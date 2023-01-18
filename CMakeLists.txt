@@ -69,6 +69,29 @@ target_link_libraries("${PROJECT_NAME}" GTest::gtest GTest::gtest_main)
 
 
 # -----------------------------------------------------------------------------
+# Conditional compilation, it's equal to add a `#define MACRO_NAME` in your
+# project source file.
+#
+# `target_compile_definitions`: Specify compile definitions to use when
+#                               compiling a given <target. The named <target>
+#                               must have been created by a command such as
+#                               `add_executable()` or `add_library()` and must
+#                               not be an Imported Target.
+#
+# syntax: target_compile_definitions(<target>
+#           <INTERFACE|PUBLIC|PRIVATE> [items1...]
+#           [<INTERFACE|PUBLIC|PRIVATE> [items2...] ...])
+#
+# `PUBLIC` or `INTERFACE` publishes the compile definitions required to compile
+# against the `headers` for the target.
+#
+# More details from here:
+# https://cmake.org/cmake/help/v3.0/command/target_compile_definitions.html?highlight=target_compile_de
+# -----------------------------------------------------------------------------
+target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_LINK_LIST_DEBUG)
+
+
+# -----------------------------------------------------------------------------
 # Add a test to the project to be run by `ctest(1).`
 #
 # More details from here:
