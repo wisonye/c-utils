@@ -18,24 +18,39 @@ typedef void *(*CloneFromFunc)(void *original_value);
 //
 typedef void *(*FreeFunc)(void *data_to_free);
 
+//----------------------------------------------------------------------------
+// LinkListNdoe
+//----------------------------------------------------------------------------
+
 //
 //
 //
 typedef struct LinkListNode {
     // The heap-allocated `data` should own by copyit via the `CloneFromFunc`
     // if `data` is NOT a primitive type.
-    void *data;
-    struct LinkListNode *next;
+    void *_data;
+    struct LinkListNode *_next;
 
 } LinkListNode;
 
 //
 //
 //
+void *LinkListNode_get_data(const LinkListNode *self);
+LinkListNode *LinkListNode_get_next(const LinkListNode *self);
+
+
+//----------------------------------------------------------------------------
+// LinkList
+//----------------------------------------------------------------------------
+
+//
+//
+//
 typedef struct {
-    size_t len;
-    LinkListNode *head;
-    LinkListNode *tail;
+    size_t _len;
+    LinkListNode *_head;
+    LinkListNode *_tail;
 
 } LinkList;
 
@@ -68,6 +83,13 @@ LinkList LinkList_from_value(size_t item_size, void *value,
 //
 LinkList LinkList_from_array(size_t item_size, void *array,
                              CloneFromFunc clone_from_func);
+
+//
+//
+//
+size_t LinkList_length(const LinkList *self);
+const LinkListNode *LinkList_get_head(const LinkList *self);
+const LinkListNode *LinkList_get_tail(const LinkList *self);
 
 //
 //

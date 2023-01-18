@@ -5,14 +5,28 @@
 #include <stdlib.h>
 #include <string.h>
 
+//----------------------------------------------------------------------------
+// LinkListNdoe
+//----------------------------------------------------------------------------
+
+void *LinkListNode_get_data(const LinkListNode *self) { return self->_data; }
+
+LinkListNode *LinkListNode_get_next(const LinkListNode *self) {
+    return self->_next;
+}
+
+//----------------------------------------------------------------------------
+// LinkList
+//----------------------------------------------------------------------------
+
 //
 // Create empty list
 //
 LinkList LinkList_from_empty() {
     LinkList list = {
-        .len = 0,
-        .head = NULL,
-        .tail = NULL,
+        ._len = 0,
+        ._head = NULL,
+        ._tail = NULL,
     };
 
     return list;
@@ -32,12 +46,12 @@ LinkList LinkList_from_value(size_t item_size, void *value,
     // Create first node
     LinkListNode *node = malloc(sizeof(LinkListNode));
     *node = (LinkListNode){
-        .data = malloc(item_size),
-        .next = NULL,
+        ._data = malloc(item_size),
+        ._next = NULL,
     };
 
     // Copy data
-    memcpy(node->data, value, item_size);
+    memcpy(node->_data, value, item_size);
 
 #if ENABLE_LINK_LIST_DEBUG
     // printf("\n>>> LinkList_from_value - node->data: %lu\n", *((size_t
@@ -53,9 +67,9 @@ LinkList LinkList_from_value(size_t item_size, void *value,
 
     // Create list
     LinkList list = {
-        .len = 1,
-        .head = node,
-        .tail = node,
+        ._len = 1,
+        ._head = node,
+        ._tail = node,
     };
 
     return list;
@@ -76,6 +90,19 @@ LinkList LinkList_from_array(size_t item_size, void *array,
 //
 //
 //
+size_t LinkList_length(const LinkList *self) { return self->_len; }
+
+const LinkListNode *LinkList_get_head(const LinkList *self) {
+    return self->_head;
+}
+
+const LinkListNode *LinkList_get_tail(const LinkList *self) {
+    return self->_tail;
+}
+
+//
+//
+//
 LinkListNode *LinkList_find(const void *query);
 
 //
@@ -89,29 +116,29 @@ void LinkList_free(LinkList *self, FreeFunc free_func) {
     if (self == NULL) return;
 
     // Current node
-    LinkListNode *current = self->head;
+    LinkListNode *current = self->_head;
 
     while (current != NULL) {
         // Free current node data
-        if (current->data != NULL) {
+        if (current->_data != NULL) {
             if (free_func != NULL) {
-                free_func(current->data);
+                free_func(current->_data);
             } else {
-                free(current->data);
+                free(current->_data);
             }
-            current->data = NULL;
+            current->_data = NULL;
         }
 
         LinkListNode *node_to_free = current;
 
         // Point to next node
-        current = current->next;
+        current = current->_next;
 
         // Free current node
         free(node_to_free);
     }
 
-    self->len = 0;
-    self->head = NULL;
-    self->tail = NULL;
+    self->_len = 0;
+    self->_head = NULL;
+    self->_tail = NULL;
 }

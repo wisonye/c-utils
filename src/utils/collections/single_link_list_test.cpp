@@ -22,9 +22,9 @@ extern "C" {
 //
 TEST(SingleLinkList, CreateEmptyList) {
     LinkList list = LinkList_from_empty();
-    ASSERT_EQ(list.len, 0);
-    ASSERT_EQ(list.head, NULL);
-    ASSERT_EQ(list.tail, NULL);
+    ASSERT_EQ(list._len, 0);
+    ASSERT_EQ(list._head, NULL);
+    ASSERT_EQ(list._tail, NULL);
 
     LinkList_free(&list, NULL);
 }
@@ -40,16 +40,16 @@ LinkList create_integer_list() {
 
 TEST(SingleLinkList, IntegerList) {
     LinkList int_list = create_integer_list();
-    ASSERT_EQ(int_list.len, 1);
-    ASSERT_NE(int_list.head, NULL);
-    ASSERT_NE(int_list.tail, NULL);
-    ASSERT_EQ(int_list.head->next, NULL);
-    ASSERT_EQ(*((size_t *)int_list.head->data), 9999);
+    ASSERT_EQ(int_list._len, 1);
+    ASSERT_NE(int_list._head, NULL);
+    ASSERT_NE(int_list._tail, NULL);
+    ASSERT_EQ(int_list._head->_next, NULL);
+    ASSERT_EQ(*((size_t *)int_list._head->_data), 9999);
 
     LinkList_free(&int_list, NULL);
-    ASSERT_EQ(int_list.len, 0);
-    ASSERT_EQ(int_list.head, NULL);
-    ASSERT_EQ(int_list.tail, NULL);
+    ASSERT_EQ(int_list._len, 0);
+    ASSERT_EQ(int_list._head, NULL);
+    ASSERT_EQ(int_list._tail, NULL);
 }
 
 //
@@ -64,16 +64,16 @@ LinkList create_double_list() {
 
 TEST(SingleLinkList, DoubleList) {
     LinkList double_list = create_double_list();
-    ASSERT_EQ(double_list.len, 1);
-    ASSERT_NE(double_list.head, NULL);
-    ASSERT_NE(double_list.tail, NULL);
-    ASSERT_EQ(double_list.head->next, NULL);
+    ASSERT_EQ(double_list._len, 1);
+    ASSERT_NE(double_list._head, NULL);
+    ASSERT_NE(double_list._tail, NULL);
+    ASSERT_EQ(double_list._head->_next, NULL);
     /* double double_data = *((double *)double_list.head->data); */
     /* printf("\n>>> double_data: %f", double_data); */
-    ASSERT_EQ(*((double *)double_list.head->data), 8888.888);
+    ASSERT_EQ(*((double *)double_list._head->_data), 8888.888);
 
     LinkList_free(&double_list, NULL);
-    ASSERT_EQ(double_list.len, 0);
-    ASSERT_EQ(double_list.head, NULL);
-    ASSERT_EQ(double_list.tail, NULL);
+    ASSERT_EQ(double_list._len, 0);
+    ASSERT_EQ(double_list._head, NULL);
+    ASSERT_EQ(double_list._tail, NULL);
 }
