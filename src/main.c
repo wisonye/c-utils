@@ -1,4 +1,3 @@
-// #include <gtest/gtest.h>
 #include "utils/collections/single_link_list.h"
 
 //
