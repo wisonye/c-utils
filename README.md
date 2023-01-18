@@ -12,17 +12,26 @@ call.
 
 </br>
 
-All source code located in `src/utils`, the `src/main.cpp` is just a unit test.
-You need to install `GoogleTest` if want to run it.
+This project has 2 `cmake` setups for different purposes:
 
-</br>
+- `/usr/home/wison/C/c-utils/use_c_compiler_to_run_main/CMakeLists.txt`
 
-Why `main.cpp` in a `C` project?
+   Use `C` compiler to compile `main.c` and then use `memory leaking tools` to
+   check memory leaking issue on the pure `C` binary. Otherwise, if I use `CPP`
+   compiler to compile the binary which links to `gtest`, then faulty memory
+   leaking is detected!!!
 
-That's because `GoogleTest` only work for `CPP`, but it doesn't affect all your
-C source code:)
+   </br>
 
-</br>
+
+- `/usr/home/wison/C/c-utils/use_cpp_compiler_to_run_googletest/CMakeLists.txt`
+
+    As `GoogleTest` only work for `CPP`, that's why you need the separated `CPP`
+    compilation setup.
+
+    </br>
+
+
 
 ### 1. Make sure you compile and install `GoogleTest`
 
@@ -114,47 +123,65 @@ doas make install
 
 </br>
 
-### 2. Use `cmake` to setup the compile configuration and run unit test
+### 2. `cmake` setup and run
+
+#### 2.1 Use `C` compiler to compile `main.c`
 
 ```bash
 # Make sure you're in the project root folder
-./configure.sh
-
-# -- The C compiler identification is Clang 14.0.5
-# -- The CXX compiler identification is Clang 14.0.5
-# -- Detecting C compiler ABI info
-# -- Detecting C compiler ABI info - done
-# -- Check for working C compiler: /usr/bin/cc - skipped
-# -- Detecting C compile features
-# -- Detecting C compile features - done
-# -- Detecting CXX compiler ABI info
-# -- Detecting CXX compiler ABI info - done
-# -- Check for working CXX compiler: /usr/bin/c++ - skipped
-# -- Detecting CXX compile features
-# -- Detecting CXX compile features - done
-# -- Found GTest: /usr/local/lib/cmake/GTest/GTestConfig.cmake (found version "1.12.1")
-# >>> CMAKE_SYSTEM_NAME: FreeBSD
-# >>> CMAKE_BUILD_TYPE: Debug
-# >>> CMAKE_C_COMPILER: /usr/bin/cc
-# >>> CMAKE_C_FLAGS:
-# >>> CMAKE_C_FLAGS_DEBUG: -g
-# >>> CMAKE_C_FLAGS_RELEASE: -O3 -DNDEBUG
-# >>> CMAKE_CXX_COMPILER: /usr/bin/c++
-# >>> CMAKE_CXX_FLAGS: -std=gnu++17
-# >>> CMAKE_CXX_FLAGS_DEBUG: -g
-# >>> CMAKE_CXX_FLAGS_RELEASE: -O3 -DNDEBUG
-# >>> GTest_FOUND: TRUE
-# -- Configuring done
-# -- Generating done
+./configure_c.sh
 ```
 
 </br>
 
-It Generates everything needs into `build` folder and the `compile_commands.json`
-for `clangd_extensions` neovim plugin
+It Generates everything needs into `build_c` folder and the
+`build/compile_commands.json` for `clangd_extensions` neovim plugin
 
 </br>
 
+Compile and run:
+
+```bash
+./build_and_run_c.sh
+```
+
+</br>
+
+Memory leak check:
+
+```bash
+valgrind --leak-check=full --show-reachable=yes build_c/c-utils
+
+# ==58532== Memcheck, a memory error detector
+# ==58532== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+# ==58532== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
+# ==58532== Command: build_c/c-utils
+# ==58532==
+# ==58532==
+# ==58532== HEAP SUMMARY:
+# ==58532==     in use at exit: 0 bytes in 0 blocks
+# ==58532==   total heap usage: 4 allocs, 4 frees, 48 bytes allocated
+# ==58532==
+# ==58532== All heap blocks were freed -- no leaks are possible
+# ==58532==
+# ==58532== For lists of detected and suppressed errors, rerun with: -s
+# ==58532== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+</br>
+
+
+#### 2.2 Use `CPP` compiler to compile `main.cpp`
+
+```bash
+# Make sure you're in the project root folder
+./configure_cpp.sh
+```
+
+It Generates everything needs into `build_unit_test` folder and the
+`build/compile_commands.json` for `clangd_extensions` neovim plugin
+
+</br>
 
 Pay attention to the following output:
 
@@ -171,23 +198,24 @@ the header files and link `GTest::gtest` and `GTest::gtest_main` libraries.
 Compile and run all unit test:
 
 ```bash
-./build_and_run.sh
+./build_and_run_unit_test.sh
 
-# [ 25%] Building C object CMakeFiles/c-utils.dir/src/utils/collections/single_link_list.c.o
-# [ 50%] Linking CXX executable c-utils
-# [100%] Built target c-utils
-# [==========] Running 2 tests from 1 test suite.
+# [100%] Linking CXX executable c-utils-unit-test
+# [100%] Built target c-utils-unit-test
+# [==========] Running 3 tests from 1 test suite.
 # [----------] Global test environment set-up.
-# [----------] 2 tests from SingleLinkList
+# [----------] 3 tests from SingleLinkList
 # [ RUN      ] SingleLinkList.CreateEmptyList
 # [       OK ] SingleLinkList.CreateEmptyList (0 ms)
-# [ RUN      ] SingleLinkList.CreateCustomStructList
-# [       OK ] SingleLinkList.CreateCustomStructList (0 ms)
-# [----------] 2 tests from SingleLinkList (0 ms total)
+# [ RUN      ] SingleLinkList.IntegerList
+# [       OK ] SingleLinkList.IntegerList (0 ms)
+# [ RUN      ] SingleLinkList.DoubleList
+# [       OK ] SingleLinkList.DoubleList (0 ms)
+# [----------] 3 tests from SingleLinkList (0 ms total)
 # 
 # [----------] Global test environment tear-down
-# [==========] 2 tests from 1 test suite ran. (0 ms total)
-# [  PASSED  ] 2 tests.
+# [==========] 3 tests from 1 test suite ran. (0 ms total)
+# [  PASSED  ] 3 tests.
 ```
 
 </br>
