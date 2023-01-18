@@ -1,3 +1,6 @@
+#ifndef __SINGLE_LINK_LIST_H__
+#define __SINGLE_LINK_LIST_H__
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -79,3 +82,5 @@ LinkListNode *LinkList_find(const void *query);
 // a complicated struct instance
 //
 void LinkList_free(LinkList *self, FreeFunc free_func);
+
+#endif
