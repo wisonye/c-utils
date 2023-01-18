@@ -1,2 +1,4 @@
 build
 .cache
+build_c
+build_unit_test
