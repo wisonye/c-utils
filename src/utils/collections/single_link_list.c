@@ -100,6 +100,14 @@ const LinkListNode *LinkList_get_tail(const LinkList *self) {
     return self->_tail;
 }
 
+const void *LinkList_get_head_data(const LinkList *self) {
+    return (self->_head != NULL) ? self->_head->_data : NULL;
+}
+
+const void *LinkList_get_tail_data(const LinkList *self) {
+    return (self->_tail != NULL) ? self->_tail->_data : NULL;
+}
+
 //
 //
 //

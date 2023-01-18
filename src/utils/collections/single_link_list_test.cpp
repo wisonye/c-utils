@@ -44,6 +44,7 @@ TEST(SingleLinkList, IntegerList) {
     ASSERT_NE(int_list._head, NULL);
     ASSERT_NE(int_list._tail, NULL);
     ASSERT_EQ(int_list._head->_next, NULL);
+    ASSERT_EQ(*((size_t *)LinkList_get_head_data(&int_list)), 9999);
     ASSERT_EQ(*((size_t *)int_list._head->_data), 9999);
 
     LinkList_free(&int_list, NULL);
@@ -70,6 +71,7 @@ TEST(SingleLinkList, DoubleList) {
     ASSERT_EQ(double_list._head->_next, NULL);
     /* double double_data = *((double *)double_list.head->data); */
     /* printf("\n>>> double_data: %f", double_data); */
+    ASSERT_EQ(*((double *)LinkList_get_head_data(&double_list)), 8888.888);
     ASSERT_EQ(*((double *)double_list._head->_data), 8888.888);
 
     LinkList_free(&double_list, NULL);

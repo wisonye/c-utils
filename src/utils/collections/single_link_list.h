@@ -89,7 +89,9 @@ LinkList LinkList_from_array(size_t item_size, void *array,
 //
 size_t LinkList_length(const LinkList *self);
 const LinkListNode *LinkList_get_head(const LinkList *self);
+const void *LinkList_get_head_data(const LinkList *self);
 const LinkListNode *LinkList_get_tail(const LinkList *self);
+const void *LinkList_get_tail_data(const LinkList *self);
 
 //
 //
