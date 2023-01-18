@@ -88,7 +88,7 @@ LinkList LinkList_from_array(size_t item_size, void *array,
                              CloneFromFunc clone_from_func) {}
 
 //
-//
+// Getters
 //
 size_t LinkList_length(const LinkList *self) { return self->_len; }
 
@@ -109,7 +109,99 @@ const void *LinkList_get_tail_data(const LinkList *self) {
 }
 
 //
+// Append to the tail
 //
+void LinkList_append_value(LinkList *self, size_t item_size, void *value,
+                           CloneFromFunc clone_from_func) {
+    // Create append node
+    LinkListNode *node = malloc(sizeof(LinkListNode));
+    *node = (LinkListNode){
+        ._data = malloc(item_size),
+        ._next = NULL,
+    };
+
+    // Copy data
+    memcpy(node->_data, value, item_size);
+
+    /* if (clone_from_func != NULL) { */
+    /*     clone_from_func(value) : value; */
+    /* } else { */
+    /*     memcpy(node->data, value, item_size); */
+    /* } */
+
+    // Empty list case
+    if (self->_len <= 0) {
+        self->_head = node;
+        self->_tail = node;
+    }
+    // Append to tail
+    else {
+        // Update `tail`
+        if (self->_tail != NULL) {
+            self->_tail->_next = node;
+        }
+
+        // Replace `tail`
+        self->_tail = node;
+    }
+
+    self->_len++;
+}
+
+//
+// Iterator
+//
+//
+
+//
+// Return a `Iterator` pointer from the `LinkLiist`:
+//
+// `Iterator.length`: Shows how many data pointer in `Iterator.data_arr`.
+//
+// `Iterator.data_arr`: Stores all list node data pointer, you need to convert
+//                      the correct data type before using it. If
+//                      `Iterator.length` is zeor, DO NOT access this array!!!
+//
+// The returned `Iterator` pointer has to be freed by calling
+// `LinkList_free_iter()`.
+//
+LinkListIterator *LinkList_iter(const LinkList *self) {
+    if (self->_len <= 0) {
+        LinkListIterator *iter = malloc(sizeof(LinkListIterator));
+        iter->length = 0;
+
+        return iter;
+    }
+
+    LinkListIterator *iter =
+        malloc(sizeof(LinkListIterator) + self->_len * sizeof(void *));
+    iter->length = self->_len;
+
+    // Pointer to first node
+    LinkListNode *current = self->_head;
+
+    // Ptr indext to walk through the `iter->data_arr`
+    size_t data_ptr_index = 0;
+
+    while (current != NULL) {
+        iter->data_arr[data_ptr_index] = current->_data;
+        data_ptr_index++;
+
+        // Point to next node
+        current = current->_next;
+    }
+
+    return iter;
+}
+
+void LinkList_free_iter(LinkListIterator *iter) {
+    if (iter != NULL) {
+        free(iter);
+    }
+}
+
+//
+// Querys
 //
 LinkListNode *LinkList_find(const void *query);
 

@@ -39,7 +39,6 @@ typedef struct LinkListNode {
 void *LinkListNode_get_data(const LinkListNode *self);
 LinkListNode *LinkListNode_get_next(const LinkListNode *self);
 
-
 //----------------------------------------------------------------------------
 // LinkList
 //----------------------------------------------------------------------------
@@ -85,16 +84,45 @@ LinkList LinkList_from_array(size_t item_size, void *array,
                              CloneFromFunc clone_from_func);
 
 //
-//
+// Getters
 //
 size_t LinkList_length(const LinkList *self);
 const LinkListNode *LinkList_get_head(const LinkList *self);
 const void *LinkList_get_head_data(const LinkList *self);
 const LinkListNode *LinkList_get_tail(const LinkList *self);
 const void *LinkList_get_tail_data(const LinkList *self);
+const void *LinkList_get_tail_data(const LinkList *self);
 
 //
+// Append to the tail
 //
+void LinkList_append_value(LinkList *self, size_t item_size, void *value,
+                           CloneFromFunc clone_from_func);
+
+//
+// Iterator
+//
+typedef struct {
+    size_t length;
+    void *data_arr[];
+} LinkListIterator;
+
+//
+// Return a `Iterator` pointer from the `LinkLiist`:
+//
+// `Iterator.length`: Shows how many data pointer in `Iterator.data_arr`.
+//
+// `Iterator.data_arr`: Stores all list node data pointer, you need to convert
+//                      the correct data type before using it. If `Iterator.length`
+//                      is zeor, DO NOT access this array!!!
+//
+// The returned `Iterator` pointer has to be freed by calling `LinkList_free_iter()`.
+//
+LinkListIterator *LinkList_iter(const LinkList *self);
+void LinkList_free_iter(LinkListIterator *iter);
+
+//
+// Querys
 //
 LinkListNode *LinkList_find(const void *query);
 

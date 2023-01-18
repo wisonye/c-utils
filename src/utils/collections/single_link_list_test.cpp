@@ -38,7 +38,7 @@ LinkList create_integer_list() {
     return list;
 }
 
-TEST(SingleLinkList, IntegerList) {
+TEST(SingleLinkList, IntegerListWithOneNode) {
     LinkList int_list = create_integer_list();
     ASSERT_EQ(int_list._len, 1);
     ASSERT_NE(int_list._head, NULL);
@@ -63,7 +63,7 @@ LinkList create_double_list() {
     return list;
 }
 
-TEST(SingleLinkList, DoubleList) {
+TEST(SingleLinkList, DoubleListWithOneNode) {
     LinkList double_list = create_double_list();
     ASSERT_EQ(double_list._len, 1);
     ASSERT_NE(double_list._head, NULL);
@@ -78,4 +78,36 @@ TEST(SingleLinkList, DoubleList) {
     ASSERT_EQ(double_list._len, 0);
     ASSERT_EQ(double_list._head, NULL);
     ASSERT_EQ(double_list._tail, NULL);
+}
+
+TEST(SingleLinkList, IntListAppendNode) {
+    LinkList short_int_list = LinkList_from_empty();
+
+    // Append a few nodes
+    size_t values[] = {111, 222, 333, 444, 555};
+    LinkList_append_value(&short_int_list, sizeof(uint16_t), &values[0], NULL);
+    LinkList_append_value(&short_int_list, sizeof(uint16_t), &values[1], NULL);
+    LinkList_append_value(&short_int_list, sizeof(uint16_t), &values[2], NULL);
+    LinkList_append_value(&short_int_list, sizeof(uint16_t), &values[3], NULL);
+    LinkList_append_value(&short_int_list, sizeof(uint16_t), &values[4], NULL);
+
+    ASSERT_EQ(short_int_list._len, 5);
+    ASSERT_NE(short_int_list._head, NULL);
+    ASSERT_NE(short_int_list._tail, NULL);
+
+    // Get back the iter and check all data
+    LinkListIterator *iter = LinkList_iter(&short_int_list);
+    for (size_t iter_index = 0; iter_index < iter->length; iter_index++) {
+        size_t temp_value = *((uint16_t *)iter->data_arr[iter_index]);
+        printf("\n>>> temp_value: %lu", temp_value);
+
+        ASSERT_EQ(temp_value, values[iter_index]);
+    }
+    LinkList_free_iter(iter);
+
+    //
+    LinkList_free(&short_int_list, NULL);
+    ASSERT_EQ(short_int_list._len, 0);
+    ASSERT_EQ(short_int_list._head, NULL);
+    ASSERT_EQ(short_int_list._tail, NULL);
 }
