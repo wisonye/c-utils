@@ -13,11 +13,9 @@
 // LinkListNdoe
 //----------------------------------------------------------------------------
 
-void *LinkListNode_get_data(const LinkListNode *self) { return self->_data; }
+void *LLNode_get_data(const LLNode *self) { return self->_data; }
 
-LinkListNode *LinkListNode_get_next(const LinkListNode *self) {
-    return self->_next;
-}
+LLNode *LLNode_get_next(const LLNode *self) { return self->_next; }
 
 //----------------------------------------------------------------------------
 // LinkList
@@ -26,8 +24,8 @@ LinkListNode *LinkListNode_get_next(const LinkListNode *self) {
 //
 // Create empty list
 //
-LinkList LinkList_from_empty() {
-    LinkList list = {
+LL LL_from_empty() {
+    LL list = {
         ._len = 0,
         ._head = NULL,
         ._tail = NULL,
@@ -45,11 +43,10 @@ LinkList LinkList_from_empty() {
 // is to copy/clone the `original_value` to `LinkListNod.data`. That said the
 // `LinkListNode` own the heap-allocated `data`.
 //
-LinkList LinkList_from_value(size_t item_size, void *value,
-                             CloneFromFunc clone_from_func) {
+LL LL_from_value(size_t item_size, void *value, CloneFromFunc clone_from_func) {
     // Create first node
-    LinkListNode *node = malloc(sizeof(LinkListNode));
-    *node = (LinkListNode){
+    LLNode *node = malloc(sizeof(LLNode));
+    *node = (LLNode){
         ._data = malloc(item_size),
         ._next = NULL,
     };
@@ -58,8 +55,8 @@ LinkList LinkList_from_value(size_t item_size, void *value,
     memcpy(node->_data, value, item_size);
 
 #if ENABLE_LINK_LIST_DEBUG
-    // printf("\n>>> LinkList_from_value - node->data: %lu\n", *((size_t
-    // *)node->data)); printf("\n>>> LinkList_from_value - node->data: %f\n",
+    // printf("\n>>> LL_from_value - node->data: %lu\n", *((size_t
+    // *)node->data)); printf("\n>>> LL_from_value - node->data: %f\n",
     // *((double *)node->data));
 #endif
 
@@ -70,7 +67,7 @@ LinkList LinkList_from_value(size_t item_size, void *value,
     /* } */
 
     // Create list
-    LinkList list = {
+    LL list = {
         ._len = 1,
         ._head = node,
         ._tail = node,
@@ -88,38 +85,34 @@ LinkList LinkList_from_value(size_t item_size, void *value,
 // is to copy/clone the `original_value` to `LinkListNod.data`. That said the
 // `LinkListNode` own the heap-allocated `data`.
 //
-LinkList LinkList_from_array(size_t item_size, void *array,
-                             CloneFromFunc clone_from_func) {}
+LL LL_from_array(size_t item_size, void *array, CloneFromFunc clone_from_func) {
+}
 
 //
 // Getters
 //
-size_t LinkList_length(const LinkList *self) { return self->_len; }
+size_t LL_length(const LL *self) { return self->_len; }
 
-const LinkListNode *LinkList_get_head(const LinkList *self) {
-    return self->_head;
-}
+const LLNode *LL_get_head(const LL *self) { return self->_head; }
 
-const LinkListNode *LinkList_get_tail(const LinkList *self) {
-    return self->_tail;
-}
+const LLNode *LL_get_tail(const LL *self) { return self->_tail; }
 
-const void *LinkList_get_head_data(const LinkList *self) {
+const void *LL_get_head_data(const LL *self) {
     return (self->_head != NULL) ? self->_head->_data : NULL;
 }
 
-const void *LinkList_get_tail_data(const LinkList *self) {
+const void *LL_get_tail_data(const LL *self) {
     return (self->_tail != NULL) ? self->_tail->_data : NULL;
 }
 
 //
 // Append to the tail
 //
-void LinkList_append_value(LinkList *self, size_t item_size, void *value,
-                           CloneFromFunc clone_from_func) {
+void LL_append_value(LL *self, size_t item_size, void *value,
+                     CloneFromFunc clone_from_func) {
     // Create append node
-    LinkListNode *node = malloc(sizeof(LinkListNode));
-    *node = (LinkListNode){
+    LLNode *node = malloc(sizeof(LLNode));
+    *node = (LLNode){
         ._data = malloc(item_size),
         ._next = NULL,
     };
@@ -167,22 +160,21 @@ void LinkList_append_value(LinkList *self, size_t item_size, void *value,
 //                      `Iterator.length` is zeor, DO NOT access this array!!!
 //
 // The returned `Iterator` pointer has to be freed by calling
-// `LinkList_free_iter()`.
+// `LL_free_iter()`.
 //
-LinkListIterator *LinkList_iter(const LinkList *self) {
+LLIterator *LL_iter(const LL *self) {
     if (self->_len <= 0) {
-        LinkListIterator *iter = malloc(sizeof(LinkListIterator));
+        LLIterator *iter = malloc(sizeof(LLIterator));
         iter->length = 0;
 
         return iter;
     }
 
-    LinkListIterator *iter =
-        malloc(sizeof(LinkListIterator) + self->_len * sizeof(void *));
+    LLIterator *iter = malloc(sizeof(LLIterator) + self->_len * sizeof(void *));
     iter->length = self->_len;
 
     // Pointer to first node
-    LinkListNode *current = self->_head;
+    LLNode *current = self->_head;
 
     // Ptr indext to walk through the `iter->data_arr`
     size_t data_ptr_index = 0;
@@ -198,10 +190,10 @@ LinkListIterator *LinkList_iter(const LinkList *self) {
     return iter;
 }
 
-void LinkList_free_iter(LinkListIterator *iter) {
+void LL_free_iter(LLIterator *iter) {
     if (iter != NULL) {
 #ifdef ENABLE_LINK_LIST_DEBUG
-        printf("\n>>> LinkList_free_iter, iter address: %p", iter);
+        printf("\n>>> LL_free_iter, iter address: %p", iter);
 #endif
         free(iter);
     }
@@ -210,7 +202,7 @@ void LinkList_free_iter(LinkListIterator *iter) {
 //
 // Querys
 //
-LinkListNode *LinkList_find(const void *query);
+LLNode *LL_find(const void *query);
 
 //
 // `free_func`:
@@ -219,7 +211,7 @@ LinkListNode *LinkList_find(const void *query);
 // is to call the original `DataType.free(node->data)`, just in case `data` is
 // a complicated struct instance
 //
-void LinkList_free(LinkList *self, FreeFunc free_func) {
+void LL_free(LL *self, FreeFunc free_func) {
     if (self == NULL) return;
 
 #ifdef ENABLE_LINK_LIST_DEBUG
@@ -228,7 +220,7 @@ void LinkList_free(LinkList *self, FreeFunc free_func) {
 #endif
 
     // Current node
-    LinkListNode *current = self->_head;
+    LLNode *current = self->_head;
 
     while (current != NULL) {
         // Free current node data
@@ -244,7 +236,7 @@ void LinkList_free(LinkList *self, FreeFunc free_func) {
             current->_data = NULL;
         }
 
-        LinkListNode *node_to_free = current;
+        LLNode *node_to_free = current;
 
         // Point to next node
         current = current->_next;
