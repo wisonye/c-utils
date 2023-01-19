@@ -108,6 +108,19 @@ const void *LL_get_tail_data(const LL *self) {
 //
 // Append to the tail
 //
+// Example:
+//
+// ```c
+// // Append a few nodes
+// LL short_int_list = LL_from_empty();
+// size_t values[] = {111, 222, 333, 444, 555};
+// LL_append_value(&short_int_list, sizeof(uint16_t), &values[0], NULL);
+// LL_append_value(&short_int_list, sizeof(uint16_t), &values[1], NULL);
+// LL_append_value(&short_int_list, sizeof(uint16_t), &values[2], NULL);
+// LL_append_value(&short_int_list, sizeof(uint16_t), &values[3], NULL);
+// LL_append_value(&short_int_list, sizeof(uint16_t), &values[4], NULL);
+// ```
+//
 void LL_append_value(LL *self, size_t item_size, void *value,
                      CloneFromFunc clone_from_func) {
     // Create append node
@@ -148,7 +161,6 @@ void LL_append_value(LL *self, size_t item_size, void *value,
 //
 // Iterator
 //
-//
 
 //
 // Return a `Iterator` pointer from the `LinkLiist`:
@@ -161,6 +173,21 @@ void LL_append_value(LL *self, size_t item_size, void *value,
 //
 // The returned `Iterator` pointer has to be freed by calling
 // `LL_free_iter()`.
+//
+// Example:
+//
+// ```c
+// // Get back the iter and check all data
+//
+// LL short_int_list = LL_from_empty();
+// // .... append_value
+// LLIterator *iter = LL_iter(&short_int_list);
+// for (size_t iter_index = 0; iter_index < iter->length; iter_index++) {
+//     size_t temp_value = *((uint16_t *)iter->data_arr[iter_index]);
+//     printf("\n>>>> temp_value: %lu", temp_value);
+// }
+// LL_free_iter(iter);
+// ```
 //
 LLIterator *LL_iter(const LL *self) {
     if (self->_len <= 0) {
