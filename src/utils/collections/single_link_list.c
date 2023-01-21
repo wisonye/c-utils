@@ -283,7 +283,7 @@ void LL_free(LL *self, FreeFunc free_func) {
 #ifdef ENABLE_LINK_LIST_DEBUG
     printf(
         "\n>>> LinkListFree - list address: %p, total free node amount: %lu, "
-        "total free node data amount: %lu",
+        "total free node data amount: %lu\n",
         self, free_node_amount, free_node_data_amount);
 #endif
 }
