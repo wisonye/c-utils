@@ -36,6 +36,7 @@ project("c-utils")
 # -----------------------------------------------------------------------------
 add_executable("${PROJECT_NAME}"
     "../src/utils/collections/single_link_list.c"
+    "../src/utils/string.c"
     "../src/main.c")
 
 

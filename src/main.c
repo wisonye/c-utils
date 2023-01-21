@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "utils/collections/single_link_list.h"
 #include "utils/data_types.h"
+#include "utils/string.h"
 
 //
 //
@@ -9,6 +10,19 @@ LL create_integer_list() {
     usize stack_value = 9999;
     LL list = LL_from_value(sizeof(usize), &stack_value, NULL);
     return list;
+}
+
+//
+//
+//
+Str create_string(const char str[]) {
+    Str temp_str = Str_from_arr(str);
+    printf("\n>>> create_string - temp_str len: %lu, value: %s",
+           Str_length(&temp_str), Str_as_str(&temp_str));
+
+    Str temp_str_2 = Str_from_str("Hey Hey Hey!");
+    Str_free(&temp_str_2);
+    return temp_str;
 }
 
 //
@@ -42,4 +56,43 @@ int main(int argc, char **argv) {
 
     //
     LL_free(&short_int_list, NULL);
+
+    //
+    // String
+    //
+    Str my_name = Str_from_str("Wison Ye:)");
+    Str_free(&my_name);
+
+    Str empty_str_1 = Str_from_str(NULL);
+    Str empty_str_2 = Str_from_str("");
+    printf(
+        "\n>> empty_str_1 len: %lu, value: %s", Str_length(&empty_str_1),
+        Str_as_str(&empty_str_1) == NULL ? "NULL" : Str_as_str(&empty_str_1));
+    printf(
+        "\n>> empty_str_2 len: %lu, value: %s", Str_length(&empty_str_2),
+        Str_as_str(&empty_str_2) == NULL ? "NULL" : Str_as_str(&empty_str_2));
+    Str_free(&empty_str_1);
+    Str_free(&empty_str_2);
+
+    char temp_id[] = "123456789";
+    char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
+    printf("\n>>> temp_id: %s", temp_id);
+    printf("\n>>> temp_id_2: %s", temp_id_2);
+
+    Str str_1 = Str_from_arr(temp_id);
+    Str str_2 = Str_from_arr(temp_id_2);
+
+    printf("\n>> str_1 len: %lu, value: %s", Str_length(&str_1),
+           Str_as_str(&str_1));
+    printf("\n>> str_2 len: %lu, value: %s", Str_length(&str_2),
+           Str_as_str(&str_2));
+
+    Str_free(&str_1);
+    Str_free(&str_2);
+
+    char order[] = "MyOrder-ZXCVB";
+    Str str_3 = create_string(order);
+    printf("\n>> str_3 len: %lu, value: %s", Str_length(&str_3),
+           Str_as_str(&str_3));
+    Str_free(&str_3);
 }
