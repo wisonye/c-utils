@@ -92,10 +92,12 @@ long Str_find_substring(const Str *self, const char *str_to_find,
 
 #if ENABLE_LINK_LIST_DEBUG
     printf(
-        "\n>>> Str_find_substring - temp_ptr: %p, buffer_ptr: %p, index: %li",
-        temp_ptr, self->_buffer, (temp_ptr - self->_buffer));
+        "\n>>> Str_find_substring - temp_ptr: %p, buffer_ptr: %p, index: %li, "
+        "temp_ptr == 0: %d",
+        temp_ptr, self->_buffer, (temp_ptr - self->_buffer), temp_ptr == 0x00);
 #endif
-    return temp_ptr == NULL ? -1 : temp_ptr - self->_buffer;
+    return (temp_ptr == NULL || temp_ptr == 0x0) ? -1
+                                                 : temp_ptr - self->_buffer;
 }
 
 //

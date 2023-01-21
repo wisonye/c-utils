@@ -126,6 +126,8 @@ int main(int argc, char **argv) {
            Str_index_of(&original_str, "W"));
     printf("\n>>> Search ':)' in '%s', index: %li", Str_as_str(&original_str),
            Str_index_of(&original_str, ":)"));
+    printf("\n>>> Search 'a' in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, "a"));
     printf("\n>>> Search 'w' (case-sensitive) in '%s', index: %li",
            Str_as_str(&original_str),
            Str_index_of_case_sensitive(&original_str, "w"));

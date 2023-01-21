@@ -59,3 +59,17 @@ TEST(String, StringClone) {
     Str_free(&clone_from_empty);
 }
 
+TEST(String, FindSubString) {
+    Str original_str = Str_from_str("Wison Ye:)");
+
+    ASSERT_EQ(Str_index_of(&original_str, ""), -1);
+    ASSERT_EQ(Str_index_of(&original_str, " "), 5);
+    ASSERT_EQ(Str_index_of(&original_str, "w"), 0);
+    ASSERT_EQ(Str_index_of(&original_str, "W"), 0);
+    ASSERT_EQ(Str_index_of(&original_str, ":)"), 8);
+    ASSERT_EQ(Str_index_of(&original_str, "b"), -1);
+    ASSERT_EQ(Str_index_of_case_sensitive(&original_str, "w"), -1);
+    ASSERT_EQ(Str_index_of_case_sensitive(&original_str, "Y"), 6);
+
+    Str_free(&original_str);
+}
