@@ -25,6 +25,8 @@ Str create_string(const char str[]) {
     return temp_str;
 }
 
+Str clone_string(const Str *original) { return Str_clone(original); }
+
 //
 //
 //
@@ -135,4 +137,14 @@ int main(int argc, char **argv) {
            Str_as_str(&original_str),
            Str_index_of_case_sensitive(&original_str, "Y"));
     Str_free(&original_str);
+
+    Str src_str = Str_from_str("Hey:)");
+    Str cloned_str = clone_string(&src_str);
+    Str_free(&src_str);
+
+    printf("\n>> cloned_str len: %lu, value: %s", Str_length(&cloned_str),
+           Str_as_str(&cloned_str));
+    Str_free(&cloned_str);
+    printf("\n>> cloned_str len: %lu, value: %s", Str_length(&cloned_str),
+           Str_as_str(&cloned_str));
 }
