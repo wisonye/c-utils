@@ -15,8 +15,8 @@ LL create_integer_list() {
 //
 //
 int main(int argc, char **argv) {
-    LL list = LL_from_empty();
-    LL int_list = create_integer_list();
+    LinkList list = LL_from_empty();
+    LinkList int_list = create_integer_list();
     LL int_list_2 = create_integer_list();
     LL_free(&list, NULL);
     LL_free(&int_list, NULL);

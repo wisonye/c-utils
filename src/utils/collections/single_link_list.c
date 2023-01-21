@@ -24,8 +24,8 @@ LLNode *LLNode_get_next(const LLNode *self) { return self->_next; }
 //
 // Create empty list
 //
-LL LL_from_empty() {
-    LL list = {
+LinkList LL_from_empty() {
+    LinkList list = {
         ._len = 0,
         ._head = NULL,
         ._tail = NULL,
@@ -43,7 +43,8 @@ LL LL_from_empty() {
 // is to copy/clone the `original_value` to `LinkListNod.data`. That said the
 // `LinkListNode` own the heap-allocated `data`.
 //
-LL LL_from_value(size_t item_size, void *value, CloneFromFunc clone_from_func) {
+LinkList LL_from_value(size_t item_size, void *value,
+                       CloneFromFunc clone_from_func) {
     // Create first node
     LLNode *node = malloc(sizeof(LLNode));
     *node = (LLNode){
@@ -67,7 +68,7 @@ LL LL_from_value(size_t item_size, void *value, CloneFromFunc clone_from_func) {
     /* } */
 
     // Create list
-    LL list = {
+    LinkList list = {
         ._len = 1,
         ._head = node,
         ._tail = node,
@@ -85,7 +86,7 @@ LL LL_from_value(size_t item_size, void *value, CloneFromFunc clone_from_func) {
 // is to copy/clone the `original_value` to `LinkListNod.data`. That said the
 // `LinkListNode` own the heap-allocated `data`.
 //
-LL LL_from_array(size_t item_size, void *array, CloneFromFunc clone_from_func) {
+LinkList LL_from_array(size_t item_size, void *array, CloneFromFunc clone_from_func) {
 }
 
 //

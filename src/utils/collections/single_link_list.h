@@ -22,16 +22,13 @@ typedef void *(*FreeFunc)(void *data_to_free);
 // LinkListNdoe
 //----------------------------------------------------------------------------
 
-//
-//
-//
 typedef struct LLNode {
     // The heap-allocated `data` should own by copyit via the `CloneFromFunc`
     // if `data` is NOT a primitive type.
     void *_data;
     struct LLNode *_next;
 
-} LLNode, LLNode;
+} LLNode, LLN;
 
 //
 //
@@ -43,9 +40,6 @@ LLNode *LL_get_next(const LLNode *self);
 // LinkList
 //----------------------------------------------------------------------------
 
-//
-//
-//
 typedef struct {
     size_t _len;
     LLNode *_head;
@@ -56,7 +50,7 @@ typedef struct {
 //
 //
 //
-LL LL_from_empty();
+LinkList LL_from_empty();
 
 //
 // Create list and insert first node that copies from value
@@ -67,7 +61,8 @@ LL LL_from_empty();
 // is to copy/clone the `original_value` to `LinkListNod.data`. That said the
 // `LLNode` own the heap-allocated `data`.
 //
-LL LL_from_value(size_t item_size, void *value, CloneFromFunc clone_from_func);
+LinkList LL_from_value(size_t item_size, void *value,
+                       CloneFromFunc clone_from_func);
 
 //
 // Create list and insert first node that copies from value
@@ -79,7 +74,8 @@ LL LL_from_value(size_t item_size, void *value, CloneFromFunc clone_from_func);
 // is to copy/clone the `original_value` to `LinkListNod.data`. That said the
 // `LLNode` own the heap-allocated `data`.
 //
-LL LL_from_array(size_t item_size, void *array, CloneFromFunc clone_from_func);
+LinkList LL_from_array(size_t item_size, void *array,
+                       CloneFromFunc clone_from_func);
 
 //
 // Getters
