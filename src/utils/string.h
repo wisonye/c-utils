@@ -16,6 +16,7 @@ typedef struct {
 //
 Str Str_from_arr(const char arr[]);
 Str Str_from_str(const char *str);
+Str Str_clone(const Str *src);
 
 //
 //

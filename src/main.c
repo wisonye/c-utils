@@ -69,10 +69,19 @@ int main(int argc, char **argv) {
         "\n>> empty_str_1 len: %lu, value: %s", Str_length(&empty_str_1),
         Str_as_str(&empty_str_1) == NULL ? "NULL" : Str_as_str(&empty_str_1));
     printf(
-        "\n>> empty_str_2 len: %lu, value: %s", Str_length(&empty_str_2),
+        "\n>> empty_str_2 len: %lu, value: '%s'", Str_length(&empty_str_2),
         Str_as_str(&empty_str_2) == NULL ? "NULL" : Str_as_str(&empty_str_2));
+
+    Str clone_from_empty_str = Str_clone(&empty_str_2);
+    printf("\n>> clone_from_empty_str len: %lu, value: '%s'",
+           Str_length(&clone_from_empty_str),
+           Str_as_str(&clone_from_empty_str) == NULL
+               ? "NULL"
+               : Str_as_str(&clone_from_empty_str));
+
     Str_free(&empty_str_1);
     Str_free(&empty_str_2);
+    Str_free(&clone_from_empty_str);
 
     char temp_id[] = "123456789";
     char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
@@ -94,5 +103,13 @@ int main(int argc, char **argv) {
     Str str_3 = create_string(order);
     printf("\n>> str_3 len: %lu, value: %s", Str_length(&str_3),
            Str_as_str(&str_3));
+
+    Str clone_from_order_str = Str_clone(&str_3);
+    printf("\n>> clone_from_order_str len: %lu, value: %s",
+           Str_length(&clone_from_order_str),
+           Str_as_str(&clone_from_order_str) == NULL
+               ? "NULL"
+               : Str_as_str(&clone_from_order_str));
     Str_free(&str_3);
+    Str_free(&clone_from_order_str);
 }

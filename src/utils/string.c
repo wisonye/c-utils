@@ -23,6 +23,7 @@ Str Str_from_arr(const char arr[]) {
     return string;
 }
 
+//
 Str Str_from_str(const char *str) {
     usize temp_len = (str != NULL) ? strlen(str) : 0;
 
@@ -35,6 +36,25 @@ Str Str_from_str(const char *str) {
         string._buffer = malloc(temp_len + 1);
         memcpy(string._buffer, str, temp_len);
         string._buffer[temp_len] = '\0';
+    }
+
+    return string;
+}
+
+//
+// Deep clone from `src`
+//
+Str Str_clone(const Str *src) {
+    String string = {
+        ._len = 0,
+        ._buffer = NULL,
+    };
+
+    if (src != NULL && src->_len > 0 && src->_buffer != NULL) {
+        string._len = src->_len;
+        string._buffer = malloc(src->_len + 1);
+        memcpy(string._buffer, src->_buffer, src->_len);
+        string._buffer[string._len] = '\0';
     }
 
     return string;
