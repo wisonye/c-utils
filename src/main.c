@@ -136,6 +136,12 @@ int main(int argc, char **argv) {
     printf("\n>>> Search 'Y' (case-sensitive) in '%s', index: %li",
            Str_as_str(&original_str),
            Str_index_of_case_sensitive(&original_str, "Y"));
+    printf("\n>>> Check whether contains ':)' in '%s', containers: %s",
+           Str_as_str(&original_str),
+           Str_contains(&original_str, ":)") ? "TRUE" : "FALSE");
+    printf("\n>>> Check whether contains 'on' in '%s', containers: %s",
+           Str_as_str(&original_str),
+           Str_contains(&original_str, "fi") ? "TRUE" : "FALSE");
     Str_free(&original_str);
 
     Str src_str = Str_from_str("Hey:)");

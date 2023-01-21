@@ -37,7 +37,6 @@ TEST(String, StringFromArray) {
     ASSERT_EQ(Str_as_str(&str), NULL);
 }
 
-
 TEST(String, StringClone) {
     char arr[] = "Unit Test:)";
     Str str = Str_from_arr(arr);
@@ -70,6 +69,20 @@ TEST(String, FindSubString) {
     ASSERT_EQ(Str_index_of(&original_str, "b"), -1);
     ASSERT_EQ(Str_index_of_case_sensitive(&original_str, "w"), -1);
     ASSERT_EQ(Str_index_of_case_sensitive(&original_str, "Y"), 6);
+
+    Str_free(&original_str);
+}
+
+TEST(String, CheckContainsSubString) {
+    Str original_str = Str_from_str("Wison Ye:)");
+
+    ASSERT_EQ(Str_contains(&original_str, (char *)""), false);
+    ASSERT_EQ(Str_contains(&original_str, (char *)" "), true);
+    ASSERT_EQ(Str_contains(&original_str, (char *)"w"), true);
+    ASSERT_EQ(Str_contains(&original_str, (char *)"W"), true);
+    ASSERT_EQ(Str_contains(&original_str, (char *)":)"), true);
+    ASSERT_EQ(Str_contains(&original_str, (char *)"b"), false);
+    ASSERT_EQ(Str_contains(&original_str, (char *)"fi"), false);
 
     Str_free(&original_str);
 }

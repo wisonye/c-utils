@@ -68,7 +68,7 @@ long Str_index_of_case_sensitive(const Str *self, const char *str_to_find);
 /*
  * Check whether contain the given `char *` or not
  */
-bool Str_contains(const Str *self);
+bool Str_contains(const Str *self, char *str_to_check);
 
 /*
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`
