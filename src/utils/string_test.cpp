@@ -37,6 +37,7 @@ TEST(String, StringFromArray) {
     ASSERT_EQ(Str_as_str(&str), NULL);
 }
 
+
 TEST(String, StringClone) {
     char arr[] = "Unit Test:)";
     Str str = Str_from_arr(arr);
@@ -51,9 +52,10 @@ TEST(String, StringClone) {
     Str clone_from_empty = Str_clone(&empty_str);
     ASSERT_EQ(Str_length(&clone_from_empty), 0);
     ASSERT_EQ(Str_as_str(&clone_from_empty), NULL);
-    ASSERT_EQ(strcmp(Str_as_str(&clone_from_empty), arr), 1);
 
     Str_free(&str);
     Str_free(&clone_1);
     Str_free(&empty_str);
+    Str_free(&clone_from_empty);
 }
+
