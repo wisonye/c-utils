@@ -112,4 +112,25 @@ int main(int argc, char **argv) {
                : Str_as_str(&clone_from_order_str));
     Str_free(&str_3);
     Str_free(&clone_from_order_str);
+
+    Str original_str = Str_from_str("Wison Ye:)");
+    printf("\n>>> Search '' in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, ""));
+    printf("\n>>> Search NULL in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, NULL));
+    printf("\n>>> Search ' ' in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, " "));
+    printf("\n>>> Search 'w' in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, "w"));
+    printf("\n>>> Search 'W' in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, "W"));
+    printf("\n>>> Search ':)' in '%s', index: %li", Str_as_str(&original_str),
+           Str_index_of(&original_str, ":)"));
+    printf("\n>>> Search 'w' (case-sensitive) in '%s', index: %li",
+           Str_as_str(&original_str),
+           Str_index_of_case_sensitive(&original_str, "w"));
+    printf("\n>>> Search 'Y' (case-sensitive) in '%s', index: %li",
+           Str_as_str(&original_str),
+           Str_index_of_case_sensitive(&original_str, "Y"));
+    Str_free(&original_str);
 }

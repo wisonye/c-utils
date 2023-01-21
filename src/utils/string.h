@@ -1,6 +1,8 @@
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
+#include <stdbool.h>
+
 #include "data_types.h"
 
 //
@@ -19,14 +21,21 @@ Str Str_from_str(const char *str);
 Str Str_clone(const Str *src);
 
 //
+// Getter
 //
+usize Str_length(const Str *self);
+const char *Str_as_str(const Str *self);
+
 //
-usize Str_length(const Str *str);
-const char *Str_as_str(const Str *str);
+// Query
+//
+long Str_index_of(const Str *self, const char *str_to_find);
+long Str_index_of_case_sensitive(const Str *self, const char *str_to_find);
+bool Str_contains(const Str *self);
 
 //
 // Free
 //
-void Str_free(Str *str);
+void Str_free(Str *self);
 
 #endif

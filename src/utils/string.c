@@ -1,7 +1,12 @@
 #include "string.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if ENABLE_LINK_LIST_DEBUG
+#include <stdio.h>
+#endif
 
 //
 // Create from `char[]` or `char *`
@@ -61,21 +66,61 @@ Str Str_clone(const Str *src) {
 }
 
 //
+// Getter
 //
-//
-usize Str_length(const Str *str) { return (str != NULL) ? str->_len : 0; }
+usize Str_length(const Str *self) { return (self != NULL) ? self->_len : 0; }
 
-const char *Str_as_str(const Str *str) {
-    return (str != NULL && str->_buffer != NULL) ? str->_buffer : NULL;
+const char *Str_as_str(const Str *self) {
+    return (self != NULL && self->_buffer != NULL) ? self->_buffer : NULL;
 }
+
+//
+// Query (not public)
+//
+long Str_find_substring(const Str *self, const char *str_to_find,
+                        bool case_sensitive) {
+    if (self == NULL || self->_buffer == NULL || str_to_find == NULL ||
+        strlen(str_to_find) <= 0) {
+#if ENABLE_LINK_LIST_DEBUG
+        printf("\n>>> Str_find_substring - NULL, ignore the search.");
+#endif
+        return -1;
+    }
+
+    char *temp_ptr = (case_sensitive) ? strstr(self->_buffer, str_to_find)
+                                      : strcasestr(self->_buffer, str_to_find);
+
+#if ENABLE_LINK_LIST_DEBUG
+    printf(
+        "\n>>> Str_find_substring - temp_ptr: %p, buffer_ptr: %p, index: %li",
+        temp_ptr, self->_buffer, (temp_ptr - self->_buffer));
+#endif
+    return temp_ptr == NULL ? -1 : temp_ptr - self->_buffer;
+}
+
+//
+// Find the given `char *`, return `-1` if not found.
+//
+long Str_index_of(const Str *self, const char *str_to_find) {
+    return Str_find_substring(self, str_to_find, false);
+}
+
+long Str_index_of_case_sensitive(const Str *self, const char *str_to_find) {
+    return Str_find_substring(self, str_to_find, true);
+}
+
+//
+// Check whether contain the given `char *`
+//
+bool Str_contains(const Str *self) {}
 
 //
 // Free
 //
-void Str_free(Str *str) {
-    if (str != NULL && str->_buffer != NULL) {
-        free(str->_buffer);
-        str->_len = 0;
-        str->_buffer = NULL;
+void Str_free(Str *self) {
+    if (self != NULL && self->_buffer != NULL) {
+        free(self->_buffer);
+        self->_len = 0;
+        self->_buffer = NULL;
     }
 }

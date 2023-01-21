@@ -16,11 +16,19 @@ typedef uint32_t uint32;
 typedef uint64_t u64;
 typedef uint64_t uint64;
 typedef size_t usize;
+typedef int8_t i8;
+typedef int8_t int8;
+typedef int16_t i16;
+typedef int16_t int16;
+typedef int32_t i32;
+typedef int32_t int32;
+typedef int64_t i64;
+typedef int64_t int64;
 
 //
 // Rust string literal
 //
-typedef char* _str;
+typedef char *_str;
 
 //
 // Get back data type name as static `char *`
@@ -70,6 +78,5 @@ typedef char* _str;
         _Bool is_same_str_non_case_sensitive = strcasecmp(_a_type, _b_type); \
         (is_same_str_non_case_sensitive == 0);                               \
     })
-
 
 #endif
