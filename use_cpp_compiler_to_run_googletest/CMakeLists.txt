@@ -44,6 +44,8 @@ find_package(GTest REQUIRED)
 add_executable("${PROJECT_NAME}-unit-test"
     "../src/utils/collections/single_link_list.c"
     "../src/utils/collections/single_link_list_test.cpp"
+    "../src/utils/string.c"
+    "../src/utils/string_test.cpp"
     "../src/main.cpp")
 
 
