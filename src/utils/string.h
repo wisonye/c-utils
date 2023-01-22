@@ -14,6 +14,11 @@ typedef struct {
 } String, Str;
 
 /*
+ * Create from empty
+ */
+Str Str_from_empty();
+
+/*
  * Create from `char[]`
  */
 Str Str_from_arr(const char arr[]);
@@ -28,11 +33,15 @@ Str Str_from_str(const char *str);
  */
 Str Str_clone(const Str *src);
 
+/*
+ * Push other `Str *` at the end
+ */
+void Str_push_other(Str *self, const Str *original_str);
 
 /*
- * Append `char *` at the end
+ * Push the given `char *` at the end
  */
-void Str_append(const Str *self, const char *str_to_append);
+void Str_push_str(Str *self, const char *str_to_push);
 
 /*
  * Append `char *` at the beginning
@@ -69,6 +78,11 @@ long Str_index_of_case_sensitive(const Str *self, const char *str_to_find);
  * Check whether contain the given `char *` or not
  */
 bool Str_contains(const Str *self, char *str_to_check);
+
+/*
+ * Reset  to empty string
+ */
+void Str_reset_to_empty(Str *self);
 
 /*
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`

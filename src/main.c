@@ -153,4 +153,29 @@ int main(int argc, char **argv) {
     Str_free(&cloned_str);
     printf("\n>> cloned_str len: %lu, value: %s", Str_length(&cloned_str),
            Str_as_str(&cloned_str));
+
+    // String push to the end
+    Str temp_str = Str_from_str("Hey-->");
+    Str empty_str_before_push = Str_from_empty();
+    Str_push_str(&empty_str_before_push, "");
+    Str_push_str(&empty_str_before_push, NULL);
+    Str_push_str(&empty_str_before_push, "My name is: ");
+    Str_push_str(&empty_str_before_push, "Wison Ye");
+    Str_push_str(&empty_str_before_push, ":)");
+    printf("\n>> empty_str_before_push len: %lu, value: %s",
+           Str_length(&empty_str_before_push),
+           Str_as_str(&empty_str_before_push));
+
+    Str_push_str(&empty_str_before_push, Str_as_str(&temp_str));
+    printf("\n>> empty_str_before_push len: %lu, value: %s",
+           Str_length(&empty_str_before_push),
+           Str_as_str(&empty_str_before_push));
+
+    Str_reset_to_empty(&empty_str_before_push);
+    printf("\n>> empty_str_before_push len: %lu, value: %s",
+           Str_length(&empty_str_before_push),
+           Str_as_str(&empty_str_before_push));
+
+    Str_free(&temp_str);
+    Str_free(&empty_str_before_push);
 }

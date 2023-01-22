@@ -9,6 +9,18 @@
 #endif
 
 /*
+ * Create from empty
+ */
+Str Str_from_empty() {
+    Str string = {
+        ._len = 0,
+        ._buffer = NULL,
+    };
+
+    return string;
+}
+
+/*
  * Create from `char[]`
  */
 Str Str_from_arr(const char arr[]) {
@@ -68,9 +80,49 @@ Str Str_clone(const Str *src) {
 }
 
 /*
- * Append `char *` at the end
+ * Push other `Str *` at the end
  */
-void Str_append(const Str *self, const char *str_to_append) {}
+void Str_push_other(Str *self, const Str *original_str) {
+    if (self == NULL || original_str == NULL) {
+        return;
+    }
+
+    Str_push_str(self, Str_as_str(original_str));
+}
+
+/*
+ * Push the given `char *` at the end
+ */
+void Str_push_str(Str *self, const char *str_to_push) {
+    if (self == NULL || str_to_push == NULL) {
+        return;
+    }
+
+    usize str_to_push_len = strlen(str_to_push);
+    if (str_to_push_len <= 0) {
+        return;
+    }
+
+    usize new_buffer_len = self->_len + str_to_push_len + 1;
+    char *new_buffer = malloc(new_buffer_len);
+    char *copy_ptr = new_buffer;
+
+    // Copy original value (NOT include the `\0`)
+    if (self->_len > 0) {
+        memcpy(copy_ptr, self->_buffer, self->_len);
+        copy_ptr += self->_len;
+    }
+
+    memcpy(copy_ptr, str_to_push, str_to_push_len);
+    new_buffer[new_buffer_len - 1] = '\0';
+
+    // Update
+    self->_len = new_buffer_len - 1;  // Not count the '\0'
+    if (self->_buffer != NULL) {
+        free(self->_buffer);
+    }
+    self->_buffer = new_buffer;
+}
 
 /*
  * Append `char *` at the beginning
@@ -140,6 +192,17 @@ long Str_index_of_case_sensitive(const Str *self, const char *str_to_find) {
  */
 bool Str_contains(const Str *self, char *str_to_check) {
     return Str_find_substring(self, str_to_check, false) != -1;
+}
+
+/*
+ * Reset  to empty string
+ */
+void Str_reset_to_empty(Str *self) {
+    if (self != NULL && self->_buffer != NULL) {
+        self->_len = 0;
+        free(self->_buffer);
+        self->_buffer = NULL;
+    }
 }
 
 /*
