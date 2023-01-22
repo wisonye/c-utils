@@ -86,3 +86,41 @@ TEST(String, CheckContainsSubString) {
 
     Str_free(&original_str);
 }
+
+TEST(String, ResetToEmpty) {
+    Str temp_str = Str_from_str("Wison Ye:)");
+    Str_reset_to_empty(&temp_str);
+
+    ASSERT_EQ(Str_length(&temp_str), 0);
+    ASSERT_EQ(Str_as_str(&temp_str), NULL);
+
+    Str_free(&temp_str);
+}
+
+TEST(String, Push) {
+    Str empty_str = Str_from_empty();
+    Str init_empty_str = Str_from_empty();
+    Str original_str = Str_from_str("Wison Ye:)");
+    Str other_str = Str_from_str("Other string.");
+
+    Str_push_str(&init_empty_str, Str_as_str(&original_str));
+    ASSERT_EQ(Str_length(&init_empty_str), Str_length(&original_str));
+    ASSERT_EQ(Str_length(&init_empty_str), strlen(Str_as_str(&original_str)));
+
+    Str_push_str(&original_str, Str_as_str(&original_str));
+    ASSERT_EQ(Str_length(&original_str), Str_length(&init_empty_str) * 2);
+
+    Str_reset_to_empty(&original_str);
+    Str_push_other(&original_str, &other_str);
+    Str_push_other(&original_str, &other_str);
+    printf(
+        "\n>>> String Push - orignal aftger push with other, len: %lu, value: "
+        "%s",
+        Str_length(&original_str), Str_as_str(&original_str));
+    ASSERT_EQ(Str_length(&original_str), Str_length(&other_str) * 2);
+
+    Str_free(&empty_str);
+    Str_free(&init_empty_str);
+    Str_free(&original_str);
+    Str_free(&other_str);
+}
