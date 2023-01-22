@@ -11,7 +11,13 @@ void print_u32(char *v_name, u32 v) { printf("\n>>> %s: %" PRIu32, v_name, v); }
 void print_u64(char *v_name, u64 v) { printf("\n>>> %s: %" PRIu64, v_name, v); }
 
 void print_usize(char *v_name, usize v) {
+#if __APPLE__
+    printf("\n>>> %s: %lu", v_name, v);
+#elif __FreeBSD__
     printf("\n>>> %s: %" PRIu64, v_name, v);
+#else
+    printf("\n>>> %s: %" PRIu64, v_name, v);
+#endif
 }
 
 void print_i8(char *v_name, i8 v) { printf("\n>>> %s: %" PRIi8, v_name, v); }
@@ -25,7 +31,13 @@ void print_i64(char *v_name, i64 v) { printf("\n>>> %s: %" PRIi64, v_name, v); }
 void print_int(char *v_name, i32 v) { printf("\n>>> %s: %" PRIi32, v_name, v); }
 
 void print_long(char *v_name, long v) {
+#if __APPLE__
+    printf("\n>>> %s: %li", v_name, v);
+#elif __FreeBSD__
     printf("\n>>> %s: %" PRIi64, v_name, v);
+#else
+    printf("\n>>> %s: %" PRIi64, v_name, v);
+#endif
 }
 
 void print_char(char *v_name, char v) { printf("\n>>> %s: %c", v_name, v); }
@@ -66,7 +78,13 @@ void print_u32_ptr(char *v_name, u32 *v) {
 }
 
 void print_usize_ptr(char *v_name, usize *v) {
+#if __APPLE__
+    printf("\n>>> %s (ptr): %p, value: %" PRIuPTR, v_name, v, *v);
+#elif __FreeBSD__
     printf("\n>>> %s (ptr): %p, value: %" PRIu64, v_name, v, *v);
+#else
+    printf("\n>>> %s (ptr): %p, value: %" PRIu64, v_name, v, *v);
+#endif
 }
 
 void print_u64_ptr(char *v_name, u64 *v) {

@@ -349,5 +349,8 @@ int main(int argc, char **argv) {
     printf("\nsizeof(long): %lu", sizeof(long));
     printf("\nsizeof(long int): %lu", sizeof(long int));
     printf("\nsizeof(long long int): %lu", sizeof(long long int));
+    printf("\nsizeof(unsigned long): %lu", sizeof(unsigned long));
+    printf("\nsizeof(unsigned long int): %lu", sizeof(unsigned long int));
     printf("\nsizeof(unsigned long long int): %lu", sizeof(unsigned long long int));
+    printf("\nsizeof(size_t): %lu", sizeof(size_t));
 }
