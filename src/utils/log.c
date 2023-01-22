@@ -56,6 +56,10 @@ void print_long_double(char *v_name, long double v) {
 
 void print_string(char *v_name, char *v) { printf("\n>>> %s: %s", v_name, v); }
 
+void print_const_string(char *v_name, const char *v) {
+    printf("\n>>> %s: %s", v_name, v);
+}
+
 void print_void_ptr(char *v_name, void *v) {
     printf("\n>>> %s (ptr): %p", v_name, v);
 }

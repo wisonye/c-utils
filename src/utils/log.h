@@ -40,6 +40,8 @@ void print_long_double(char *v_name, long double v);
 
 void print_string(char *v_name, char *v);
 
+void print_const_string(char *v_name, const char *v);
+
 void print_void_ptr(char *v_name, void *v);
 
 void print_bool_ptr(char *v_name, bool *v);
@@ -89,6 +91,7 @@ void print_long_double_ptr(char *v_name, long double *v);
     double: print_long_double, \
     long double: print_long_double, \
     char *: print_string, \
+    const char *: print_const_string, \
     void *: print_void_ptr, \
     _Bool *: print_bool_ptr, \
     unsigned char *: print_u8_ptr, \
@@ -104,5 +107,5 @@ void print_long_double_ptr(char *v_name, long double *v);
     float *: print_float_ptr, \
     double *: print_double_ptr, \
     long double *: print_long_double_ptr, \
-    default : print_string)(#V, V)
+    default : print_const_string)(#V, (V))
 #endif

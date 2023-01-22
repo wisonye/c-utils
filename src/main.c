@@ -217,7 +217,7 @@ void test_string() {
 //
 //
 //
-typedef struct Point{
+typedef struct Point {
     float x;
     float y;
 } Point;
@@ -331,12 +331,10 @@ void test_log_macro() {
     LOG_VAR(my_string);
     LOG_VAR(my_u8_arr);
 
-    Point point = { .x = 1.1, .y = 2.2 };
+    Point point = {.x = 1.1, .y = 2.2};
     printf("\n>>> point type: %s", TYPE_NAME(point));
     // LOG_VAR(point);
-
 }
-
 
 //
 //
@@ -345,12 +343,12 @@ int main(int argc, char **argv) {
     /* test_link_list(); */
     /* test_string(); */
     test_log_macro();
-    printf("\nsizeof(int): %lu", sizeof(int));
-    printf("\nsizeof(long): %lu", sizeof(long));
-    printf("\nsizeof(long int): %lu", sizeof(long int));
-    printf("\nsizeof(long long int): %lu", sizeof(long long int));
-    printf("\nsizeof(unsigned long): %lu", sizeof(unsigned long));
-    printf("\nsizeof(unsigned long int): %lu", sizeof(unsigned long int));
-    printf("\nsizeof(unsigned long long int): %lu", sizeof(unsigned long long int));
-    printf("\nsizeof(size_t): %lu", sizeof(size_t));
+    LOG_VAR(sizeof(int));
+    LOG_VAR(sizeof(long));
+    LOG_VAR(sizeof(long int));
+    LOG_VAR(sizeof(long long int));
+    LOG_VAR(sizeof(unsigned long));
+    LOG_VAR(sizeof(unsigned long int));
+    LOG_VAR(sizeof(unsigned long long int));
+    LOG_VAR(sizeof(size_t));
 }
