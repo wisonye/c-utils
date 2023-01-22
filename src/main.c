@@ -1,6 +1,9 @@
+#include <stdbool.h>
+
 #include "stdio.h"
 #include "utils/collections/single_link_list.h"
 #include "utils/data_types.h"
+#include "utils/log.h"
 #include "utils/string.h"
 
 //
@@ -30,7 +33,7 @@ Str clone_string(const Str *original) { return Str_clone(original); }
 //
 //
 //
-int main(int argc, char **argv) {
+void test_link_list() {
     LinkList list = LL_from_empty();
     LinkList int_list = create_integer_list();
     LL int_list_2 = create_integer_list();
@@ -58,7 +61,12 @@ int main(int argc, char **argv) {
 
     //
     LL_free(&short_int_list, NULL);
+}
 
+//
+//
+//
+void test_string() {
     //
     // String
     //
@@ -204,4 +212,137 @@ int main(int argc, char **argv) {
 
     Str_free(&other_str);
     Str_free(&empty_str_before_insert);
+}
+
+//
+//
+//
+typedef struct Point{
+    float x;
+    float y;
+} Point;
+
+void test_log_macro() {
+    char *string_value = "Wison Ye";
+    char char_value = 'c';
+    u8 u8_value = 255;
+    u16 u16_value = 65535;
+    u32 u32_value = 99999;
+    u64 u64_value = 99999;
+    usize usize_value = 99999;
+    i8 i8_value = 127;
+    i16 i16_value = 65535 / 2;
+    i32 i32_value = -99999;
+    i64 i64_value = -2299999;
+    int int_value = 999999;
+    long long_value = 999999;
+    long long long_long_value = 999999;
+    float float_value = 123.123;
+    double double_value = 99999.123;
+    long double long_double_value = 99999.123;
+    bool bool_value = true;
+
+    printf("\n>>> char_value type: %s", TYPE_NAME(char_value));
+    printf("\n>>> u8_value type: %s", TYPE_NAME(u8_value));
+    printf("\n>>> u16_value type: %s", TYPE_NAME(u16_value));
+    printf("\n>>> u32_value type: %s", TYPE_NAME(u32_value));
+    printf("\n>>> u64_value type: %s", TYPE_NAME(u64_value));
+    printf("\n>>> usize_value type: %s", TYPE_NAME(usize_value));
+    printf("\n>>> i8_value type: %s", TYPE_NAME(i8_value));
+    printf("\n>>> i16_value type: %s", TYPE_NAME(i16_value));
+    printf("\n>>> i32_value type: %s", TYPE_NAME(i32_value));
+    printf("\n>>> i64_value type: %s", TYPE_NAME(i64_value));
+    printf("\n>>> int_value type: %s", TYPE_NAME(int_value));
+    printf("\n>>> long_value type: %s", TYPE_NAME(long_value));
+    printf("\n>>> long_long_value type: %s", TYPE_NAME(long_long_value));
+    printf("\n>>> float_value type: %s", TYPE_NAME(float_value));
+    printf("\n>>> double_value type: %s", TYPE_NAME(double_value));
+    printf("\n>>> long_double_value type: %s", TYPE_NAME(long_double_value));
+    printf("\n>>> bool_value type: %s", TYPE_NAME(bool_value));
+
+    LOG_VAR(char_value);
+    LOG_VAR(u8_value);
+    LOG_VAR(u16_value);
+    LOG_VAR(u32_value);
+    LOG_VAR(u64_value);
+    LOG_VAR(usize_value);
+    LOG_VAR(i8_value);
+    LOG_VAR(i16_value);
+    LOG_VAR(i32_value);
+    LOG_VAR(i64_value);
+    LOG_VAR(int_value);
+    LOG_VAR(long_value);
+    LOG_VAR(long_long_value);
+    LOG_VAR(float_value);
+    LOG_VAR(double_value);
+    LOG_VAR(long_double_value);
+    LOG_VAR(bool_value);
+    LOG_VAR(string_value);
+
+    void *void_ptr = &string_value;
+    bool *bool_ptr = &bool_value;
+    u8 *u8_ptr = &u8_value;
+    u16 *u16_ptr = &u16_value;
+    u32 *u32_ptr = &u32_value;
+    u64 *u64_ptr = &u64_value;
+    usize *usize_ptr = &usize_value;
+    i8 *i8_ptr = &i8_value;
+    i16 *i16_ptr = &i16_value;
+    i32 *i32_ptr = &i32_value;
+    i64 *i64_ptr = &i64_value;
+    float *float_ptr = &float_value;
+    double *double_ptr = &double_value;
+    long double *long_double_ptr = &long_double_value;
+
+    printf("\n>>> void_ptr type: %s", TYPE_NAME(void_ptr));
+    printf("\n>>> bool_ptr type: %s", TYPE_NAME(bool_ptr));
+    printf("\n>>> u8_ptr type: %s", TYPE_NAME(u8_ptr));
+    printf("\n>>> u16_ptr type: %s", TYPE_NAME(u16_ptr));
+    printf("\n>>> u32_ptr type: %s", TYPE_NAME(u32_ptr));
+    printf("\n>>> u64_ptr type: %s", TYPE_NAME(u64_ptr));
+    printf("\n>>> usize_ptr type: %s", TYPE_NAME(usize_ptr));
+    printf("\n>>> i8_ptr type: %s", TYPE_NAME(i8_ptr));
+    printf("\n>>> i16_ptr type: %s", TYPE_NAME(i16_ptr));
+    printf("\n>>> i32_ptr type: %s", TYPE_NAME(i32_ptr));
+    printf("\n>>> i64_ptr type: %s", TYPE_NAME(i64_ptr));
+    printf("\n>>> float_ptr type: %s", TYPE_NAME(float_ptr));
+    printf("\n>>> double_ptr type: %s", TYPE_NAME(double_ptr));
+    printf("\n>>> long_double_ptr type: %s", TYPE_NAME(long_double_ptr));
+    LOG_VAR(void_ptr);
+    LOG_VAR(bool_ptr);
+    LOG_VAR(u8_ptr);
+    LOG_VAR(u16_ptr);
+    LOG_VAR(u32_ptr);
+    LOG_VAR(u64_ptr);
+    LOG_VAR(usize_ptr);
+    LOG_VAR(i8_ptr);
+    LOG_VAR(i16_ptr);
+    LOG_VAR(i32_ptr);
+    LOG_VAR(i64_ptr);
+    LOG_VAR(float_ptr);
+    LOG_VAR(double_ptr);
+    LOG_VAR(long_double_ptr);
+
+    char my_string[] = "My String:)";
+    u8 my_u8_arr[] = {0x01, 0x02, 0x03};
+    printf("\n>>> my_string type: %s", TYPE_NAME(my_string));
+    printf("\n>>> my_u8_arr type: %s", TYPE_NAME(my_u8_arr));
+
+    LOG_VAR(my_string);
+    LOG_VAR(my_u8_arr);
+
+    Point point = { .x = 1.1, .y = 2.2 };
+    printf("\n>>> point type: %s", TYPE_NAME(point));
+    // LOG_VAR(point);
+
+}
+
+
+//
+//
+//
+int main(int argc, char **argv) {
+    /* test_link_list(); */
+    /* test_string(); */
+    test_log_macro();
 }

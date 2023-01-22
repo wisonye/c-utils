@@ -35,7 +35,7 @@ typedef char *_str;
 //
 #define TYPE_NAME(x) \
     _Generic((x),                                                   \
-    _Bool: "_Bool",                                                 \
+    _Bool: "Bool",                                                 \
     unsigned char: "unsigned char",                                 \
     char: "char",                                                   \
     signed char: "signed char",                                     \
@@ -66,6 +66,7 @@ typedef char *_str;
     float *: "pointer to float",                                    \
     double *: "pointer to double",                                  \
     long double *: "pointer to long double",                        \
+    struct Point: "struct Point",                        \
     default: "other")
 
 //
