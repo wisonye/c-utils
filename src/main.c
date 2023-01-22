@@ -178,4 +178,30 @@ int main(int argc, char **argv) {
 
     Str_free(&temp_str);
     Str_free(&empty_str_before_push);
+
+    // String insert to the beginning
+    Str empty_str_before_insert = Str_from_empty();
+    Str_insert_str_to_begin(&empty_str_before_insert, "");
+    Str_insert_str_to_begin(&empty_str_before_insert, NULL);
+    Str_insert_str_to_begin(&empty_str_before_insert, "My name is: ");
+    Str_insert_str_to_begin(&empty_str_before_insert, "Wison Ye");
+    Str_insert_str_to_begin(&empty_str_before_insert, ":)");
+    printf("\n>> empty_str_before_insert len: %lu, value: %s",
+           Str_length(&empty_str_before_insert),
+           Str_as_str(&empty_str_before_insert));
+
+    Str_reset_to_empty(&empty_str_before_insert);
+    printf("\n>> empty_str_before_insert len: %lu, value: %s",
+           Str_length(&empty_str_before_insert),
+           Str_as_str(&empty_str_before_insert));
+
+    Str other_str = Str_from_str("I'm other str.");
+    Str_insert_str_to_begin(&empty_str_before_insert, "Hey:)");
+    Str_insert_other_to_begin(&empty_str_before_insert, &other_str);
+    printf("\n>> empty_str_before_insert len: %lu, value: %s",
+           Str_length(&empty_str_before_insert),
+           Str_as_str(&empty_str_before_insert));
+
+    Str_free(&other_str);
+    Str_free(&empty_str_before_insert);
 }

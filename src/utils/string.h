@@ -36,7 +36,7 @@ Str Str_clone(const Str *src);
 /*
  * Push other `Str *` at the end
  */
-void Str_push_other(Str *self, const Str *original_str);
+void Str_push_other(Str *self, const Str *other);
 
 /*
  * Push the given `char *` at the end
@@ -44,14 +44,20 @@ void Str_push_other(Str *self, const Str *original_str);
 void Str_push_str(Str *self, const char *str_to_push);
 
 /*
- * Append `char *` at the beginning
+ * Insert `Str *` to the beginning
  */
-void Str_insert_at_begin(const Str *self, const char *str_to_insert);
+void Str_insert_other_to_begin(Str *self, const Str *other);
 
 /*
- * Append `char *` at the given index
+ * Insert `char *` to the beginning
  */
-void Str_insert_at_index(const Str *self, const char *str_to_insert,
+void Str_insert_str_to_begin(Str *self, const char *str_to_insert);
+
+
+/*
+ * Insert `char *` at the given index
+ */
+void Str_insert_at_index(Str *self, const char *str_to_insert,
                          usize index_to_insert);
 
 /*

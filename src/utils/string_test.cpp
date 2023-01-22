@@ -113,14 +113,33 @@ TEST(String, Push) {
     Str_reset_to_empty(&original_str);
     Str_push_other(&original_str, &other_str);
     Str_push_other(&original_str, &other_str);
-    printf(
-        "\n>>> String Push - orignal aftger push with other, len: %lu, value: "
-        "%s",
-        Str_length(&original_str), Str_as_str(&original_str));
+    /* printf( */
+    /*     "\n>>> String Push - orignal aftger push with other, len: %lu, value:
+     * " */
+    /*     "%s", */
+    /*     Str_length(&original_str), Str_as_str(&original_str)); */
     ASSERT_EQ(Str_length(&original_str), Str_length(&other_str) * 2);
 
     Str_free(&empty_str);
     Str_free(&init_empty_str);
     Str_free(&original_str);
+    Str_free(&other_str);
+}
+
+TEST(String, InsertAtBegin) {
+    Str empty_str = Str_from_empty();
+    Str init_empty_str = Str_from_empty();
+    Str other_str = Str_from_str("12345");
+
+    Str_push_str(&init_empty_str, "6789");
+    Str_insert_other_to_begin(&init_empty_str, &other_str);
+    Str_insert_str_to_begin(&init_empty_str, "0000");
+    /* printf("\n>>> String InsertAtBegin - init_empty_str len: %lu, value: %s",
+     */
+    /*        Str_length(&init_empty_str), Str_as_str(&init_empty_str)); */
+    ASSERT_EQ(Str_length(&init_empty_str), strlen("0000123456789"));
+
+    Str_free(&empty_str);
+    Str_free(&init_empty_str);
     Str_free(&other_str);
 }

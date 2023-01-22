@@ -82,12 +82,12 @@ Str Str_clone(const Str *src) {
 /*
  * Push other `Str *` at the end
  */
-void Str_push_other(Str *self, const Str *original_str) {
-    if (self == NULL || original_str == NULL) {
+void Str_push_other(Str *self, const Str *other) {
+    if (self == NULL || other == NULL) {
         return;
     }
 
-    Str_push_str(self, Str_as_str(original_str));
+    Str_push_str(self, Str_as_str(other));
 }
 
 /*
@@ -125,14 +125,54 @@ void Str_push_str(Str *self, const char *str_to_push) {
 }
 
 /*
- * Append `char *` at the beginning
+ * Insert `Str *` to the beginning
  */
-void Str_insert_at_begin(const Str *self, const char *str_to_insert) {}
+void Str_insert_other_to_begin(Str *self, const Str *other) {
+    if (self == NULL || other == NULL) {
+        return;
+    }
+
+    Str_insert_str_to_begin(self, Str_as_str(other));
+}
 
 /*
- * Append `char *` at the given index
+ * Insert `char *` to the beginning
  */
-void Str_insert_at_index(const Str *self, const char *str_to_insert,
+void Str_insert_str_to_begin(Str *self, const char *str_to_insert) {
+    if (self == NULL || str_to_insert == NULL) {
+        return;
+    }
+
+    usize insert_len = strlen(str_to_insert);
+    if (insert_len <= 0) {
+        return;
+    }
+
+    usize new_buffer_len = self->_len + insert_len + 1;
+    char *new_buffer = malloc(new_buffer_len);
+    char *copy_ptr = new_buffer;
+
+    // Copy insert value (NOT include the `\0`)
+    memcpy(copy_ptr, str_to_insert, insert_len);
+    copy_ptr += insert_len;
+
+    if (self->_len > 0) {
+        memcpy(copy_ptr, self->_buffer, self->_len);
+    }
+    new_buffer[new_buffer_len - 1] = '\0';
+
+    // Update
+    self->_len = new_buffer_len - 1;  // Not count the '\0'
+    if (self->_buffer != NULL) {
+        free(self->_buffer);
+    }
+    self->_buffer = new_buffer;
+}
+
+/*
+ * Insert `char *` at the given index
+ */
+void Str_insert_at_index(Str *self, const char *str_to_insert,
                          usize index_to_insert) {}
 
 /*
