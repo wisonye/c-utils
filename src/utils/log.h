@@ -71,41 +71,47 @@ void print_double_ptr(char *v_name, double *v);
 void print_long_double_ptr(char *v_name, long double *v);
 
 /**
- * Log the variable value based the primitive type
+ * Log the variable value based the primitive type, only available when defined
+ * `ENABLE_DEBUG_LOG`
  */
+#ifdef ENABLE_DEBUG_LOG
 #define LOG_VAR(V) \
     _Generic((V), \
-    _Bool: print_bool, \
-    unsigned char: print_u8, \
-    char: print_char, \
-    signed char: print_i8, \
-    short int: print_i16, \
-    unsigned short int: print_u16, \
-    int: print_int, \
-    unsigned int: print_u32, \
-    long int: print_long, \
-    unsigned long int: print_usize, \
-    long long int: print_i64, \
-    unsigned long long int: print_u64, \
-    float: print_float, \
-    double: print_long_double, \
-    long double: print_long_double, \
-    char *: print_string, \
-    const char *: print_const_string, \
-    void *: print_void_ptr, \
-    _Bool *: print_bool_ptr, \
-    unsigned char *: print_u8_ptr, \
-    unsigned short int *: print_u16_ptr, \
-    unsigned int *: print_u32_ptr, \
-    unsigned long int *: print_usize_ptr,            \
-    unsigned long long int *: print_u64_ptr,  \
-    signed char *: print_i8_ptr, \
-    short int *: print_i16_ptr, \
-    int *: print_i32_ptr, \
-    long int *: print_i64_ptr, \
-    long long int *: print_i64_ptr, \
-    float *: print_float_ptr, \
-    double *: print_double_ptr, \
-    long double *: print_long_double_ptr, \
-    default : print_const_string)(#V, (V))
+        _Bool: print_bool, \
+        unsigned char: print_u8, \
+        char: print_char, \
+        signed char: print_i8, \
+        short int: print_i16, \
+        unsigned short int: print_u16, \
+        int: print_int, \
+        unsigned int: print_u32, \
+        long int: print_long, \
+        unsigned long int: print_usize, \
+        long long int: print_i64, \
+        unsigned long long int: print_u64, \
+        float: print_float, \
+        double: print_long_double, \
+        long double: print_long_double, \
+        char *: print_string, \
+        const char *: print_const_string, \
+        void *: print_void_ptr, \
+        _Bool *: print_bool_ptr, \
+        unsigned char *: print_u8_ptr, \
+        unsigned short int *: print_u16_ptr, \
+        unsigned int *: print_u32_ptr, \
+        unsigned long int *: print_usize_ptr,            \
+        unsigned long long int *: print_u64_ptr,  \
+        signed char *: print_i8_ptr, \
+        short int *: print_i16_ptr, \
+        int *: print_i32_ptr, \
+        long int *: print_i64_ptr, \
+        long long int *: print_i64_ptr, \
+        float *: print_float_ptr, \
+        double *: print_double_ptr, \
+        long double *: print_long_double_ptr, \
+        default : print_const_string)(#V, (V))
+#else
+/** Define it as nothing **/
+#define LOG_VAR(V)
+#endif
 #endif
