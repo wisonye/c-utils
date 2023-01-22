@@ -220,3 +220,45 @@ Compile and run all unit test:
 
 </br>
 
+#### 3. How to print all supported macros on current computer and OS
+
+```bash
+clang -dM -E - < /dev/null
+```
+
+</br>
+
+Also, you can use it to confirm whether the parituclar OS macro defines or not:
+
+```bash
+clang -dM -E - < /dev/null | rg BSD
+#define __FreeBSD__ 14
+#define __FreeBSD_cc_version 1400001
+```
+
+</br>
+
+Support OS:
+
+|OPERATING SYSTEM | MACRO PRESENT | NOTES
+| --------------- | ------------- | ----- |
+|Windows 32 bit + 64 bit | _WIN32 | for all Windows OS ||
+|Windows 64 bit | _WIN64 | Only for 64 bit Windows ||
+|Apple | __APPLE__ | for all Apple OS|
+|Apple | __MACH__ | alternative to above|
+|iOS embedded | TARGET_OS_EMBEDDED | include TargetConditionals.h|
+|iOS stimulator | TARGET_IPHONE_SIMULATOR | include TargetConditionals.h|
+|iPhone | TARGET_OS_IPHONE | include TargetConditionals.h|
+|MacOS | TARGET_OS_MAC | include TargetConditionals.h|
+|Android | __ANDROID__ | subset of linux|
+|Unix based OS | __unix__ ||
+|Linux | __linux__ | subset of unix|
+|POSIX based | _POSIX_VERSION | Windows with Cygwin|
+|Solaris | __sun | |
+|HP UX | __hpux | |
+|BSD | BSD | all BSD flavors|
+|DragonFly BSD | __DragonFly__ | |
+|FreeBSD | __FreeBSD__ | |
+|NetBSD | __NetBSD__ | |
+|OpenBSD | __OpenBSD__ | |
+
