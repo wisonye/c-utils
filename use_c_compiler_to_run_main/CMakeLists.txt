@@ -35,6 +35,7 @@ project("c-utils")
 # https://cmake.org/cmake/help/v3.0/command/add_executable.html?highlight=add_executable
 # -----------------------------------------------------------------------------
 add_executable("${PROJECT_NAME}"
+    "../src/utils/log.c"
     "../src/utils/collections/single_link_list.c"
     "../src/utils/string.c"
     "../src/main.c")

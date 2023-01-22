@@ -345,4 +345,9 @@ int main(int argc, char **argv) {
     /* test_link_list(); */
     /* test_string(); */
     test_log_macro();
+    printf("\nsizeof(int): %lu", sizeof(int));
+    printf("\nsizeof(long): %lu", sizeof(long));
+    printf("\nsizeof(long int): %lu", sizeof(long int));
+    printf("\nsizeof(long long int): %lu", sizeof(long long int));
+    printf("\nsizeof(unsigned long long int): %lu", sizeof(unsigned long long int));
 }
