@@ -220,7 +220,21 @@ Compile and run all unit test:
 
 </br>
 
-#### 3. How to print all supported macros on current computer and OS
+#### 3. How to preview preprocess step source code
+
+It's beneficial if you can print out the source code content after the
+preprocessor step (but before throwing it into the compiler)
+
+```bash
+# `-D`: Use to define macros
+# `-E`: Run the preprocessor stage.
+clang -E -D ENABLE_DEBUG_LOG src/main.c | bat
+```
+
+</br>
+
+
+#### 4. How to print all supported macros on current computer and OS
 
 ```bash
 clang -dM -E - < /dev/null
