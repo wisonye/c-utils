@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -339,6 +340,10 @@ void test_log_macro() {
 
 int add(int v1, int v2) { return v1 + v2; }
 
+void unimplemented_function() {
+    assert(false && "This function doesn't implement yet.");
+}
+
 //
 //
 //
@@ -354,6 +359,8 @@ int main(int argc, char **argv) {
     LOG_VAR(sizeof(unsigned long int));
     LOG_VAR(sizeof(unsigned long long int));
     LOG_VAR(sizeof(size_t));
+
+    // unimplemented_function();
 
     Str my_str = Str_from_str("My name is Wison Ye");
     DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
