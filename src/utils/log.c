@@ -1,7 +1,12 @@
 #include "log.h"
 
 #include <inttypes.h>
+#include <stdarg.h>
+#include <stdio.h>
 
+//
+// Print integer
+//
 void print_u8(char *v_name, u8 v) { printf("\n>>> %s: %" PRIu8, v_name, v); }
 
 void print_u16(char *v_name, u16 v) { printf("\n>>> %s: %" PRIu16, v_name, v); }
@@ -60,6 +65,9 @@ void print_const_string(char *v_name, const char *v) {
     printf("\n>>> %s: %s", v_name, v);
 }
 
+//
+// Print pointer
+//
 void print_void_ptr(char *v_name, void *v) {
     printf("\n>>> %s (ptr): %p", v_name, v);
 }
@@ -121,4 +129,36 @@ void print_double_ptr(char *v_name, double *v) {
 
 void print_long_double_ptr(char *v_name, long double *v) {
     printf("\n>>> %s (ptr): %p, value: %Lf", v_name, v, *v);
+}
+
+/**
+ * Log
+ */
+void __log__(LogLevel log_level, const char *module_name,
+             const char *function_name, const char *format_str, ...) {
+    char *log_level_str = NULL;
+    switch (log_level) {
+        case LL_DEBUG:
+            log_level_str = "(D)";
+            break;
+        case LL_INFO:
+            log_level_str = "(I)";
+            break;
+        case LL_WARN:
+            log_level_str = "(W)";
+            break;
+        case LL_ERROR:
+            log_level_str = "(E)";
+            break;
+        default:
+            log_level_str = "(I)";
+    }
+
+    char buffer[LOG_BUFFER_SIZE];
+    va_list args;
+    va_start(args, format_str);
+    vsprintf(buffer, format_str, args);
+    va_end(args);
+    printf("\n%s [ %s ] > %s - %s", log_level_str, module_name, function_name,
+           buffer);
 }

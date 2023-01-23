@@ -1,6 +1,7 @@
+#include <stdarg.h>
 #include <stdbool.h>
+#include <stdio.h>
 
-#include "stdio.h"
 #include "utils/collections/single_link_list.h"
 #include "utils/data_types.h"
 #include "utils/log.h"
@@ -336,6 +337,8 @@ void test_log_macro() {
     // LOG_VAR(point);
 }
 
+int add(int v1, int v2) { return v1 + v2; }
+
 //
 //
 //
@@ -351,4 +354,23 @@ int main(int argc, char **argv) {
     LOG_VAR(sizeof(unsigned long int));
     LOG_VAR(sizeof(unsigned long long int));
     LOG_VAR(sizeof(size_t));
+
+    Str my_str = Str_from_str("My name is Wison Ye");
+    DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
+    DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
+    DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    Str_free(&my_str);
+
+    Str my_name_str = Str_from_str("Wison Ye");
+    Str clone_from_empty_str = Str_clone(&my_name_str);
+    DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
+              Str_length(&clone_from_empty_str),
+              Str_as_str(&clone_from_empty_str) == NULL
+                  ? "NULL"
+                  : Str_as_str(&clone_from_empty_str));
+    Str_free(&my_name_str);
+    Str_free(&clone_from_empty_str);
 }
