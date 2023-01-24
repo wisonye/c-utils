@@ -15,131 +15,53 @@ extern "C" {
 #include <stddef.h>
 #include <string.h>
 
-#include "string.h"
+#include "hex_buffer.h"
 }
 
-TEST(String, EmptyString) {
-    Str empty_str = Str_from_str(NULL);
-    ASSERT_EQ(Str_length(&empty_str), 0);
-    ASSERT_EQ(Str_as_str(&empty_str), NULL);
+TEST(HexBuffer, EmptyHexBuffer) {
+    HexBuffer *b1 = Hex_from_string(NULL);
+    ASSERT_EQ(b1, NULL);
 
-    Str_free(&empty_str);
+    HexBuffer *b2 = Hex_from_string("");
+    ASSERT_EQ(b2, NULL);
+
+    HexBuffer *b3 = Hex_from_string("    ");
+    ASSERT_EQ(b3, NULL);
+
+    HexBuffer *b4 = Hex_from_string("A");
+    ASSERT_EQ(b4, NULL);
+
+    HexBuffer *b5 = Hex_from_string("ABC");
+    ASSERT_EQ(b5, NULL);
+
+    HexBuffer *b6 = Hex_from_string("@##Q@#Q@$FSDDFSDFABC");
+    ASSERT_EQ(b6, NULL);
 }
 
-TEST(String, StringFromArray) {
-    char arr[] = "Unit Test:)";
-    Str str = Str_from_arr(arr);
-    ASSERT_EQ(Str_length(&str), strlen(arr));
-    ASSERT_EQ(strcmp(Str_as_str(&str), arr), 0);
+TEST(HexBuffer, InvalidHexBuffer) {
+    HexBuffer *b1 = Hex_from_string("!@#$%^&*()");
+    ASSERT_EQ(b1, NULL);
 
-    Str_free(&str);
-    ASSERT_EQ(Str_length(&str), 0);
-    ASSERT_EQ(Str_as_str(&str), NULL);
+    HexBuffer *b2 = Hex_from_string("GHikalbcop");
+    ASSERT_EQ(b2, NULL);
 }
 
-TEST(String, StringClone) {
-    char arr[] = "Unit Test:)";
-    Str str = Str_from_arr(arr);
-    ASSERT_EQ(Str_length(&str), strlen(arr));
-    ASSERT_EQ(strcmp(Str_as_str(&str), arr), 0);
+TEST(HexBuffer, ValidHexBuffer) {
+    HexBuffer *b1 = Hex_from_string("112233445566AABBCCDD");
+    ASSERT_NE(b1, NULL);
+    ASSERT_EQ(Hex_length(b1), 10);
+    char b1_str[Hex_length(b1) * 2];
+    usize return_b1_str_len = Hex_to_string(b1, b1_str, Hex_length(b1) * 2);
+    ASSERT_EQ(return_b1_str_len, 20);
+    ASSERT_EQ(strlen(b1_str), 20);
+    ASSERT_EQ(strcmp(b1_str, "112233445566AABBCCDD"), 0);
 
-    Str clone_1 = Str_clone(&str);
-    ASSERT_EQ(Str_length(&clone_1), strlen(arr));
-    ASSERT_EQ(strcmp(Str_as_str(&clone_1), arr), 0);
-
-    Str empty_str = Str_from_str("");
-    Str clone_from_empty = Str_clone(&empty_str);
-    ASSERT_EQ(Str_length(&clone_from_empty), 0);
-    ASSERT_EQ(Str_as_str(&clone_from_empty), NULL);
-
-    Str_free(&str);
-    Str_free(&clone_1);
-    Str_free(&empty_str);
-    Str_free(&clone_from_empty);
-}
-
-TEST(String, FindSubString) {
-    Str original_str = Str_from_str("Wison Ye:)");
-
-    ASSERT_EQ(Str_index_of(&original_str, ""), -1);
-    ASSERT_EQ(Str_index_of(&original_str, " "), 5);
-    ASSERT_EQ(Str_index_of(&original_str, "w"), 0);
-    ASSERT_EQ(Str_index_of(&original_str, "W"), 0);
-    ASSERT_EQ(Str_index_of(&original_str, ":)"), 8);
-    ASSERT_EQ(Str_index_of(&original_str, "b"), -1);
-    ASSERT_EQ(Str_index_of_case_sensitive(&original_str, "w"), -1);
-    ASSERT_EQ(Str_index_of_case_sensitive(&original_str, "Y"), 6);
-
-    Str_free(&original_str);
-}
-
-TEST(String, CheckContainsSubString) {
-    Str original_str = Str_from_str("Wison Ye:)");
-
-    ASSERT_EQ(Str_contains(&original_str, (char *)""), false);
-    ASSERT_EQ(Str_contains(&original_str, (char *)" "), true);
-    ASSERT_EQ(Str_contains(&original_str, (char *)"w"), true);
-    ASSERT_EQ(Str_contains(&original_str, (char *)"W"), true);
-    ASSERT_EQ(Str_contains(&original_str, (char *)":)"), true);
-    ASSERT_EQ(Str_contains(&original_str, (char *)"b"), false);
-    ASSERT_EQ(Str_contains(&original_str, (char *)"fi"), false);
-
-    Str_free(&original_str);
-}
-
-TEST(String, ResetToEmpty) {
-    Str temp_str = Str_from_str("Wison Ye:)");
-    Str_reset_to_empty(&temp_str);
-
-    ASSERT_EQ(Str_length(&temp_str), 0);
-    ASSERT_EQ(Str_as_str(&temp_str), NULL);
-
-    Str_free(&temp_str);
-}
-
-TEST(String, Push) {
-    Str empty_str = Str_from_empty();
-    Str init_empty_str = Str_from_empty();
-    Str original_str = Str_from_str("Wison Ye:)");
-    Str other_str = Str_from_str("Other string.");
-
-    Str_push_str(&init_empty_str, Str_as_str(&original_str));
-    ASSERT_EQ(Str_length(&init_empty_str), Str_length(&original_str));
-    ASSERT_EQ(Str_length(&init_empty_str), strlen(Str_as_str(&original_str)));
-
-    Str_push_str(&original_str, Str_as_str(&original_str));
-    ASSERT_EQ(Str_length(&original_str), Str_length(&init_empty_str) * 2);
-
-    Str_reset_to_empty(&original_str);
-    Str_push_other(&original_str, &other_str);
-    Str_push_other(&original_str, &other_str);
-    /* printf( */
-    /*     "\n>>> String Push - orignal aftger push with other, len: %lu, value:
-     * " */
-    /*     "%s", */
-    /*     Str_length(&original_str), Str_as_str(&original_str)); */
-    ASSERT_EQ(Str_length(&original_str), Str_length(&other_str) * 2);
-
-    Str_free(&empty_str);
-    Str_free(&init_empty_str);
-    Str_free(&original_str);
-    Str_free(&other_str);
-}
-
-TEST(String, InsertAtBegin) {
-    Str empty_str = Str_from_empty();
-    Str init_empty_str = Str_from_empty();
-    Str other_str = Str_from_str("12345");
-
-    Str_push_str(&init_empty_str, "6789");
-    Str_insert_other_to_begin(&init_empty_str, &other_str);
-    Str_insert_str_to_begin(&init_empty_str, "0000");
-    /* printf("\n>>> String InsertAtBegin - init_empty_str len: %lu, value: %s",
-     */
-    /*        Str_length(&init_empty_str), Str_as_str(&init_empty_str)); */
-    ASSERT_EQ(Str_length(&init_empty_str), strlen("0000123456789"));
-
-    Str_free(&empty_str);
-    Str_free(&init_empty_str);
-    Str_free(&other_str);
+    HexBuffer *b2 = Hex_from_string(" AA b B C D      e    f  &*@#($*&)");
+    ASSERT_NE(b2, NULL);
+    ASSERT_EQ(Hex_length(b2), 4);
+    char b2_str[Hex_length(b2) * 2];
+    usize return_b2_str_len = Hex_to_string(b2, b2_str, Hex_length(b2) * 2);
+    ASSERT_EQ(return_b2_str_len, 8);
+    ASSERT_EQ(strlen(b2_str), 8);
+    ASSERT_EQ(strcmp(b2_str, "AABBCDEF"), 0);
 }
