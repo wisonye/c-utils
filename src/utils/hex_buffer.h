@@ -21,12 +21,13 @@ typedef struct {
 } HexBuffer;
 
 /*
- * Create `HexBuffer` from the given `char *`
+ * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~z` `A~Z`
+ * characters, all another characters will be ignored.
  *
  * Return `NULL` if:
  *
  * - `hex_str` is NULL or empty string
- * - `hex_str` has an odd length
+ * - `hex_str` (after ignored all invalid characters) has an odd length
  */
 HexBuffer *Hex_from_string(const char *hex_str);
 

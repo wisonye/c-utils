@@ -21,29 +21,60 @@ printf("\n>>> unsigned_short_v: 0x%04X", unsigned_short_v);
 */
 
 /*
- * Create `HexBuffer` from the given `char *`
+ * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~z` `A~Z`
+ * characters, all another characters will be ignored.
  *
  * Return `NULL` if:
  *
  * - `hex_str` is NULL or empty string
- * - `hex_str` has an odd length
+ * - `hex_str` (after ignored all invalid characters) has an odd length
  */
 HexBuffer *Hex_from_string(const char *hex_str) {
     if (hex_str == NULL) return NULL;
 
     usize hex_str_len = strlen(hex_str);
-    if (hex_str_len <= 0 || hex_str_len % 2 != 0) return NULL;
+    //
+    // Remove all non `0~9` `a~z` `A~Z` characters
+    //
+    char valid_hex_str[hex_str_len + 1];
+    usize valid_str_index = 0;
+    for (usize t = 0; t < hex_str_len; t++) {
+        char temp_char = hex_str[t];
+
+        if ((temp_char >= 48 && temp_char <= 57) ||
+            (temp_char >= 65 && temp_char <= 90) ||
+            (temp_char >= 97 && temp_char <= 122)) {
+            valid_hex_str[valid_str_index] = temp_char;
+            valid_str_index++;
+        }
+    }
+    valid_hex_str[valid_str_index] = '\0';
+
+    usize valid_hex_str_len = strlen(valid_hex_str);
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(HexBuffer, Hex_from_string, "valid_hex_str len: %lu, value: %s",
+              valid_hex_str_len, valid_hex_str);
+#endif
+
+    if (valid_hex_str_len <= 0 || valid_hex_str_len % 2 != 0) {
+#ifdef ENABLE_DEBUG_LOG
+        DEBUG_LOG(HexBuffer, Hex_from_string,
+                  "valid_hex_str length <= 0 or is odd length, return NULL.",
+                  valid_hex_str_len, valid_hex_str);
+#endif
+        return NULL;
+    }
 
     //
     // `_buffer` is a fixed array and it's the last member in the struct, so
     // `malloc` supports allocated the continuous memory block to container the
     // enitre `HexBuffer` and that fixed array space.
     //
-    usize buffer_size = sizeof(char) * hex_str_len / 2;
+    usize buffer_size = sizeof(char) * valid_hex_str_len / 2;
     HexBuffer *buffer = malloc(sizeof(HexBuffer) + buffer_size);
     buffer->_len = buffer_size;
 
-    char *copy_str = (char *)hex_str;
+    char *copy_str = (char *)valid_hex_str;
     for (usize index = 0; index < buffer_size; index++) {
         char temp_hex_str[3] = {0};
         strncpy(temp_hex_str, copy_str, 2);
@@ -53,6 +84,7 @@ HexBuffer *Hex_from_string(const char *hex_str) {
                   temp_hex_str, strlen(temp_hex_str));
 #endif
 
+        // `strtol` converts the 16 base ASCII to long
         buffer->_buffer[index] = (u8)strtol(temp_hex_str, NULL, 16);
 
 #ifdef ENABLE_DEBUG_LOG

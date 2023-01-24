@@ -360,7 +360,21 @@ void test_hex_buffer() {
         DEBUG_LOG(Main, test_hex_buffer, "hex_string: %s", hex_string);
     }
 
+    HexBuffer *buffer_2 = Hex_from_string(
+        " A $%@@!!@!@!`"
+        ""
+        ""
+        "`&*())@$%%   B C D ");
+    char hex_string_2[Hex_length(buffer_2) * 2];
+    usize return_hex_len_2 =
+        Hex_to_string(buffer_2, hex_string_2, Hex_length(buffer_2) * 2);
+    DEBUG_LOG(Main, test_hex_buffer, "return_hex_len_2: %lu", return_hex_len_2);
+    if (return_hex_len_2 > 0) {
+        DEBUG_LOG(Main, test_hex_buffer, "hex_string_2: %s", hex_string_2);
+    }
+
     Hex_free(buffer_1);
+    Hex_free(buffer_2);
 }
 
 //
