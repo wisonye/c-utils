@@ -38,6 +38,7 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/log.c"
     "../src/utils/collections/single_link_list.c"
     "../src/utils/string.c"
+    "../src/utils/hex_buffer.c"
     "../src/main.c")
 
 

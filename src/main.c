@@ -5,6 +5,7 @@
 
 #include "utils/collections/single_link_list.h"
 #include "utils/data_types.h"
+#include "utils/hex_buffer.h"
 #include "utils/log.h"
 #include "utils/string.h"
 
@@ -347,37 +348,57 @@ void unimplemented_function() {
 //
 //
 //
+void test_hex_buffer() {
+    char hex_str_1[] = "AABBCCDD";
+    HexBuffer *buffer_1 = Hex_from_string(hex_str_1);
+
+    char hex_string[Hex_length(buffer_1) * 2];
+    usize return_hex_len =
+        Hex_to_string(buffer_1, hex_string, Hex_length(buffer_1) * 2);
+    DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
+    if (return_hex_len > 0) {
+        DEBUG_LOG(Main, test_hex_buffer, "hex_string: %s", hex_string);
+    }
+
+    Hex_free(buffer_1);
+}
+
+//
+//
+//
 int main(int argc, char **argv) {
     /* test_link_list(); */
     /* test_string(); */
-    test_log_macro();
-    LOG_VAR(sizeof(int));
-    LOG_VAR(sizeof(long));
-    LOG_VAR(sizeof(long int));
-    LOG_VAR(sizeof(long long int));
-    LOG_VAR(sizeof(unsigned long));
-    LOG_VAR(sizeof(unsigned long int));
-    LOG_VAR(sizeof(unsigned long long int));
-    LOG_VAR(sizeof(size_t));
+    /* test_log_macro(); */
+    /* LOG_VAR(sizeof(int)); */
+    /* LOG_VAR(sizeof(long)); */
+    /* LOG_VAR(sizeof(long int)); */
+    /* LOG_VAR(sizeof(long long int)); */
+    /* LOG_VAR(sizeof(unsigned long)); */
+    /* LOG_VAR(sizeof(unsigned long int)); */
+    /* LOG_VAR(sizeof(unsigned long long int)); */
+    /* LOG_VAR(sizeof(size_t)); */
 
     // unimplemented_function();
 
-    Str my_str = Str_from_str("My name is Wison Ye");
-    DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
-    DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-    DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    Str_free(&my_str);
+    // Str my_str = Str_from_str("My name is Wison Ye");
+    // DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
+    // DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
+    // DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    // INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    // WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    // ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+    // Str_free(&my_str);
 
-    Str my_name_str = Str_from_str("Wison Ye");
-    Str clone_from_empty_str = Str_clone(&my_name_str);
-    DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
-              Str_length(&clone_from_empty_str),
-              Str_as_str(&clone_from_empty_str) == NULL
-                  ? "NULL"
-                  : Str_as_str(&clone_from_empty_str));
-    Str_free(&my_name_str);
-    Str_free(&clone_from_empty_str);
+    // Str my_name_str = Str_from_str("Wison Ye");
+    // Str clone_from_empty_str = Str_clone(&my_name_str);
+    // DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
+    //           Str_length(&clone_from_empty_str),
+    //           Str_as_str(&clone_from_empty_str) == NULL
+    //               ? "NULL"
+    //               : Str_as_str(&clone_from_empty_str));
+    // Str_free(&my_name_str);
+    // Str_free(&clone_from_empty_str);
+
+    test_hex_buffer();
 }

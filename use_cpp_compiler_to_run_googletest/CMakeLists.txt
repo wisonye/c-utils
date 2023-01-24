@@ -47,6 +47,8 @@ add_executable("${PROJECT_NAME}-unit-test"
     "../src/utils/collections/single_link_list_test.cpp"
     "../src/utils/string.c"
     "../src/utils/string_test.cpp"
+    "../src/utils/hex_buffer.c"
+    "../src/utils/hex_buffer_test.cpp"
     "../src/main.cpp")
 
 
