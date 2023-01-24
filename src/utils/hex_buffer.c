@@ -11,16 +11,6 @@
 #endif
 
 /*
-unsigned char unsigned_char_v = 0x0A;
-unsigned short unsigned_short_v = 0x0123;
-
-
-// `04` means left-padding `0` until output len is 4
-// Output: >>> unsigned_short_v: 0x0123
-printf("\n>>> unsigned_short_v: 0x%04X", unsigned_short_v);
-*/
-
-/*
  * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
  * characters, all another characters will be ignored.
  *
