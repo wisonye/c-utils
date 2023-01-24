@@ -21,7 +21,7 @@ printf("\n>>> unsigned_short_v: 0x%04X", unsigned_short_v);
 */
 
 /*
- * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~z` `A~Z`
+ * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
  * characters, all another characters will be ignored.
  *
  * Return `NULL` if:
@@ -42,8 +42,8 @@ HexBuffer *Hex_from_string(const char *hex_str) {
         char temp_char = hex_str[t];
 
         if ((temp_char >= 48 && temp_char <= 57) ||
-            (temp_char >= 65 && temp_char <= 90) ||
-            (temp_char >= 97 && temp_char <= 122)) {
+            (temp_char >= 65 && temp_char <= 70) ||
+            (temp_char >= 97 && temp_char <= 102)) {
             valid_hex_str[valid_str_index] = temp_char;
             valid_str_index++;
         }

@@ -21,7 +21,7 @@ typedef struct {
 } HexBuffer;
 
 /*
- * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~z` `A~Z`
+ * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
  * characters, all another characters will be ignored.
  *
  * Return `NULL` if:
