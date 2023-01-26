@@ -443,3 +443,1200 @@ Support OS:
 |NetBSD | __NetBSD__ | |
 |OpenBSD | __OpenBSD__ | |
 
+
+### 4. `C` -> `Rust` transition
+
+#### 4.1. Primitive Data Types
+
+Here is the [`C Date Types`](https://en.wikipedia.org/wiki/C_data_types)
+
+| **C** | **Rust** |
+|-------|----------|
+| [ Integer ] |
+| char              | i8            |
+| unsigned char     | u8            |
+| short             | i16           |
+| unsigned short    | u16           |
+| int               | i32           |
+| unsigned int      | u32           |
+| long              | i64           |
+| unsigned long     | u64           |
+| size_t            | u64/usize (But u32 in `FreeBSD`)     |
+| [ Floating point ] |
+| float             | f32           |
+| double            | f64           |
+| [ Boolean ] |
+| _Bool             | bool           |
+
+</br>
+
+
+
+#### 4.2. `printf` related
+
+- How to print fixed width HEX
+
+    - C
+        ```c
+        unsigned char unsigned_char_v = 0x0A;
+        unsigned short unsigned_short_v = 0x0123;
+
+        // `02` means left-padding `0` until output len is 2
+        // Output: >>> unsigned_char_v: 0x0A
+        printf("\n>>> unsigned_char_v: 0x%02X", unsigned_char_v);
+
+        // `04` means left-padding `0` until output len is 4
+        // Output: >>> unsigned_short_v: 0x0123
+        printf("\n>>> unsigned_short_v: 0x%04X", unsigned_short_v);
+        ```
+
+        </br>
+
+    - Rust
+        ```rust
+        let u8_v = 0x0Au8;
+        let u16_v = 0x0Bu16;
+        println!("u8_v: 0x{u8_v:#02X?}, size: {}", core::mem::size_of::<u8>());
+        println!("u16_v: 0x{u16_v:#02X?}, size: {}", core::mem::size_of::<u16>());
+        ```
+
+        </br>
+
+
+- How to format string (sequence of chars)
+
+    - C
+        `snprintf` is the safe version of [`sprintf`](https://cplusplus.com/reference/cstdio/snprintf/)
+
+        ```c
+        const size_t BUFFER_SIZE = 100;
+        char buffer[BUFFER_SIZE];
+
+        char *my_name = "Wison Ye";
+        int my_age = 888;
+
+        int buffer_str_size =
+            snprintf(buffer, BUFFER_SIZE, "%s, %i", my_name, my_age);
+        printf(
+            "\nformatted_str: %s, formatted_buffer_size: %i, sizeof: %lu, strlen: "
+            "%lu",
+            buffer, buffer_str_size, sizeof(buffer), strlen(buffer));
+
+        // Output: formatted_str: Wison Ye, 888, formatted_buffer_size: 13, sizeof: 100, strlen: 13⏎
+        ```
+
+        </br>
+
+    - Rust
+
+        ```rust
+        let u16_v = 0x0Bu16;
+        let formatted_str = format!("u16_v: 0x{u16_v:#02X?}, size: {}", core::mem::size_of::<u16>());
+        println!("formatted_str: {formatted_str}");
+        ```
+
+        </br>
+
+
+### 4.3. `string` related
+
+`string` actually just a sequance of characters.
+
+```c
+char my_name[] = "wisonye";
+```
+
+`sizeof(my_name)` is `8`, as it includes the final `\0` null-terminated character!!!
+
+`strlen(my_name)` is `7`, as it doesn't count the final `\0` null-terminated character!!!
+
+</br>
+
+But you **CANNOT** use `sizeof` on a `char *` (pointer, NOT `char []`), otherwise
+you always get back `4` (4bytes on 32bit) or `8` (8bytes on 64bit):
+
+```c
+char *my_name_2 = "wisonye wisonye";
+printf("\nsizeof(my_name_2): %lu", sizeof(my_name_2));
+printf("\nstrlen(my_name_2): %lu", strlen(my_name_2));
+
+// sizeof(my_name_2): 8
+// strlen(my_name_2): 15⏎
+```
+
+</br>
+
+
+- Safey verison of `strncat`
+
+    ```c
+    //
+    // Safey verison of `strncat`:
+    //
+    // `max_dest_len` should be the `sizeof(char dest[])`
+    //
+    char *strncat_safe(char *dest, const char *src, size_t max_dest_len) {
+        // `dest` and `src` both are `char *`, that's why you should use
+        // `strlen` instead of `sizeof`. If you use `sizeof`, it always
+        // return `4` or `8`, as that the size of a pointer (4 bytes on
+        // 32bit, 8 bytes in 64bit)!!!
+        size_t src_len = strlen(src);
+        size_t current_dest_str_len = strlen(dest);
+
+        // printf("\n\ndest_len: %lu, src_len: %lu, max_dest_len: %lu", current_dest_str_len, src_len, max_dest_len);
+
+        // `-1` because you need to count the `\0` null-terminated character
+        // to end the string.
+        size_t available_dest_len = max_dest_len - 1;
+
+        if (current_dest_str_len == 0 && available_dest_len >= src_len) {
+            // printf("\n>>> 1");
+            return strncat(dest, src, available_dest_len);
+        }
+        if (current_dest_str_len > 0 &&
+            available_dest_len >= current_dest_str_len + src_len) {
+            // printf("\n>>> 2");
+            return strncat(dest, src, available_dest_len);
+        } else {
+            if (available_dest_len - current_dest_str_len > 0) {
+                // printf("\n>>> 3");
+                return strncat(dest, src,
+                               available_dest_len - current_dest_str_len);
+            } else {
+                // printf("\n>>> 4");
+                return dest;
+            }
+        }
+    }
+    ```
+
+    </br>
+
+### 4.4 Life time
+
+In `C`, actually it has the lifetime concept and it works the same way with
+`Rust`:
+
+- Local variable will be destroyed after it's out of the scope (code block/function body)
+
+- Return value by copying it, same with `passing by value`
+
+</br>
+
+So, let's take a look at a few real-world examples:
+
+- Return a struct in funciton works:
+
+    ```c
+    typedef struct {
+        char *first_name;
+        char *last_name;
+    } Name2;
+
+    //
+    // This works: by returning a struct instance.
+    //
+    // It does the same thing of passing by value which means a copy of the struct
+    // instance.
+    //
+    // By proving this, you can print out the local var's address and compare to
+    // the outer caller return struct instance's address, they should be the
+    // different pointer!!!
+    //
+    Name2 create_your_name(char *first_name, char *last_name) {
+        Name2 your_name = {first_name, last_name};
+
+        printf("\n>>> (from create_your_name function) - `your_name` stack local var pointer: %p", &your_name);
+        // >>> (from create_your_name function) - `your_name` stack local var pointer: 0x7ffeeecff090
+
+        return your_name;
+    }
+
+    // Call it and compare the struct instance address and they're different
+    char first_name[] = "Wison";
+    char last_name[] = "Ye";
+    Name2 the_name_you_created = create_your_name(first_name, last_name);
+
+    printf("\n>>> `the_name_you_created` pointer: %p", &the_name_you_created);
+    // >>> `the_name_you_created` pointer: 0x7ffeeecff0d0
+    ```
+
+    As you can see that the `create_your_name` return a new struct instance by
+    copying it and it works.
+
+    `0x7ffeee` proves that it's the stack frame local variable, as stack frame
+    located at the very high address area.
+
+    If you doubt that `why it works` even it has the `char *` pointer???
+
+    That's because the pointer is passed by outside, so here is the trick:
+
+    `the_name_you_created.first_name` --> `char first_name[]`
+
+    `the_name_you_created.last_name` --> `char last_name[]`
+
+    And both `first_name` and `last_name` still exists and available after the
+    function (`create_your_name`) stack frame has been destroyed, that's why
+    it works:)
+
+    </br>
+
+
+- Return a struct in funciton that doesn't work:
+
+    ```c
+    typedef struct {
+        char *first_name;
+        char *last_name;
+    } Name2;
+
+
+    //
+    // This won't work: by returning a struct instance but there is local stack
+    // address reference!!!
+    //
+    Name2 create_temp_name() {
+        char temp_first_name[] = "No first name";
+        char temp_last_name[] = "No last name";
+
+        Name2 your_name = {temp_first_name, temp_last_name};
+        printf("\n\n>>> (from create_temp_name function) - `your_name` stack local var pointer: %p", &your_name);
+        // >>> (from create_temp_name function) - `your_name` stack local var pointer: 0x7ffeeecff068
+
+        // After returning (or say by copying) the `your_name` struct instance,
+        // `your_name.first_name` and `your_name.last_name` point to invalid memory
+        // address!!!
+        return your_name;
+    }
+
+    // Call it and compare the struct instance address and they're different
+    Name2 the_name_wont_work = create_temp_name();
+
+    printf("\n>>> `the_name_wont_work ` pointer: %p", &the_name_wont_work);
+    // `the_name_wont_work` pointer: 0x7ffeeecff0b0
+    ```
+
+    As you can see that the `create_temp_name` return a new struct instance by
+    copying it and it SHOULD work.
+
+    But in fact, it doesn't work at all!!!
+
+    That's because:
+
+    `the_name_wont_work.first_name` --> `char temp_first_name[]`
+
+    `the_name_wont_work.last_name` --> `char temp_last_name[]`
+
+    And both `temp_first_name` and `temp_last_name` won't be exists and
+    unavailable after the function (`create_temp_name`) stack frame has been
+    destroyed, that's why it won't work:)
+
+    Yes, it compiles and runs, but ..... the values aren't the values you think
+    they're and might crash in sometimes!!!
+
+    That's why passing any stack memory pointer to outside world is super
+    dangerous and it's very difficult to debug!!!
+
+    </br>
+
+
+    Also, have a look at the "./c_demo_struct_stack_frame_analysis.txt", as it
+    shows the function call stack details.
+
+    </br>
+
+
+#### 3.4 The relationship between `Pointer` and `Array`
+
+Actually, `pointer` is just like an `array` in the other form, the `C` design
+assumes that you use a `pointer` like an `array`. That's why the following
+code works:
+
+```c
+
+u16 temp_arr[] = {1, 2, 3, 4, 5};
+
+//
+// `sizeof` is an operator, NOT a function!!!
+//
+usize arr_len = sizeof(temp_arr) / sizeof(temp_arr[0]);
+
+//
+// Use `pointer` to print the loop
+//
+u16 *loop_ptr = temp_arr;
+for (usize index = 0; index < arr_len; index++) {
+    printf("\n>>> (pointer_in_arr - loop 2) - %p: %u", loop_ptr + index,
+            *(loop_ptr + index));
+}
+
+// >>> (pointer_in_arr - loop 2) - 0x820d9d686: 1
+// >>> (pointer_in_arr - loop 2) - 0x820d9d688: 2
+// >>> (pointer_in_arr - loop 2) - 0x820d9d68a: 3
+// >>> (pointer_in_arr - loop 2) - 0x820d9d68c: 4
+// >>> (pointer_in_arr - loop 2) - 0x820d9d68e: 5
+```
+
+You can found a fews things from the above code:
+
+- `loop_ptr` is a `pointer to u16` type
+
+- `loop_ptr + X`:
+
+    It's saying: add/move the pointer address to `X unit of pointed type` from
+    the current position (start from `0x820d9d686` on above print out sample).
+
+    That's why `loop_ptr + 1` actually moved 2 bytes (`0x820d9d686 + 2`), as
+    the pointer points to type `u16`!!!
+
+    </br>
+
+For the `temp_arr` variable, actually the compile treats it as `a pointer that
+points to the first element of the allocated array`, and you can use that
+`temp_arr` as just a pointer. That's why the following code works:
+
+```c
+
+// `temp_arr` acts like the `loop_str` in above sample, as in fact, it just
+// an pointer:)
+for (usize index = 0; index < arr_len; index++) {
+    printf("\n>>> (pointer_in_arr - loop 1.1) - %p: %u", temp_arr + index,
+            *(temp_arr + index));
+}
+
+>>> (pointer_in_arr - loop 1.1) - 0x8206a92a6: 1
+>>> (pointer_in_arr - loop 1.1) - 0x8206a92a8: 2
+>>> (pointer_in_arr - loop 1.1) - 0x8206a92aa: 3
+>>> (pointer_in_arr - loop 1.1) - 0x8206a92ac: 4
+>>> (pointer_in_arr - loop 1.1) - 0x8206a92ae: 5
+```
+
+</br>
+
+And one more thing to prove that you can swap the `pointer` and `array (var name)`
+is this sample:
+
+```c
+u16 *loop_ptr_2 = temp_arr;
+for (usize index = 0; index < arr_len; index++) {
+    printf("\n>>> (pointer_in_arr - loop 1.1.) - %p: %u", loop_ptr_2 + index,
+            loop_ptr_2[index]);
+}
+
+// >>> (pointer_in_arr - loop 1.1.) - 0x8205fda16: 1
+// >>> (pointer_in_arr - loop 1.1.) - 0x8205fda18: 2
+// >>> (pointer_in_arr - loop 1.1.) - 0x8205fda1a: 3
+// >>> (pointer_in_arr - loop 1.1.) - 0x8205fda1c: 4
+// >>> (pointer_in_arr - loop 1.1.) - 0x8205fda1e: 5
+```
+
+Plz pay attention to that `loop_ptr_2[index]`, all the following codes present
+the same meaning: get the value that the pointer points to, AKA: dereference
+
+- `temp_arr[index]`
+- `loop_ptr_2[index]`
+- `*(loop_ptr_2 + index)`
+- `*(temp_arr + index)`
+
+</br>
+
+Again: **An array variable is just a pointer, you can swap using them at any
+given time.**
+
+But the slight difference between the `array variable` and the `pointer` is
+that:
+
+_The compiler can check and detect the array boundary errors but NOT check on
+the pointer form_
+
+Consider the following code:
+
+```c
+temp_arr[10] = 10;
+loop_ptr_2[10] = 10;
+*(loop_ptr_2 + 10) = 10;
+```
+
+Compiler produces the error on line of `temp_arr[10] = 10` but not the rest of
+lines:
+
+```bash
+warning: array index 10 is past the end of the array (which contains 5 elements) [-Warray-bounds]
+temp_arr[10] = 10;
+^        ~~
+note: array 'temp_arr' declared here
+u16 temp_arr[] = {1, 2, 3, 4, 5};
+^
+1 warning generated.
+```
+
+</br>
+
+
+### 4. The tricky things in `C Pointer`
+
+#### 4.1 constants pointer differences
+
+- `const TYPE *var` and `TYPE const *var`
+
+    For the pointer to constants, you can change the pointer var (address)
+    value itself, but you can't change the value it points to!!!
+
+    ```c
+    char a = 'a';
+    char b = 'b';
+
+    const char *a_ptr = &a;
+    // char const *a_ptr = &a;
+
+    // You can change the pointer (address) value itself
+    a_ptr = &b;
+
+    // But you CANNOT change the value it points to
+    // error: read-only variable is not assignable
+    a_ptr = 'c';
+    ```
+
+    </br>
+
+- `*const TYPE var`
+
+    For the constants pointer, you can change the value it points to, but you
+    can't change the pointer (address) value itself!!!
+
+    ```c
+    char a = 'a';
+    char b = 'b';
+
+    char *const a_ptr = &a;
+    // char const *a_ptr = &a;
+
+    // You can change the value it points to
+    *a_ptr = 'c';
+
+    // But you CANNOT change the pointer value itself
+    // error: cannot assign to variable 'a_ptr' with const-qualified type 'char *const'
+    a_ptr = &b;
+    ```
+
+    </br>
+
+- `const TYPE *const var` and `TYPE const *const var`
+
+    For the constants pointer to constants, you can't change both!!!
+
+    ```c
+    char a = 'a';
+    char b = 'b';
+
+    const char *const a_ptr = &a;
+    // char const *const a_ptr = &a;
+
+    // You can't change both
+
+    // error: read-only variable is not assignable
+    *a_ptr = 'c';
+
+    // error: cannot assign to variable 'a_ptr' with const-qualified type 'const char *const'
+    a_ptr = &b;
+    ```
+
+    </br>
+
+### 5. Macro
+
+The macro in `C` is a super powerful weapon that helps you to generate the most
+flexible source code.
+
+#### 5.1 How to only run the preprocessor stage
+
+You can run `CC` with the `-E` flag to generate the source code that only apply
+the preprocessor stage before compiling it.
+
+```bash
+CC -E src/utils/vec.c | bat
+clang -E src/utils/vec.c | bat
+```
+
+</br>
+
+#### 5.2 Comment and empty line in macro
+
+You only can use `/* */` comment in macro body, `//` won't work!!!
+
+If you want an empty line, just add a `\` (multi line character) there.
+
+```c
+#define MY_MACRO(PARAM1) \
+    /* Here is the comment line 1 */ \
+    /* Here is the comment line 2 */ \
+    /* Follow by a empty line */\
+    \
+    printf("Just a macro sample.")
+```
+
+</br>
+
+
+#### 5.3 String in macro
+
+When using a macro argument starts with `#` (in the macro body), it treats as
+a string. That's why the `#FORMAT_TYPE` (in the following sample) will become
+a part of the `printf` format string!!!
+
+```c
+#define MACRO_PARAM_AS_STRING(INTEGER, FORMAT_TYPE) \
+    printf("Here is integer you provied: " #FORMAT_TYPE, INTEGER)
+
+int main() {
+    MACRO_PARAM_AS_STRING(888, %u);
+}
+```
+
+The above code will expand as the following:
+
+```c
+int main() {
+    printf("Here is integer you provied: " "%u", 888);
+}
+
+// And it prints out:
+// Here is integer you provied: 888⏎
+```
+
+</br>
+
+#### 5.4 Expression in macro
+
+If you want the macro parameter support passing in an expression, then you should
+wrap the parameter with `()` (in the macro body).
+
+When you want to put all code expanded by macro into a code block scope, wrap
+your code inside `({})`.
+
+Here is the sample:
+
+```c
+#include <stdio.h>
+#include <time.h>
+
+#define GET_AND_PRINT_CURRENT_TIME(PRINT_PREFIX, USE_CUSTOM_FORMAT)          \
+    ({                                                                       \
+        time_t t = time(NULL);                                               \
+        if (USE_CUSTOM_FORMAT) {                                             \
+            struct tm tm = *localtime(&t);                                   \
+            printf("\n>>> " #PRINT_PREFIX " %d-%02d-%02d %02d:%02d:%02d\n",  \
+                   tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, \
+                   tm.tm_min, tm.tm_sec);                                    \
+        } else {                                                             \
+            printf("\n>>> " #PRINT_PREFIX " %s", ctime(&t));                 \
+        }                                                                    \
+    })
+
+//
+int main() {
+    GET_AND_PRINT_CURRENT_TIME("The current time in custom format: ", 2 > 1);
+    GET_AND_PRINT_CURRENT_TIME("The current time: ", 1 > 2);
+}
+```
+
+</br>
+
+#### 5.5 How to write a macro that includes `#ifdef`?
+
+The answer is `NO, you can't do that!!!` and you have to define 2 macros with
+the same name and wrap them into a `#ifdef #else #endif` block like below:
+
+```c
+#ifdef PRINT_VEC_DEBUG_LOG
+#define ASSIGN_PUSH_VEC_ELEMENT(PTR_TYPE)                                      \
+    PTR_TYPE *next_ptr = (self->len == 1)                                      \
+                             ? (PTR_TYPE *)self->data                          \
+                             : (PTR_TYPE *)self->data + self->len - 1;         \
+    printf("\n>>> " #PTR_TYPE " >>> self->data: %p, next_ptr: %p", self->data, \
+           next_ptr);                                                          \
+    *next_ptr = *(PTR_TYPE *)value;
+#else
+#define ASSIGN_PUSH_VEC_ELEMENT(PTR_TYPE)                              \
+    PTR_TYPE *next_ptr = (self->len == 1)                              \
+                             ? (PTR_TYPE *)self->data                  \
+                             : (PTR_TYPE *)self->data + self->len - 1; \
+    *next_ptr = *(PTR_TYPE *)value;
+#endif
+```
+
+</br>
+
+#### 5.6 Auto type infer in macro
+
+[Official doc](https://gcc.gnu.org/onlinedocs/gcc/Typeof.html)
+
+</br>
+
+Auto type infer supports by `typeof` and `__auto_type`
+
+```c
+#define SHOW_TYPE_OF_VAR(A, B, C, D, E, F) \
+    ({                                     \
+        typeof(A) a = (A);                 \
+        typeof(B) b = (B);                 \
+        typeof(C) c = (C);                 \
+        typeof(D) d = (D);                 \
+        typeof(E) e = (E);                 \
+        typeof(F) f = (F);                 \
+    })
+
+#define SHOW_TYPE_OF_VAR_2(A, B, C, D, E, F) \
+    ({                                       \
+        __auto_type a = (A);                 \
+        __auto_type b = (B);                 \
+        __auto_type c = (C);                 \
+        __auto_type d = (D);                 \
+        __auto_type e = (E);                 \
+        __auto_type f = (F);                 \
+    })
+
+//
+int main() {
+    printf("\n>>> [Auto type infer in macro]\n");
+
+    SHOW_TYPE_OF_VAR(0xFF, 256, -100, 3.5, -4.5, 100000);
+    SHOW_TYPE_OF_VAR_2(0xFF, 256, -100, 3.5, -4.5, 100000);
+}
+```
+
+</br>
+
+#### 5.7 Useful macro: Get back the data type from a variable
+
+That's the `_Generic` selection at compile time, doc is [here](https://en.cppreference.com/w/c/language/generic)
+
+```c
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+
+#define TYPE_NAME(x) \
+    _Generic((x),                                                   \
+    _Bool: "_Bool",                                                 \
+    unsigned char: "unsigned char",                                 \
+    char: "char",                                                   \
+    signed char: "signed char",                                     \
+    short int: "short int",                                         \
+    unsigned short int: "unsigned short int",                       \
+    int: "int",                                                     \
+    unsigned int: "unsigned int",                                   \
+    long int: "long int",                                           \
+    unsigned long int: "unsigned long int",                         \
+    long long int: "long long int",                                 \
+    unsigned long long int: "unsigned long long int",               \
+    float: "float",                                                 \
+    double: "double",                                               \
+    long double: "long double",                                     \
+    char *: "pointer to char",                                      \
+    void *: "pointer to void",                                      \
+    _Bool *: "pointer to Bool",                                     \
+    unsigned char *: "pointer to unsigned char",                    \
+    signed char *: "pointer to signed char",                        \
+    short int *: "pointer to short int",                            \
+    unsigned short int *: "pointer to unsigned short int",          \
+    int *: "pointer to int",                                        \
+    unsigned int *: "pointer to unsigned int",                      \
+    long int *: "pointer to long int",                              \
+    unsigned long int *: "pointer to unsigned long int",            \
+    long long int *: "pointer to long long int",                    \
+    unsigned long long int *: "pointer to unsigned long long int",  \
+    float *: "pointer to float",                                    \
+    double *: "pointer to double",                                  \
+    long double *: "pointer to long double",                        \
+    default: "other")
+
+//
+//
+//
+int main() {
+    printf("\n>>> [ Get data type from variable ]");
+
+    uint8_t u8_v = 100;
+    uint16_t u16_v = 100;
+    uint32_t u32_v = 100;
+    uint64_t u64_v = 100;
+    int8_t i8_v = 100;
+    int16_t i16_v = 100;
+    int32_t i32_v = 100;
+    int64_t i64_v = 100;
+    size_t sizet_v = 100;
+    _Bool _Bool_v = true;
+    unsigned char unsigned_char_v = 0x0A;
+    char char_v = 'a';
+    signed char signed_char_v = 'a';
+    short int short_int_v = 100;
+    unsigned short int unsigned_short_int_v = 100;
+    int int_v = 100;
+    unsigned int unsigned_int_v = 100;
+    long int long_int_v = 100;
+    unsigned long int unsigned_long_int_v = 100;
+    long long int long_long_int_v = 100;
+    unsigned long long int unsigned_long_long_int_v = 100;
+    float float_v = 1.0;
+    double double_v = 1.0;
+    long double long_double_v = 1.0;
+    char *pointer_to_char_v = NULL;
+    void *pointer_to_void_v = NULL;
+    _Bool *pointer_to_Bool_v = NULL;
+    unsigned char *pointer_to_unsigned_char_v = NULL;
+    signed char *pointer_to_signed_char_v = NULL;
+    short int *pointer_to_short_int_v = NULL;
+    unsigned short int *pointer_to_unsigned_short_int_v = NULL;
+    int *pointer_to_int_v = NULL;
+    unsigned int *pointer_to_unsigned_int_v = NULL;
+    long int *pointer_to_long_int_v = NULL;
+    unsigned long int *pointer_to_unsigned_long_int_v = NULL;
+    long long int *pointer_to_long_long_int_v = NULL;
+    unsigned long long int *pointer_to_unsigned_long_long_int_v = NULL;
+    float *pointer_to_float_v = NULL;
+    double *pointer_to_double_v = NULL;
+    long double *pointer_to_long_double_v = NULL;
+
+    printf("\n>>> Type of 'u8_v' is: %s", TYPE_NAME(u8_v));
+    printf("\n>>> Type of 'u16_v' is: %s", TYPE_NAME(u16_v));
+    printf("\n>>> Type of 'u32_v' is: %s", TYPE_NAME(u32_v));
+    printf("\n>>> Type of 'u64_v' is: %s", TYPE_NAME(u64_v));
+    printf("\n>>> Type of 'i8_v' is: %s", TYPE_NAME(i8_v));
+    printf("\n>>> Type of 'i16_v' is: %s", TYPE_NAME(i16_v));
+    printf("\n>>> Type of 'i32_v' is: %s", TYPE_NAME(i32_v));
+    printf("\n>>> Type of 'i64_v' is: %s", TYPE_NAME(i64_v));
+    printf("\n>>> Type of 'usizet_v' is: %s", TYPE_NAME(sizet_v));
+    printf("\n>>> Type of '_Bool_v' is: %s", TYPE_NAME(_Bool_v));
+    printf("\n>>> Type of 'unsigned_char_v': %s", TYPE_NAME(unsigned_char_v));
+    printf("\n>>> Type of 'char_v': %s", TYPE_NAME(char_v));
+    printf("\n>>> Type of 'signed_char_v': %s", TYPE_NAME(signed_char_v));
+    printf("\n>>> Type of 'short_int_v': %s", TYPE_NAME(short_int_v));
+    printf("\n>>> Type of 'unsigned_short_int_v': %s",
+           TYPE_NAME(unsigned_short_int_v));
+    printf("\n>>> Type of 'int_v': %s", TYPE_NAME(int_v));
+    printf("\n>>> Type of 'unsigned_int_v': %s", TYPE_NAME(unsigned_int_v));
+    printf("\n>>> Type of 'long_int_v': %s", TYPE_NAME(long_int_v));
+    printf("\n>>> Type of 'unsigned_long_int_v': %s",
+           TYPE_NAME(unsigned_long_int_v));
+    printf("\n>>> Type of 'long_long_int_v': %s", TYPE_NAME(long_long_int_v));
+    printf("\n>>> Type of 'unsigned_long_long_int_v': %s",
+           TYPE_NAME(unsigned_long_long_int_v));
+    printf("\n>>> Type of 'float_v': %s", TYPE_NAME(float_v));
+    printf("\n>>> Type of 'double_v': %s", TYPE_NAME(double_v));
+    printf("\n>>> Type of 'long_double_v': %s", TYPE_NAME(long_double_v));
+    printf("\n>>> Type of '*pointer_to_char_v': %s",
+           TYPE_NAME(pointer_to_char_v));
+    printf("\n>>> Type of '*pointer_to_void_v': %s",
+           TYPE_NAME(pointer_to_void_v));
+    printf("\n>>> Type of '*pointer_to_Bool_v': %s",
+           TYPE_NAME(pointer_to_Bool_v));
+    printf("\n>>> Type of '*pointer_to_unsigned_char_v': %s",
+           TYPE_NAME(pointer_to_unsigned_char_v));
+    printf("\n>>> Type of '*pointer_to_signed_char_v': %s",
+           TYPE_NAME(pointer_to_signed_char_v));
+    printf("\n>>> Type of '*pointer_to_short_int_v': %s",
+           TYPE_NAME(pointer_to_short_int_v));
+    printf("\n>>> Type of '*pointer_to_unsigned_short_int_v': %s",
+           TYPE_NAME(pointer_to_unsigned_short_int_v));
+    printf("\n>>> Type of '*pointer_to_int_v': %s",
+           TYPE_NAME(pointer_to_int_v));
+    printf("\n>>> Type of '*pointer_to_unsigned_int_v': %s",
+           TYPE_NAME(pointer_to_unsigned_int_v));
+    printf("\n>>> Type of '*pointer_to_long_int_v': %s",
+           TYPE_NAME(pointer_to_long_int_v));
+    printf("\n>>> Type of '*pointer_to_unsigned_long_int_v': %s",
+           TYPE_NAME(pointer_to_unsigned_long_int_v));
+    printf("\n>>> Type of '*pointer_to_long_long_int_v': %s",
+           TYPE_NAME(pointer_to_long_long_int_v));
+    printf("\n>>> Type of '*pointer_to_unsigned_long_long_int_v': %s",
+           TYPE_NAME(pointer_to_unsigned_long_long_int_v));
+    printf("\n>>> Type of '*pointer_to_float_v': %s",
+           TYPE_NAME(*pointer_to_float_v));
+    printf("\n>>> Type of '*pointer_to_double_v': %s",
+           TYPE_NAME(pointer_to_double_v));
+    printf("\n>>> Type of '*pointer_to_long_double_v': %s",
+           TYPE_NAME(pointer_to_long_double_v));
+}
+
+// >>> [ Get data type from variable ]
+// >>> Type of 'u8_v' is: unsigned char
+// >>> Type of 'u16_v' is: unsigned short int
+// >>> Type of 'u32_v' is: unsigned int
+// >>> Type of 'u64_v' is: unsigned long long int
+// >>> Type of 'i8_v' is: signed char
+// >>> Type of 'i16_v' is: short int
+// >>> Type of 'i32_v' is: int
+// >>> Type of 'i64_v' is: long long int
+// >>> Type of 'usizet_v' is: unsigned long int
+// >>> Type of '_Bool_v' is: _Bool
+// >>> Type of 'unsigned_char_v': unsigned char
+// >>> Type of 'char_v': char
+// >>> Type of 'signed_char_v': signed char
+// >>> Type of 'short_int_v': short int
+// >>> Type of 'unsigned_short_int_v': unsigned short int
+// >>> Type of 'int_v': int
+// >>> Type of 'unsigned_int_v': unsigned int
+// >>> Type of 'long_int_v': long int
+// >>> Type of 'unsigned_long_int_v': unsigned long int
+// >>> Type of 'long_long_int_v': long long int
+// >>> Type of 'unsigned_long_long_int_v': unsigned long long int
+// >>> Type of 'float_v': float
+// >>> Type of 'double_v': double
+// >>> Type of 'long_double_v': long double
+// >>> Type of '*pointer_to_char_v': pointer to char
+// >>> Type of '*pointer_to_void_v': pointer to void
+// >>> Type of '*pointer_to_Bool_v': pointer to Bool
+// >>> Type of '*pointer_to_unsigned_char_v': pointer to unsigned char
+// >>> Type of '*pointer_to_signed_char_v': pointer to signed char
+// >>> Type of '*pointer_to_short_int_v': pointer to short int
+// >>> Type of '*pointer_to_unsigned_short_int_v': pointer to unsigned short int
+// >>> Type of '*pointer_to_int_v': pointer to int
+// >>> Type of '*pointer_to_unsigned_int_v': pointer to unsigned int
+// >>> Type of '*pointer_to_long_int_v': pointer to long int
+// >>> Type of '*pointer_to_unsigned_long_int_v': pointer to unsigned long int
+// >>> Type of '*pointer_to_long_long_int_v': pointer to long long int
+// >>> Type of '*pointer_to_unsigned_long_long_int_v': pointer to unsigned long long int
+// >>> Type of '*pointer_to_float_v': float
+// >>> Type of '*pointer_to_double_v': pointer to double
+// >>> Type of '*pointer_to_long_double_v': pointer to long double
+```
+</br>
+
+
+#### 5.7.1 Useful macro: Is it the same type between 2 variables/values
+
+```c
+
+//
+//
+//
+#define IS_IT_THE_SAME_TYPE(a, b)                                            \
+    ({                                                                       \
+        char _a_type[50] = TYPE_NAME((a));                                   \
+        char _b_type[50] = TYPE_NAME((b));                                   \
+        _Bool is_same_str_non_case_sensitive = strcasecmp(_a_type, _b_type); \
+        (is_same_str_non_case_sensitive == 0);                               \
+    })
+
+int main() {
+    /* usize *aaa = NULL; */
+    /* size_t *bbb = NULL; */
+    /* char aaa[10] = "asdfasdf"; */
+    /* char bbb[20] = "AAAA"; */
+    uint8_t aaa[5] = {1, 2, 3, 4, 5};
+    uint8_t bbb[3] = {9, 10, 11};
+    printf("\n>>> aaa type is: %s",TYPE_NAME(aaa));
+    printf("\n>>> bbb type is: %s",TYPE_NAME(bbb));
+
+    _Bool is_same_type_between_a_and_b = IS_IT_THE_SAME_TYPE(aaa, bbb);
+
+    if (is_same_type_between_a_and_b) {
+        printf("\n>>>> Yes, a and b ARE the same type.");
+    } else {
+        printf("\n>>>> Yes, a and b ARE NOT the same type.");
+    }
+
+    return 0;
+}
+
+// >>> aaa type is: pointer to unsigned char
+// >>> bbb type is: pointer to unsigned char
+// >>>> Yes, a and b ARE the same type.⏎
+```
+
+</br>
+
+
+#### 5.8 Generic implementation by using macro
+
+Let's see what `C` deals with generic:)
+
+The `Result` type here is just trying to show you how the magic word
+`generic` works under the hood.
+
+Let's take the `Rust` generic type `Result<T,E>` as an example.
+
+Suppose you have the following rust code:
+
+```rust
+pub struct MyResult<T, E> {
+    success: bool,
+    ok_value: T,
+    err_value: E,
+}
+
+fn main() {
+    let result_1: MyResult<usize, u8> = MyResult::<usize, u8> {
+         success: true,
+         ok_value: 100,
+         err_value: 0
+    };
+
+    let result_2: MyResult<f32, u8> = MyResult::<f32, u8> {
+         success: true,
+         ok_value: 1.0f32,
+         err_value: 0
+    };
+}
+```
+
+When Rust compiles this code, it performs **`monomorphization`**. During the
+process, the `rustc`read the values that have need used in `MyResult<T,E>`,
+and produce 2 different types wit the concrete types like below:
+
+The sample code comes from [`Generic Data Types`](https://doc.rust-lang.org/book/ch10-01-syntax.html#performance-of-code-using-generics
+) in the Rust official guide (`The Rust Programming Language`):
+
+```rust
+// pseudo code
+
+pub struct MyResult_usize_u8{
+    success: bool,
+    ok_value: usize,
+    err_value: u8,
+}
+
+pub struct MyResult_f32_u8 {
+    success: bool,
+    ok_value: f32,
+    err_value: u8,
+}
+```
+
+So, that's `nearly duplicated code`? YES, you're right and that's how it
+works:)
+
+In `C`, you can do the same thing with the `magical` macro:)
+
+
+
+Because the `magical` thing is all about the `nearly duplicated code`, that
+means you can't use the regular `include guard` pattern like below to
+prevent the generic implementation `.h` file from being included more than
+once:
+
+```c
+#ifndef __RESULT_H__
+#define __RESULT_H__
+
+//... Your code inside include guard
+
+#endif
+```
+
+</br>
+
+
+So, suppose that you want to implement the same `MyResult` type above in the
+generic way in `C`. That means you need 3 generic types:
+
+- `MY_RESULT_TYPE` as the `typedef struct` type name
+- `MY_RESULT_SUCCESS_TYPE` as the `ok` data type
+- `MY_RESULT_ERROR_TYPE` as the `err` data type
+
+</br>
+
+Let's do it:
+
+```c
+//
+// Throw error if the caller doesn't define the following `type name` which
+// uses to generate the concrete type struct definition
+//
+#if !defined(MY_RESULT_TYPE) || !defined(MY_RESULT_SUCCESS_TYPE) || \
+    !defined(MY_RESULT_ERROR_TYPE)
+#error Missing MY_RESULT_TYPE or MY_RESULT_SUCCESS_TYPE or MY_RESULT_ERROR_TYPE definition
+#endif
+
+//
+// Define macros that uses to create concrete type struct definition
+//
+#define MY_RESULT_CONCAT(tag, method) tag##_##method
+#define MY_RESULT_METHOD2(tag, method) MY_RESULT_CONCAT(tag, method)
+#define MY_RESULT_METHOD(method) MY_RESULT_METHOD2(MY_RESULT_TYPE, method)
+
+//
+// Generic (result type) struct
+//
+typedef struct {
+    _Bool success;
+    MY_RESULT_SUCCESS_TYPE *ok;
+    MY_RESULT_ERROR_TYPE *err;
+} MY_RESULT_TYPE;
+
+//
+// Similar to `Result::Ok(T)` and allocate on the heap
+//
+MY_RESULT_TYPE *MY_RESULT_METHOD(Ok)(MY_RESULT_SUCCESS_TYPE *ok) {
+    MY_RESULT_TYPE *r = malloc(sizeof(MY_RESULT_TYPE));
+    r->success = true;
+    r->ok = ok;
+    r->err = NULL;
+
+    return r;
+}
+
+//
+// Similar to `Result::Err(T)` and allocate on the heap
+//
+MY_RESULT_TYPE *MY_RESULT_METHOD(Err)(MY_RESULT_ERROR_TYPE *err) {
+    MY_RESULT_TYPE *r = malloc(sizeof(MY_RESULT_TYPE));
+    r->success = false;
+    r->ok = NULL;
+    r->err = err;
+
+    return r;
+}
+
+#undef MY_RESULT_TYPE
+#undef MY_RESULT_SUCCESS_TYPE
+#undef MY_RESULT_ERROR_TYPE
+#undef MY_RESULT_CONCAT
+#undef MY_RESULT_METHOD2
+#undef MY_RESULT_METHOD
+```
+
+</br>
+
+Ok, let's explain step-by-step:
+
+- Check the caller (`includer`) to see whether it defines the required type
+macros or not:
+
+    ```c
+    //
+    // Throw error if the caller doesn't define the following `type name` which
+    // uses to generate the concrete type struct definition
+    //
+    #if !defined(MY_RESULT_TYPE) || !defined(MY_RESULT_SUCCESS_TYPE) || \
+            !defined(MY_RESULT_ERROR_TYPE)
+    #error Missing MY_RESULT_TYPE or MY_RESULT_SUCCESS_TYPE or MY_RESULT_ERROR_TYPE definition
+    #endif
+    ```
+
+    The directive `#error` causes the preprocessor to report a fatal error,
+    then you can see the error when you compile the project.
+
+    </br>
+
+
+- Define the helper macro to define `XX_YY` method function name
+
+
+    ```C
+    //
+    // Define macros that uses to create concrete type struct definition
+    //
+    #define MY_RESULT_CONCAT(struct_name, method_name) struct_name##_##method_name
+    #define CREATE_STRUCT_METHOD_HELPER(struct_name, method_name) MY_RESULT_CONCAT(struct_name, method_name)
+    #define CREATE_STRUCT_METHOD(method_name) CREATE_STRUCT_METHOD_HELPER(MY_RESULT_TYPE, method_name)
+    ```
+
+    Suppose the caller (`includer`) source file has the following macros:
+
+    ```C
+    #define MY_RESULT_TYPE EndpointApiResult
+    ```
+
+    So, the `CREATE_STRUCT_METHOD(Ok)` macro call will be expanded as `*EndpointApiResult_Ok`. That's the way to generate the generic struct method name:)
+
+    </br>
+
+- The final important part is to undefine the caller (`includer`)'s macros
+
+
+    ```c
+    #undef MY_RESULT_TYPE
+    #undef MY_RESULT_SUCCESS_TYPE
+    #undef MY_RESULT_ERROR_TYPE
+    #undef MY_RESULT_CONCAT
+    #undef CREATE_STRUCT_METHOD_HELPER
+    #undef CREATE_STRUCT_METHOD
+    ```
+
+    </br>
+
+- So, from now on, every source code is able to include this `.h` to create
+their own concrete type version of `MyResult` struct and method.
+
+    Here is the example to show it:
+
+    ```c
+    #define MY_RESULT_TYPE EndpointApiResult
+    #define MY_RESULT_SUCCESS_TYPE char
+    #define MY_RESULT_ERROR_TYPE uint16_t
+
+    #include "utils/result.h"
+
+    char *success_result = "Got something back:)";
+    uint16_t fail_result = 404;
+
+    //
+    EndpointApiResult *simulate_call_api_success(_Bool simulate_success) {
+        EndpointApiResult *result = (simulate_success)
+                                        ? EndpointApiResult_Ok(success_result)
+                                        : EndpointApiResult_Err(&fail_result);
+    
+        return result;
+    }
+    ```
+
+    As you can see above, a few things to pay attention to :
+
+    - Those 3 `#define` should be written before the `#include "utils/result.h"`, as preprocessor handle source file from top to bottom.
+
+    - Before the `#include "utils/result.h"` be evaluated, the `EndpointApiResult` doesn't exists. It only exists after the preprocessor finishs:
+
+        You can run the `CC -E src/result_demo.c` to see the preprocessor
+        result:
+
+        ```c
+        typedef struct {
+            _Bool success;
+            char *ok;
+            uint16_t *err;
+        } EndpointApiResult;
+
+        EndpointApiResult *EndpointApiResult_Ok(char *ok) {
+            EndpointApiResult *r = malloc(sizeof(EndpointApiResult));
+            r->success = 1;
+            r->ok = ok;
+            r->err = ((void*)0);
+
+            return r;
+        }
+
+        EndpointApiResult *EndpointApiResult_Err(uint16_t *err) {
+            EndpointApiResult *r = malloc(sizeof(EndpointApiResult));
+            r->success = 0;
+            r->ok = ((void*)0);
+            r->err = err;
+
+            return r;
+        }
+        ```
+
+        That's the way how `C` deals with generic:)
+
+        </br>
+
+For more details, open `src/utils/result.h` and `src/result_demo.c` to have
+a look and run the following command to give it a try:
+
+```bash
+make c_demo_result && ./c_demo_result
+
+# >>> [ Result type demo ]
+# Result {
+#         success: true
+#         ok: Got something back:)
+#         err: NULL
+# }
+# 
+# Result {
+#         success: false
+#         ok: NULL
+#         ok: 404
+# }
+```
