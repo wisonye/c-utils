@@ -22,7 +22,7 @@ struct Vec {
  * Create empty vector
  */
 Vector Vector_new() {
-    Vector vec = malloc(sizeof(Vector));
+    Vector vec = malloc(sizeof(struct Vec));
     *vec = (struct Vec){
         .capacity = 0,
         .length = 0,
@@ -35,7 +35,7 @@ Vector Vector_new() {
  * Create an empty vector that ability to hold `capacity` elements
  */
 Vector Vector_with_capacity(usize capacity, usize element_type_size) {
-    Vector vec = malloc(sizeof(Vector));
+    Vector vec = malloc(sizeof(struct Vec));
     *vec = (struct Vec){
         .capacity = capacity,
         .length = 0,
@@ -119,7 +119,7 @@ const char *Vector_join(const Vector self, char *delemiter);
  */
 void Vector_free(Vector self) {
     free(self);
-    self->capacity = 0;
-    self->length = 0;
-    self->items = NULL;
+    /* self->capacity = 0; */
+    /* self->length = 0; */
+    // self->items = NULL;
 }
