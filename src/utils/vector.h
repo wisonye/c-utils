@@ -22,6 +22,11 @@ typedef struct {
 Vector Vector_from_empty();
 
 /*
+ * Create an empty vector that ability to hold `capacity` elements
+ */
+Vector Vector_with_capacity(usize capacity, usize element_type_size);
+
+/*
  * Push element to the end of the vector
  */
 void Vector_push(Vector self, void *element, usize element_type_size);

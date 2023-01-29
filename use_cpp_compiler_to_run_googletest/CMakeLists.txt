@@ -95,7 +95,7 @@ target_link_libraries("${PROJECT_NAME}-unit-test" GTest::gtest GTest::gtest_main
 # More details from here:
 # https://cmake.org/cmake/help/v3.0/command/target_compile_definitions.html?highlight=target_compile_de
 # -----------------------------------------------------------------------------
-target_compile_definitions("${PROJECT_NAME}-unit-test" PRIVATE ENABLE_LINK_LIST_DEBUG)
+target_compile_definitions("${PROJECT_NAME}-unit-test" PRIVATE ENABLE_DEBUG_LOG)
 
 
 # -----------------------------------------------------------------------------

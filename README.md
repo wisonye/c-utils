@@ -173,7 +173,14 @@ call.
 
         </br>
 
-- `Vector`: Growable vector
+- `Vector`: Heap allocated dynamic array
+
+    ```c
+    ```
+
+    </br>
+
+
 
 </br>
 

@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef ENABLE_DEBUG_LOG
+#include <stdio.h>
+
+#include "log.h"
+#endif
+
 //
 // Vector: Heap allocated dynamic array
 //
@@ -17,9 +23,24 @@ struct Vec {
  */
 Vector Vector_from_empty() {
     Vector vec = malloc(sizeof(Vector));
-    vec->capacity = 0;
-    vec->length = 0;
-    vec->items = NULL;
+    *vec = (struct Vec){
+        .capacity = 0,
+        .length = 0,
+        .items = NULL,
+    };
+    return vec;
+}
+
+/*
+ * Create an empty vector that ability to hold `capacity` elements
+ */
+Vector Vector_with_capacity(usize capacity, usize element_type_size) {
+    Vector vec = malloc(sizeof(Vector));
+    *vec = (struct Vec){
+        .capacity = capacity,
+        .length = 0,
+        .items = malloc(element_type_size * capacity),
+    };
     return vec;
 }
 
@@ -30,6 +51,12 @@ void Vector_push(Vector self, void *element, usize element_type_size) {
     // ensure the vector has enough space to save all elements;
     // capacity >= self->length + 1
     if (self->capacity < self->length + 1) {
+/* #ifdef ENABLE_DEBUG_LOG */
+/*         DEBUG_LOG(Vector, Vector_Push, */
+/*                   "Realloc needed, current capacity: %lu, length+1: %lu, after " */
+/*                   "capacity: %lu", */
+/*                   self->capacity, self->length + 1, self->capacity * 2); */
+/* #endif */
         self->capacity = (self->capacity == 0) ? 1 : self->capacity * 2;
         self->items = realloc(self->items, element_type_size * self->capacity);
     }
