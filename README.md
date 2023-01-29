@@ -12,113 +12,113 @@ call.
     /*
     * Create from empty
     */
-    Str Str_from_empty();
+    String Str_from_empty();
 
     /*
     * Create from `char[]`
     */
-    Str Str_from_arr(const char arr[]);
+    String Str_from_arr(const char arr[]);
 
     /*
     * Create from `char*`
     */
-    Str Str_from_str(const char *str);
+    String Str_from_str(const char *str);
 
     /*
     * Clone from given `Str` instance
     */
-    Str Str_clone(const Str *src);
+    String Str_clone(const String other);
 
     /*
-    * Push other `Str *` at the end
+    * Push other `String *` at the end
     */
-    void Str_push_other(Str *self, const Str *other);
+    void Str_push_other(String self, const String other);
 
     /*
     * Push the given `char *` at the end
     */
-    void Str_push_str(Str *self, const char *str_to_push);
+    void Str_push_str(String self, const char *str_to_push);
 
     /*
-    * Insert `Str *` to the beginning
+    * Insert `String *` to the beginning
     */
-    void Str_insert_other_to_begin(Str *self, const Str *other);
+    void Str_insert_other_to_begin(String self, const String other);
 
     /*
     * Insert `char *` to the beginning
     */
-    void Str_insert_str_to_begin(Str *self, const char *str_to_insert);
-
+    void Str_insert_str_to_begin(String self, const char *str_to_insert);
 
     /*
     * Insert `char *` at the given index
     */
-    void Str_insert_at_index(Str *self, const char *str_to_insert,
+    void Str_insert_at_index(String self, const char *str_to_insert,
                             usize index_to_insert);
 
     /*
     * Get back string length
     */
-    usize Str_length(const Str *self);
+    const usize Str_length(const String self);
 
     /*
     * Get back `char *`
     */
-    const char *Str_as_str(const Str *self);
+    const char *Str_as_str(const String self);
 
     /*
     * Find the given `char *` index, return `-1` if not found.
     */
-    long Str_index_of(const Str *self, const char *str_to_find);
+    const long Str_index_of(const String self, const char *str_to_find);
 
     /*
     * Find the given `char *` (case sensitive) index, return `-1` if not found.
     */
-    long Str_index_of_case_sensitive(const Str *self, const char *str_to_find);
+    const long Str_index_of_case_sensitive(const String self,
+                                        const char *str_to_find);
 
     /*
     * Check whether contain the given `char *` or not
     */
-    bool Str_contains(const Str *self, char *str_to_check);
+    const bool Str_contains(const String self, char *str_to_check);
 
     /*
     * Reset  to empty string
     */
-    void Str_reset_to_empty(Str *self);
+    void Str_reset_to_empty(String self);
 
     /*
     * Free allocated memory, reset length to 0 and internal buffer to `NULL`
     */
-    void Str_free(Str *self);
+    void Str_free(String self);
 
     //
     // Examples
     //
-    Str my_name = Str_from_str("Wison Ye:)");
+    String my_name = Str_from_str("Wison Ye:)");
 
-    Str empty_str_1 = Str_from_str(NULL);
-    Str empty_str_2 = Str_from_str("");
+    String empty_str_1 = Str_from_str(NULL);
+    String empty_str_2 = Str_from_str("");
 
-    Str clone_from_empty_str = Str_clone(&my_name);
+    String clone_from_empty_str = Str_clone(my_name);
     DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
-              Str_length(&clone_from_empty_str),
-              Str_as_str(&clone_from_empty_str) == NULL
+              Str_length(clone_from_empty_str),
+              Str_as_str(clone_from_empty_str) == NULL
                   ? "NULL"
-                  : Str_as_str(&clone_from_empty_str));
+                  : Str_as_str(clone_from_empty_str));
 
     // (D) [ Main ] > StringTest - clone_from_empty_str len: 8, value: Wison Ye⏎
 
     char temp_id[] = "123456789";
     char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
-    Str str_1 = Str_from_arr(temp_id);
-    Str str_2 = Str_from_arr(temp_id_2);
+    String str_1 = Str_from_arr(temp_id);
+    String str_2 = Str_from_arr(temp_id_2);
 
-    Str_free(&my_name);
-    Str_free(&empty_str_1);
-    Str_free(&empty_str_2);
-    Str_free(&clone_from_empty_str);
-    Str_free(&str_1);
-    Str_free(&str_2);
+    Str_free(my_name);
+    Str_free(empty_str_1);
+    Str_free(empty_str_2);
+    Str_free(clone_from_empty_str);
+    Str_free(str_1);
+    Str_free(str_2);
     ```
     </br>
 
@@ -155,13 +155,13 @@ call.
         #include "utils/log.h"
         #include "utils/string.h"
 
-        Str my_str = Str_from_str("My name is Wison Ye");
+        String my_str = Str_from_str("My name is Wison Ye");
         DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
         DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-        DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-        INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-        WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-        ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
+        DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+        INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+        WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+        ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
 
         // (D) [ Main ] > main - add(2, 3): 5
         // (D) [ Main ] > main - 2 + 2 :4
