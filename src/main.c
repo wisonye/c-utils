@@ -8,6 +8,7 @@
 #include "utils/hex_buffer.h"
 #include "utils/log.h"
 #include "utils/string.h"
+#include "utils/vector.h"
 
 //
 //
@@ -78,12 +79,10 @@ void test_string() {
 
     String empty_str_1 = Str_from_str(NULL);
     String empty_str_2 = Str_from_str("");
-    printf(
-        "\n>> empty_str_1 len: %lu, value: %s", Str_length(empty_str_1),
-        Str_as_str(empty_str_1) == NULL ? "NULL" : Str_as_str(empty_str_1));
-    printf(
-        "\n>> empty_str_2 len: %lu, value: '%s'", Str_length(empty_str_2),
-        Str_as_str(empty_str_2) == NULL ? "NULL" : Str_as_str(empty_str_2));
+    printf("\n>> empty_str_1 len: %lu, value: %s", Str_length(empty_str_1),
+           Str_as_str(empty_str_1) == NULL ? "NULL" : Str_as_str(empty_str_1));
+    printf("\n>> empty_str_2 len: %lu, value: '%s'", Str_length(empty_str_2),
+           Str_as_str(empty_str_2) == NULL ? "NULL" : Str_as_str(empty_str_2));
 
     String clone_from_empty_str = Str_clone(empty_str_2);
     printf("\n>> clone_from_empty_str len: %lu, value: '%s'",
@@ -380,10 +379,114 @@ void test_hex_buffer() {
 //
 //
 //
+void test_vector() {
+    Vector empty_vec = Vector_new();
+    Vector_free(empty_vec);
+
+    usize u16_type_size = sizeof(u16);
+    Vector u16_vec = Vector_with_capacity(10, u16_type_size);
+    //
+    // `capacity` should NOT change and no `realloc` will be called before
+    // pushing the 11th elements
+    //
+    u16 short_arr[] = {5000, 5001, 5002, 5003, 5004, 5005,
+                       5006, 5007, 5008, 5009, 6000};
+    Vector_push(u16_vec, &short_arr[0], u16_type_size);
+    Vector_push(u16_vec, &short_arr[1], u16_type_size);
+    Vector_push(u16_vec, &short_arr[2], u16_type_size);
+    Vector_push(u16_vec, &short_arr[3], u16_type_size);
+    Vector_push(u16_vec, &short_arr[4], u16_type_size);
+    Vector_push(u16_vec, &short_arr[5], u16_type_size);
+    Vector_push(u16_vec, &short_arr[6], u16_type_size);
+    Vector_push(u16_vec, &short_arr[7], u16_type_size);
+    Vector_push(u16_vec, &short_arr[8], u16_type_size);
+    Vector_push(u16_vec, &short_arr[9], u16_type_size);
+    // `capacity` should change to `20`
+    Vector_push(u16_vec, &short_arr[10], u16_type_size);
+    // Element value check
+    VectorIteractor short_arr_iter = Vector_iter(u16_vec);
+    u16 *temp_short_arr = (u16 *)short_arr_iter.items;
+    for (usize sa_index = 0; sa_index < short_arr_iter.length; sa_index++) {
+        DEBUG_LOG(Main, test_vector, "short_arr_iter[%lu]: %d", sa_index,
+                  temp_short_arr[sa_index]);
+    }
+    Vector_free(u16_vec);
+
+    // int vec
+    int int_arr[] = {100, 200, 300};
+    Vector int_vec = Vector_new();
+    Vector_push(int_vec, &int_arr[0], sizeof(int));
+    Vector_push(int_vec, &int_arr[1], sizeof(int));
+    Vector_push(int_vec, &int_arr[2], sizeof(int));
+
+    VectorIteractor int_arr_iter = Vector_iter(int_vec);
+    int *temp_int_arr = (int *)int_arr_iter.items;
+    for (usize index = 0; index < int_arr_iter.length; index++) {
+        DEBUG_LOG(Main, test_vector, "int_arr_iter[%lu]: %d", index,
+                  temp_int_arr[index]);
+    }
+    Vector_free(int_vec);
+
+    // Person list
+    typedef struct {
+        char first_name[10];
+        char last_name[10];
+        u8 age;
+    } Person;
+
+    Person wison = {.first_name = "Wison", .last_name = "Ye", .age = 88};
+    Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
+    Person nobody = {
+        .first_name = "Nobody", .last_name = "Nothing", .age = 100};
+    Vector person_list = Vector_new();
+    Vector_push(person_list, &wison, sizeof(Person));
+    Vector_push(person_list, &fion, sizeof(Person));
+    Vector_push(person_list, &nobody, sizeof(Person));
+
+    VectorIteractor person_list_iter = Vector_iter(person_list);
+    Person *temp_person_arr = (Person *)person_list_iter.items;
+    for (usize index = 0; index < person_list_iter.length; index++) {
+        DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].first_name: %s",
+                  index, temp_person_arr[index].first_name);
+        DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].last_name: %s",
+                  index, temp_person_arr[index].last_name);
+        DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].age: %u", index,
+                  temp_person_arr[index].age);
+    }
+    Vector_free(person_list);
+
+    // Double list
+    double double_arr[] = {11.11, 22.22, 33.33};
+    usize double_type_size = sizeof(double);
+    usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
+
+    Vector double_vec = Vector_with_capacity(double_arr_len, double_type_size);
+    for (usize di = 0; di < double_arr_len; di++) {
+        Vector_push(double_vec, &double_arr[di], double_type_size);
+    }
+
+    const double *d_value_1 =
+        (const double *)Vector_get(double_vec, 0, double_type_size);
+    const double *d_value_2 =
+        (const double *)Vector_get(double_vec, 1, double_type_size);
+    const double *d_value_3 =
+        (const double *)Vector_get(double_vec, 2, double_type_size);
+
+    DEBUG_LOG(Main, test_vector, "d_value_1: %f", *d_value_1);
+    DEBUG_LOG(Main, test_vector, "d_value_2: %f", *d_value_2);
+    DEBUG_LOG(Main, test_vector, "d_value_3: %f", *d_value_3);
+
+    Vector_free(double_vec);
+}
+
+//
+//
+//
 int main(int argc, char **argv) {
     /* test_link_list(); */
-    test_string();
+    /* test_string(); */
     /* test_log_macro(); */
+    test_vector();
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */
     /* LOG_VAR(sizeof(long int)); */
@@ -415,6 +518,4 @@ int main(int argc, char **argv) {
     // Str_free(&clone_from_empty_str);
 
     // test_hex_buffer();
-
-
 }

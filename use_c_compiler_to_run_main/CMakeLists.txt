@@ -39,6 +39,7 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/collections/single_link_list.c"
     "../src/utils/string.c"
     "../src/utils/hex_buffer.c"
+    "../src/utils/vector.c"
     "../src/main.c")
 
 
@@ -63,7 +64,7 @@ add_executable("${PROJECT_NAME}"
 # More details from here:
 # https://cmake.org/cmake/help/v3.0/command/target_compile_definitions.html?highlight=target_compile_de
 # -----------------------------------------------------------------------------
-target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG ENABLE_LINK_LIST_DEBUG)
+target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
 
 
 # -----------------------------------------------------------------------------
