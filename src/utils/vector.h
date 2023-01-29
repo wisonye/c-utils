@@ -57,7 +57,7 @@ const void *Vector_get(const Vector self, usize index, usize element_type_size);
 const char *Vector_join(const Vector self, char *delemiter);
 
 /*
- * Push element to the end of the vector
+ * Free allocated memory
  */
 void Vector_free(Vector self);
 

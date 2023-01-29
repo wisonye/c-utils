@@ -176,9 +176,206 @@ call.
 - `Vector`: Heap allocated dynamic array
 
     ```c
+    /*
+    * Create empty vector
+    */
+    Vector Vector_new();
+
+    /*
+    * Create an empty vector that ability to hold `capacity` elements
+    */
+    Vector Vector_with_capacity(usize capacity, usize element_type_size);
+
+    /*
+    * Push element to the end of the vector
+    */
+    void Vector_push(Vector self, void *element, usize element_type_size);
+
+    /*
+    * Return the length
+    */
+    const usize Vector_len(const Vector self);
+
+    /*
+    * Return the capacity
+    */
+    const usize Vector_capacity(const Vector self);
+
+    /*
+    * Return the item iterator
+    */
+    const VectorIteractor Vector_iter(const Vector self);
+
+    /*
+    * Return the given index item, return `NULL` is not exists.
+    */
+    const void *Vector_get(const Vector self, usize index, usize element_type_size);
+
+    /*
+    * Join all elements and return a string
+    */
+    const char *Vector_join(const Vector self, char *delemiter);
+
+    /*
+    * Free allocated memory
+    */
+    void Vector_free(Vector self);
     ```
 
     </br>
+
+    Examples:
+
+    - Create empty vector:
+
+        ```c
+        Vector empty_vec = Vector_new();
+        Vector_free(empty_vec);
+        ```
+
+        </br>
+
+    - Create empty vector with pre-allocated space to avoid `realloc` cost:
+
+        ```c
+        // Pre-allocate 10 `uint16_t` integer space
+        usize u16_type_size = sizeof(u16);
+        Vector u16_vec = Vector_with_capacity(10, u16_type_size);
+
+        //
+        // `capacity` should NOT change and no `realloc` will be called before
+        // pushing the 11th elements
+        //
+        u16 short_arr[] = {
+            5000, 5001, 5002, 5003, 5004,
+            5005, 5006, 5007, 5008, 5009,
+            6000
+        };
+
+        Vector_push(u16_vec, &short_arr[0], u16_type_size);
+        Vector_push(u16_vec, &short_arr[1], u16_type_size);
+        Vector_push(u16_vec, &short_arr[2], u16_type_size);
+        Vector_push(u16_vec, &short_arr[3], u16_type_size);
+        Vector_push(u16_vec, &short_arr[4], u16_type_size);
+        Vector_push(u16_vec, &short_arr[5], u16_type_size);
+        Vector_push(u16_vec, &short_arr[6], u16_type_size);
+        Vector_push(u16_vec, &short_arr[7], u16_type_size);
+        Vector_push(u16_vec, &short_arr[8], u16_type_size);
+        Vector_push(u16_vec, &short_arr[9], u16_type_size);
+
+        // This push should trigger `realloc` be called and `capacity`
+        // should change to `20` after this statement
+        Vector_push(u16_vec, &short_arr[10], u16_type_size);
+
+        // Get back iteractor to access all elements
+        VectorIteractor short_arr_iter = Vector_iter(u16_vec);
+        u16 *temp_short_arr = (u16 *)short_arr_iter.items;
+        for (usize index = 0; index < short_arr_iter.length; index++) {
+            DEBUG_LOG(Main,
+                    test_vector,
+                    "short_arr_iter[%lu]: %d",
+                    sa_index,
+                    temp_short_arr[index]);
+        }
+        Vector_free(u16_vec);
+
+        // (D) [ Main ] > test_vector - short_arr_iter[0]: 5000
+        // (D) [ Main ] > test_vector - short_arr_iter[1]: 5001
+        // (D) [ Main ] > test_vector - short_arr_iter[2]: 5002
+        // (D) [ Main ] > test_vector - short_arr_iter[3]: 5003
+        // (D) [ Main ] > test_vector - short_arr_iter[4]: 5004
+        // (D) [ Main ] > test_vector - short_arr_iter[5]: 5005
+        // (D) [ Main ] > test_vector - short_arr_iter[6]: 5006
+        // (D) [ Main ] > test_vector - short_arr_iter[7]: 5007
+        // (D) [ Main ] > test_vector - short_arr_iter[8]: 5008
+        // (D) [ Main ] > test_vector - short_arr_iter[9]: 5009
+        // (D) [ Main ] > test_vector - short_arr_iter[10]: 6000
+        ```
+
+        </br>
+
+    - Get element via `index`:
+
+        ```c
+        // Double list
+        double double_arr[] = {11.11, 22.22, 33.33};
+        usize double_type_size = sizeof(double);
+        usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
+
+        Vector double_vec = Vector_with_capacity(double_arr_len, double_type_size);
+        for (usize di = 0; di < double_arr_len; di++) {
+            Vector_push(double_vec, &double_arr[di], double_type_size);
+        }
+
+        const double *d_value_1 =
+            (const double *)Vector_get(double_vec, 0, double_type_size);
+        const double *d_value_2 =
+            (const double *)Vector_get(double_vec, 1, double_type_size);
+        const double *d_value_3 =
+            (const double *)Vector_get(double_vec, 2, double_type_size);
+
+        DEBUG_LOG(Main, test_vector, "d_value_1: %f", *d_value_1);
+        DEBUG_LOG(Main, test_vector, "d_value_2: %f", *d_value_2);
+        DEBUG_LOG(Main, test_vector, "d_value_3: %f", *d_value_3);
+
+        Vector_free(double_vec);
+
+        // (D) [ Main ] > test_vector - d_value_1: 11.110000
+        // (D) [ Main ] > test_vector - d_value_2: 22.220000
+        // (D) [ Main ] > test_vector - d_value_3: 33.330000⏎
+        ```
+
+        </br>
+
+    - Custom struct case:
+
+        ```c
+        // Person list
+        typedef struct {
+            char first_name[10];
+            char last_name[10];
+            u8 age;
+        } Person;
+
+        Person wison = {.first_name = "Wison", .last_name = "Ye", .age = 88};
+        Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
+        Person nobody = {
+            .first_name = "Nobody", .last_name = "Nothing", .age = 100};
+        Vector person_list = Vector_new();
+        Vector_push(person_list, &wison, sizeof(Person));
+        Vector_push(person_list, &fion, sizeof(Person));
+        Vector_push(person_list, &nobody, sizeof(Person));
+
+        VectorIteractor person_list_iter = Vector_iter(person_list);
+        Person *temp_person_arr = (Person *)person_list_iter.items;
+        for (usize index = 0; index < person_list_iter.length; index++) {
+            DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].first_name: %s",
+                    index, temp_person_arr[index].first_name);
+            DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].last_name: %s",
+                    index, temp_person_arr[index].last_name);
+            DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].age: %u", index,
+                    temp_person_arr[index].age);
+        }
+        Vector_free(person_list);
+
+        // (D) [ Main ] > test_vector - person_list_iter[0].first_name: Wison
+        // (D) [ Main ] > test_vector - person_list_iter[0].last_name: Ye
+        // (D) [ Main ] > test_vector - person_list_iter[0].age: 88
+        // (D) [ Main ] > test_vector - person_list_iter[1].first_name: Fion
+        // (D) [ Main ] > test_vector - person_list_iter[1].last_name: Li
+        // (D) [ Main ] > test_vector - person_list_iter[1].age: 99
+        // (D) [ Main ] > test_vector - person_list_iter[2].first_name: Nobody
+        // (D) [ Main ] > test_vector - person_list_iter[2].last_name: Nothing
+        // (D) [ Main ] > test_vector - person_list_iter[2].age: 100
+        ```
+
+        </br>
+
+
+
+
+
+
 
 
 
