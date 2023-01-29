@@ -118,8 +118,12 @@ const char *Vector_join(const Vector self, char *delemiter);
  * Push element to the end of the vector
  */
 void Vector_free(Vector self) {
+    if (self->items != NULL) {
+        void *ptr_to_free = self->items;
+        free(ptr_to_free);
+        self->items = NULL;
+    }
+    self->capacity = 0;
+    self->length = 0;
     free(self);
-    /* self->capacity = 0; */
-    /* self->length = 0; */
-    // self->items = NULL;
 }
