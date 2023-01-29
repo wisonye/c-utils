@@ -161,8 +161,6 @@ void test_string() {
     printf("\n>> cloned_str len: %lu, value: %s", Str_length(cloned_str),
            Str_as_str(cloned_str));
     Str_free(cloned_str);
-    printf("\n>> cloned_str len: %lu, value: %s", Str_length(cloned_str),
-           Str_as_str(cloned_str));
 
     // String push to the end
     String temp_str = Str_from_str("Hey-->");
@@ -483,8 +481,8 @@ void test_vector() {
 //
 //
 int main(int argc, char **argv) {
-    /* test_link_list(); */
-    /* test_string(); */
+    test_link_list();
+    test_string();
     /* test_log_macro(); */
     test_vector();
     /* LOG_VAR(sizeof(int)); */

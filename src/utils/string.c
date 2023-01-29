@@ -264,11 +264,14 @@ void Str_reset_to_empty(String self) {
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`
  */
 void Str_free(String self) {
-    if (self != NULL) {
-        self->_len = 0;
-        if (self->_buffer != NULL) {
-            free(self->_buffer);
-            self->_buffer = NULL;
-        }
+    if (self == NULL) return;
+
+    if (self->_buffer != NULL) {
+        void *ptr_to_free = self->_buffer;
+        self->_buffer = NULL;
+        free(ptr_to_free);
     }
+
+    self->_len = 0;
+    free(self);
 }
