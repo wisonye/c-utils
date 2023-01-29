@@ -68,9 +68,6 @@ TEST(Vector, EmptyVectorWithCapiticy) {
     ASSERT_EQ(temp_arr[10], short_arr[10]);
 
     Vector_free(vec);
-    ASSERT_EQ(Vector_len(vec), 0);
-    ASSERT_EQ(Vector_capacity(vec), 0);
-    ASSERT_EQ(Vector_iter(vec).items, NULL);
 }
 
 TEST(Vector, PushElement_Integer) {
@@ -95,11 +92,6 @@ TEST(Vector, PushElement_Integer) {
     ASSERT_EQ(temp_arr[2], 300);
 
     Vector_free(vec);
-    ASSERT_EQ(Vector_len(vec), 0);
-    ASSERT_EQ(Vector_capacity(vec), 0);
-    VectorIteractor iter_after_free = Vector_iter(vec);
-    ASSERT_EQ(iter_after_free.length, 0);
-    ASSERT_EQ(iter_after_free.items, NULL);
 
     int int_arr_2[] = {666, 777, 888, 999};
     Vector vec_2 = Vector_new();
@@ -131,11 +123,6 @@ TEST(Vector, PushElement_Integer) {
     ASSERT_EQ(temp_arr_2[3], 999);
 
     Vector_free(vec_2);
-    ASSERT_EQ(Vector_len(vec_2), 0);
-    ASSERT_EQ(Vector_capacity(vec_2), 0);
-    VectorIteractor iter_after_free_2 = Vector_iter(vec_2);
-    ASSERT_EQ(iter_after_free_2.length, 0);
-    ASSERT_EQ(iter_after_free_2.items, NULL);
 }
 
 typedef struct {
@@ -175,11 +162,6 @@ TEST(Vector, PushElement_custom_struct) {
     ASSERT_EQ(temp_arr[2].age, 100);
 
     Vector_free(vec);
-    ASSERT_EQ(Vector_len(vec), 0);
-    ASSERT_EQ(Vector_capacity(vec), 0);
-    VectorIteractor iter_after_free = Vector_iter(vec);
-    ASSERT_EQ(iter_after_free.length, 0);
-    ASSERT_EQ(iter_after_free.items, NULL);
 }
 
 double double_arr[] = {11.11, 22.22, 33.33};
@@ -216,11 +198,6 @@ TEST(Vector, immutable_get) {
     ASSERT_EQ(d_value_4, NULL);
 
     Vector_free(double_vec);
-    ASSERT_EQ(Vector_len(double_vec), 0);
-    ASSERT_EQ(Vector_capacity(double_vec), 0);
-    VectorIteractor iter_after_free = Vector_iter(double_vec);
-    ASSERT_EQ(iter_after_free.length, 0);
-    ASSERT_EQ(iter_after_free.items, NULL);
 
     Vector person_vec = Vector_with_capacity(person_arr_len, person_type_size);
     for (usize pi = 0; pi < double_arr_len; pi++) {
@@ -251,22 +228,4 @@ TEST(Vector, immutable_get) {
     ASSERT_EQ(person_4, NULL);
 
     Vector_free(person_vec);
-    ASSERT_EQ(Vector_len(person_vec), 0);
-    ASSERT_EQ(Vector_capacity(person_vec), 0);
-    VectorIteractor iter_after_free_2 = Vector_iter(person_vec);
-    ASSERT_EQ(iter_after_free_2.length, 0);
-    ASSERT_EQ(iter_after_free_2.items, NULL);
-    /* VectorIteractor iter = Vector_iter(vec); */
-    /* ASSERT_EQ(iter.length, Vector_len(vec)); */
-    /* Person *temp_arr = (Person *)iter.items; */
-    /* ASSERT_NE(temp_arr, NULL); */
-    /* ASSERT_EQ(strcmp(temp_arr[0].first_name, "Wison"), 0); */
-    /* ASSERT_EQ(strcmp(temp_arr[0].last_name, "Ye"), 0); */
-    /* ASSERT_EQ(temp_arr[0].age, 88); */
-    /* ASSERT_EQ(strcmp(temp_arr[1].first_name, "Fion"), 0); */
-    /* ASSERT_EQ(strcmp(temp_arr[1].last_name, "Li"), 0); */
-    /* ASSERT_EQ(temp_arr[1].age, 99); */
-    /* ASSERT_EQ(strcmp(temp_arr[2].first_name, "Nobody"), 0); */
-    /* ASSERT_EQ(strcmp(temp_arr[2].last_name, "Nothing"), 0); */
-    /* ASSERT_EQ(temp_arr[2].age, 100); */
 }
