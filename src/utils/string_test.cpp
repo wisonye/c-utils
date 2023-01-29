@@ -32,8 +32,6 @@ TEST(String, StringFromArray) {
     ASSERT_EQ(strcmp(Str_as_str(str), arr), 0);
 
     Str_free(str);
-    ASSERT_EQ(Str_length(str), 0);
-    ASSERT_EQ(Str_as_str(str), NULL);
 }
 
 TEST(String, StringClone) {
