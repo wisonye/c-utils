@@ -21,7 +21,7 @@ struct Vec {
 /*
  * Create empty vector
  */
-Vector Vector_from_empty() {
+Vector Vector_new() {
     Vector vec = malloc(sizeof(Vector));
     *vec = (struct Vec){
         .capacity = 0,
@@ -51,12 +51,14 @@ void Vector_push(Vector self, void *element, usize element_type_size) {
     // ensure the vector has enough space to save all elements;
     // capacity >= self->length + 1
     if (self->capacity < self->length + 1) {
-/* #ifdef ENABLE_DEBUG_LOG */
-/*         DEBUG_LOG(Vector, Vector_Push, */
-/*                   "Realloc needed, current capacity: %lu, length+1: %lu, after " */
-/*                   "capacity: %lu", */
-/*                   self->capacity, self->length + 1, self->capacity * 2); */
-/* #endif */
+        /* #ifdef ENABLE_DEBUG_LOG */
+        /*         DEBUG_LOG(Vector, Vector_Push, */
+        /*                   "Realloc needed, current capacity: %lu, length+1:
+         * %lu, after " */
+        /*                   "capacity: %lu", */
+        /*                   self->capacity, self->length + 1, self->capacity *
+         * 2); */
+        /* #endif */
         self->capacity = (self->capacity == 0) ? 1 : self->capacity * 2;
         self->items = realloc(self->items, element_type_size * self->capacity);
     }
@@ -83,7 +85,7 @@ void Vector_push(Vector self, void *element, usize element_type_size) {
 /*
  * Return the length
  */
-const usize Vector_length(const Vector self) { return self->length; }
+const usize Vector_len(const Vector self) { return self->length; }
 
 /*
  * Return the capacity
@@ -95,6 +97,16 @@ const usize Vector_capacity(Vector self) { return self->capacity; }
  */
 const VectorIteractor Vector_iter(const Vector self) {
     return (VectorIteractor){.length = self->length, .items = self->items};
+}
+
+/*
+ * Return the given index item, return `NULL` is not exists.
+ */
+const void *Vector_get(const Vector self, usize index,
+                       usize element_type_size) {
+    if (index < 0 || index > self->length - 1) return NULL;
+
+    return self->items + (index * element_type_size);
 }
 
 /*

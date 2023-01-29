@@ -19,7 +19,7 @@ typedef struct {
 /*
  * Create empty vector
  */
-Vector Vector_from_empty();
+Vector Vector_new();
 
 /*
  * Create an empty vector that ability to hold `capacity` elements
@@ -34,7 +34,12 @@ void Vector_push(Vector self, void *element, usize element_type_size);
 /*
  * Return the length
  */
-const usize Vector_length(const Vector self);
+const usize Vector_len(const Vector self);
+
+/*
+ * Return the capacity
+ */
+const usize Vector_capacity(const Vector self);
 
 /*
  * Return the item iterator
@@ -42,9 +47,9 @@ const usize Vector_length(const Vector self);
 const VectorIteractor Vector_iter(const Vector self);
 
 /*
- * Return the capacity
+ * Return the given index item, return `NULL` is not exists.
  */
-const usize Vector_capacity(const Vector self);
+const void *Vector_get(const Vector self, usize index, usize element_type_size);
 
 /*
  * Join all elements and return a string
