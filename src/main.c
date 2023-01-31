@@ -27,8 +27,7 @@ String create_string(const char str[]) {
     printf("\n>>> create_string - temp_str len: %lu, value: %s",
            Str_length(temp_str), Str_as_str(temp_str));
 
-    String temp_str_2 = Str_from_str("Hey Hey Hey!");
-    Str_free(temp_str_2);
+    SMART_STRING(temp_str_2) = Str_from_str("Hey Hey Hey!");
     return temp_str;
 }
 
@@ -74,58 +73,48 @@ void test_string() {
     //
     // String
     //
-    String my_name = Str_from_str("Wison Ye:)");
-    Str_free(my_name);
+    SMART_STRING(my_name) = Str_from_str("Wison Ye:)");
 
-    String empty_str_1 = Str_from_str(NULL);
-    String empty_str_2 = Str_from_str("");
+    SMART_STRING(empty_str_1) = Str_from_str(NULL);
+    SMART_STRING(empty_str_2) = Str_from_str("");
     printf("\n>> empty_str_1 len: %lu, value: %s", Str_length(empty_str_1),
            Str_as_str(empty_str_1) == NULL ? "NULL" : Str_as_str(empty_str_1));
     printf("\n>> empty_str_2 len: %lu, value: '%s'", Str_length(empty_str_2),
            Str_as_str(empty_str_2) == NULL ? "NULL" : Str_as_str(empty_str_2));
 
-    String clone_from_empty_str = Str_clone(empty_str_2);
+    SMART_STRING(clone_from_empty_str) = Str_clone(empty_str_2);
     printf("\n>> clone_from_empty_str len: %lu, value: '%s'",
            Str_length(clone_from_empty_str),
            Str_as_str(clone_from_empty_str) == NULL
                ? "NULL"
                : Str_as_str(clone_from_empty_str));
 
-    Str_free(empty_str_1);
-    Str_free(empty_str_2);
-    Str_free(clone_from_empty_str);
-
     char temp_id[] = "123456789";
     char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
     printf("\n>>> temp_id: %s", temp_id);
     printf("\n>>> temp_id_2: %s", temp_id_2);
 
-    String str_1 = Str_from_arr(temp_id);
-    String str_2 = Str_from_arr(temp_id_2);
+    SMART_STRING(str_1) = Str_from_arr(temp_id);
+    SMART_STRING(str_2) = Str_from_arr(temp_id_2);
 
     printf("\n>> str_1 len: %lu, value: %s", Str_length(str_1),
            Str_as_str(str_1));
     printf("\n>> str_2 len: %lu, value: %s", Str_length(str_2),
            Str_as_str(str_2));
 
-    Str_free(str_1);
-    Str_free(str_2);
-
     char order[] = "MyOrder-ZXCVB";
-    String str_3 = create_string(order);
+    SMART_STRING(str_3) = create_string(order);
     printf("\n>> str_3 len: %lu, value: %s", Str_length(str_3),
            Str_as_str(str_3));
 
-    String clone_from_order_str = Str_clone(str_3);
+    SMART_STRING(clone_from_order_str) = Str_clone(str_3);
     printf("\n>> clone_from_order_str len: %lu, value: %s",
            Str_length(clone_from_order_str),
            Str_as_str(clone_from_order_str) == NULL
                ? "NULL"
                : Str_as_str(clone_from_order_str));
-    Str_free(str_3);
-    Str_free(clone_from_order_str);
 
-    String original_str = Str_from_str("Wison Ye:)");
+    SMART_STRING(original_str) = Str_from_str("Wison Ye:)");
     printf("\n>>> Search '' in '%s', index: %li", Str_as_str(original_str),
            Str_index_of(original_str, ""));
     printf("\n>>> Search NULL in '%s', index: %li", Str_as_str(original_str),
@@ -152,19 +141,16 @@ void test_string() {
     printf("\n>>> Check whether contains 'on' in '%s', containers: %s",
            Str_as_str(original_str),
            Str_contains(original_str, "fi") ? "TRUE" : "FALSE");
-    Str_free(original_str);
 
-    String src_str = Str_from_str("Hey:)");
-    String cloned_str = clone_string(src_str);
-    Str_free(src_str);
+    SMART_STRING(src_str) = Str_from_str("Hey:)");
+    SMART_STRING(cloned_str) = clone_string(src_str);
 
     printf("\n>> cloned_str len: %lu, value: %s", Str_length(cloned_str),
            Str_as_str(cloned_str));
-    Str_free(cloned_str);
 
     // String push to the end
-    String temp_str = Str_from_str("Hey-->");
-    String empty_str_before_push = Str_from_empty();
+    SMART_STRING(temp_str) = Str_from_str("Hey-->");
+    SMART_STRING(empty_str_before_push) = Str_from_empty();
     Str_push_str(empty_str_before_push, "");
     Str_push_str(empty_str_before_push, NULL);
     Str_push_str(empty_str_before_push, "My name is: ");
@@ -184,11 +170,8 @@ void test_string() {
            Str_length(empty_str_before_push),
            Str_as_str(empty_str_before_push));
 
-    Str_free(temp_str);
-    Str_free(empty_str_before_push);
-
     // String insert to the beginning
-    String empty_str_before_insert = Str_from_empty();
+    SMART_STRING(empty_str_before_insert) = Str_from_empty();
     Str_insert_str_to_begin(empty_str_before_insert, "");
     Str_insert_str_to_begin(empty_str_before_insert, NULL);
     Str_insert_str_to_begin(empty_str_before_insert, "My name is: ");
@@ -203,15 +186,12 @@ void test_string() {
            Str_length(empty_str_before_insert),
            Str_as_str(empty_str_before_insert));
 
-    String other_str = Str_from_str("I'm other str.");
+    SMART_STRING(other_str) = Str_from_str("I'm other str.");
     Str_insert_str_to_begin(empty_str_before_insert, "Hey:)");
     Str_insert_other_to_begin(empty_str_before_insert, other_str);
     printf("\n>> empty_str_before_insert len: %lu, value: %s",
            Str_length(empty_str_before_insert),
            Str_as_str(empty_str_before_insert));
-
-    Str_free(other_str);
-    Str_free(empty_str_before_insert);
 }
 
 //
@@ -481,10 +461,10 @@ void test_vector() {
 //
 //
 int main(int argc, char **argv) {
-    test_link_list();
+    /* test_link_list(); */
     test_string();
     /* test_log_macro(); */
-    test_vector();
+    /* test_vector(); */
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */
     /* LOG_VAR(sizeof(long int)); */
