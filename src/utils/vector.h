@@ -16,6 +16,24 @@ typedef struct {
     void *items;
 } VectorIteractor;
 
+//
+//
+//
+void auto_free_vector(Vector *ptr);
+
+/*
+ * Define smart `Vector` var that calls `Vector_free()` automatically when the
+ * variable is out of the scope
+ *
+ * ```c
+ * SMART_VECTOR(empty_vec) = Vector_new();
+ *
+ * // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
+ * ```
+ */
+#define SMART_VECTOR(x) \
+    __attribute__((cleanup(auto_free_vector))) Vector x
+
 /*
  * Create empty vector
  */

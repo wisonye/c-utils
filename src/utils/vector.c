@@ -23,6 +23,11 @@ struct Vec {
  */
 Vector Vector_new() {
     Vector vec = malloc(sizeof(struct Vec));
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(Vector, new, "self pointer: %p", vec);
+#endif
+
     *vec = (struct Vec){
         .capacity = 0,
         .length = 0,
@@ -36,6 +41,12 @@ Vector Vector_new() {
  */
 Vector Vector_with_capacity(usize capacity, usize element_type_size) {
     Vector vec = malloc(sizeof(struct Vec));
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(Vector, with_capacity, "self pointer: %p, capacity: %lu", vec,
+              capacity);
+#endif
+
     *vec = (struct Vec){
         .capacity = capacity,
         .length = 0,
@@ -128,4 +139,16 @@ void Vector_free(Vector self) {
     self->capacity = 0;
     self->length = 0;
     free(self);
+}
+
+/*
+ * Auto free vector call
+ */
+void auto_free_vector(Vector *ptr) {
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(Vector, auto_free_vector,
+              "out of scope with vector ptr: %p, length: %lu", *ptr,
+              Vector_len(*ptr));
+#endif
+    Vector_free(*ptr);
 }
