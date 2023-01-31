@@ -4,8 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if ENABLE_LINK_LIST_DEBUG
+#if ENABLE_DEBUG_LOG
 #include <stdio.h>
+
+#include "log.h"
 #endif
 
 //
@@ -21,6 +23,11 @@ struct Str {
  */
 String Str_from_empty() {
     String string = malloc(sizeof(struct Str));
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, from_empty, "self pointer: %p", string);
+#endif
+
     *string = (struct Str){
         ._len = 0,
         ._buffer = NULL,
@@ -36,6 +43,12 @@ String Str_from_arr(const char arr[]) {
     usize temp_len = (arr != NULL) ? strlen(arr) : 0;
 
     String string = malloc(sizeof(struct Str));
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, from_arr, "self pointer: %p, from_arr: %s", string,
+              arr);
+#endif
+
     *string = (struct Str){
         ._len = temp_len > 0 ? temp_len : 0,
         ._buffer = NULL,
@@ -57,6 +70,12 @@ String Str_from_str(const char *str) {
     usize temp_len = (str != NULL) ? strlen(str) : 0;
 
     String string = malloc(sizeof(struct Str));
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, from_str, "self pointer: %p, from_str: %s", string,
+              str);
+#endif
+
     *string = (struct Str){
         ._len = temp_len > 0 ? temp_len : 0,
         ._buffer = NULL,
@@ -76,6 +95,12 @@ String Str_from_str(const char *str) {
  */
 String Str_clone(const String other) {
     String string = malloc(sizeof(struct Str));
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, clone, "self pointer: %p, from_other: %s", string,
+              Str_as_str(other));
+#endif
+
     *string = (struct Str){
         ._len = 0,
         ._buffer = NULL,
@@ -274,4 +299,15 @@ void Str_free(String self) {
 
     self->_len = 0;
     free(self);
+}
+
+/*
+ * Auto free string call
+ */
+void auto_free_string(String *ptr) {
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, auto_free_string, "out of scope with string ptr: %p, as_str: %s",
+              *ptr, Str_as_str(*ptr));
+#endif
+    Str_free(*ptr);
 }

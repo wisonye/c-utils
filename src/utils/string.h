@@ -10,6 +10,24 @@
 //
 typedef struct Str *String;
 
+//
+//
+//
+void auto_free_string(String *ptr);
+
+/*
+ * Define smart `String` var that calls `Str_free()` automatically when the
+ * variable is out of the scope
+ *
+ * ```c
+ * SMART_STRING(src_str) = Str_from_str("Hey:)");
+ *
+ * // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5473850, as_str: Hey:)
+ * ```
+ */
+#define SMART_STRING(x) \
+    __attribute__((cleanup(auto_free_string))) String x
+
 /*
  * Create from empty
  */
