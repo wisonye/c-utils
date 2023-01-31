@@ -8,19 +8,17 @@ extern "C" {
 }
 
 TEST(Vector, EmptyVector) {
-    Vector empty_vec = Vector_new();
+    SMART_VECTOR(empty_vec) = Vector_new();
     ASSERT_EQ(Vector_len(empty_vec), 0);
     ASSERT_EQ(Vector_capacity(empty_vec), 0);
     VectorIteractor iter = Vector_iter(empty_vec);
     ASSERT_EQ(iter.length, 0);
     ASSERT_EQ(iter.items, NULL);
-
-    Vector_free(empty_vec);
 }
 
 TEST(Vector, EmptyVectorWithCapiticy) {
     usize u16_type_size = sizeof(u16);
-    Vector vec = Vector_with_capacity(10, u16_type_size);
+    SMART_VECTOR(vec) = Vector_with_capacity(10, u16_type_size);
     ASSERT_EQ(Vector_len(vec), 0);
     ASSERT_EQ(Vector_capacity(vec), 10);
     VectorIteractor iter_2 = Vector_iter(vec);
@@ -66,13 +64,11 @@ TEST(Vector, EmptyVectorWithCapiticy) {
     ASSERT_EQ(temp_arr[8], short_arr[8]);
     ASSERT_EQ(temp_arr[9], short_arr[9]);
     ASSERT_EQ(temp_arr[10], short_arr[10]);
-
-    Vector_free(vec);
 }
 
 TEST(Vector, PushElement_Integer) {
     int int_arr[] = {100, 200, 300};
-    Vector vec = Vector_new();
+    SMART_VECTOR(vec) = Vector_new();
     Vector_push(vec, &int_arr[0], sizeof(int));
     ASSERT_EQ(Vector_len(vec), 1);
     ASSERT_EQ(Vector_capacity(vec), 1);
@@ -91,10 +87,8 @@ TEST(Vector, PushElement_Integer) {
     ASSERT_EQ(temp_arr[1], 200);
     ASSERT_EQ(temp_arr[2], 300);
 
-    Vector_free(vec);
-
     int int_arr_2[] = {666, 777, 888, 999};
-    Vector vec_2 = Vector_new();
+    SMART_VECTOR(vec_2) = Vector_new();
     Vector_push(vec_2, &int_arr_2[0], sizeof(int));
     ASSERT_EQ(Vector_len(vec_2), 1);
     ASSERT_EQ(Vector_capacity(vec_2), 1);
@@ -121,8 +115,6 @@ TEST(Vector, PushElement_Integer) {
     ASSERT_EQ(temp_arr_2[1], 777);
     ASSERT_EQ(temp_arr_2[2], 888);
     ASSERT_EQ(temp_arr_2[3], 999);
-
-    Vector_free(vec_2);
 }
 
 typedef struct {
@@ -136,7 +128,7 @@ TEST(Vector, PushElement_custom_struct) {
     Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
     Person nobody = {
         .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-    Vector vec = Vector_new();
+    SMART_VECTOR(vec) = Vector_new();
     Vector_push(vec, &wison, sizeof(Person));
     ASSERT_EQ(Vector_len(vec), 1);
     ASSERT_EQ(Vector_capacity(vec), 1);
@@ -160,8 +152,6 @@ TEST(Vector, PushElement_custom_struct) {
     ASSERT_EQ(strcmp(temp_arr[2].first_name, "Nobody"), 0);
     ASSERT_EQ(strcmp(temp_arr[2].last_name, "Nothing"), 0);
     ASSERT_EQ(temp_arr[2].age, 100);
-
-    Vector_free(vec);
 }
 
 double double_arr[] = {11.11, 22.22, 33.33};
@@ -177,7 +167,8 @@ usize person_type_size = sizeof(Person);
 usize person_arr_len = sizeof(person_arr) / sizeof(person_arr[0]);
 
 TEST(Vector, immutable_get) {
-    Vector double_vec = Vector_with_capacity(double_arr_len, double_type_size);
+    SMART_VECTOR(double_vec) =
+        Vector_with_capacity(double_arr_len, double_type_size);
     for (usize di = 0; di < double_arr_len; di++) {
         Vector_push(double_vec, &double_arr[di], double_type_size);
     }
@@ -197,9 +188,8 @@ TEST(Vector, immutable_get) {
         (const double *)Vector_get(double_vec, 3, double_type_size);
     ASSERT_EQ(d_value_4, NULL);
 
-    Vector_free(double_vec);
-
-    Vector person_vec = Vector_with_capacity(person_arr_len, person_type_size);
+    SMART_VECTOR(person_vec) =
+        Vector_with_capacity(person_arr_len, person_type_size);
     for (usize pi = 0; pi < double_arr_len; pi++) {
         Vector_push(person_vec, &person_arr[pi], person_type_size);
     }
@@ -226,6 +216,4 @@ TEST(Vector, immutable_get) {
     const Person *person_4 =
         (const Person *)Vector_get(person_vec, 3, person_type_size);
     ASSERT_EQ(person_4, NULL);
-
-    Vector_free(person_vec);
 }
