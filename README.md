@@ -199,48 +199,61 @@ call.
 
     ```c
     /*
-    * Create empty vector
-    */
+     * Define smart `Vector` var that calls `Vector_free()` automatically when the
+     * variable is out of the scope
+     *
+     * ```c
+     * SMART_VECTOR(empty_vec) = Vector_new();
+     *
+     * // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
+     * ```
+     */
+    #define SMART_VECTOR(x) \
+        __attribute__((cleanup(auto_free_vector))) Vector x
+
+    /*
+     * Create empty vector
+     */
     Vector Vector_new();
 
     /*
-    * Create an empty vector that ability to hold `capacity` elements
-    */
+     * Create an empty vector that ability to hold `capacity` elements
+     */
     Vector Vector_with_capacity(usize capacity, usize element_type_size);
 
     /*
-    * Push element to the end of the vector
-    */
+     * Push element to the end of the vector
+     */
     void Vector_push(Vector self, void *element, usize element_type_size);
 
     /*
-    * Return the length
-    */
+     * Return the length
+     */
     const usize Vector_len(const Vector self);
 
     /*
-    * Return the capacity
-    */
+     * Return the capacity
+     */
     const usize Vector_capacity(const Vector self);
 
     /*
-    * Return the item iterator
-    */
+     * Return the item iterator
+     */
     const VectorIteractor Vector_iter(const Vector self);
 
     /*
-    * Return the given index item, return `NULL` is not exists.
-    */
+     * Return the given index item, return `NULL` is not exists.
+     */
     const void *Vector_get(const Vector self, usize index, usize element_type_size);
 
     /*
-    * Join all elements and return a string
-    */
+     * Join all elements and return a string
+     */
     const char *Vector_join(const Vector self, char *delemiter);
 
     /*
-    * Free allocated memory
-    */
+     * Free allocated memory
+     */
     void Vector_free(Vector self);
     ```
 
@@ -251,8 +264,8 @@ call.
     - Create empty vector:
 
         ```c
-        Vector empty_vec = Vector_new();
-        Vector_free(empty_vec);
+        SMART_VECTOR(empty_vec) = Vector_new();
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
         ```
 
         </br>
@@ -262,7 +275,7 @@ call.
         ```c
         // Pre-allocate 10 `uint16_t` integer space
         usize u16_type_size = sizeof(u16);
-        Vector u16_vec = Vector_with_capacity(10, u16_type_size);
+        SMART_VECTOR(u16_vec) = Vector_with_capacity(10, u16_type_size);
 
         //
         // `capacity` should NOT change and no `realloc` will be called before
@@ -299,7 +312,6 @@ call.
                     sa_index,
                     temp_short_arr[index]);
         }
-        Vector_free(u16_vec);
 
         // (D) [ Main ] > test_vector - short_arr_iter[0]: 5000
         // (D) [ Main ] > test_vector - short_arr_iter[1]: 5001
@@ -312,6 +324,7 @@ call.
         // (D) [ Main ] > test_vector - short_arr_iter[8]: 5008
         // (D) [ Main ] > test_vector - short_arr_iter[9]: 5009
         // (D) [ Main ] > test_vector - short_arr_iter[10]: 6000
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x54730e0, length: 11
         ```
 
         </br>
@@ -324,7 +337,8 @@ call.
         usize double_type_size = sizeof(double);
         usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
-        Vector double_vec = Vector_with_capacity(double_arr_len, double_type_size);
+        SMART_VECTOR(double_vec) =
+            Vector_with_capacity(double_arr_len, double_type_size);
         for (usize di = 0; di < double_arr_len; di++) {
             Vector_push(double_vec, &double_arr[di], double_type_size);
         }
@@ -340,11 +354,10 @@ call.
         DEBUG_LOG(Main, test_vector, "d_value_2: %f", *d_value_2);
         DEBUG_LOG(Main, test_vector, "d_value_3: %f", *d_value_3);
 
-        Vector_free(double_vec);
-
         // (D) [ Main ] > test_vector - d_value_1: 11.110000
         // (D) [ Main ] > test_vector - d_value_2: 22.220000
         // (D) [ Main ] > test_vector - d_value_3: 33.330000⏎
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5473210, length: 3
         ```
 
         </br>
@@ -363,7 +376,9 @@ call.
         Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
         Person nobody = {
             .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-        Vector person_list = Vector_new();
+
+        SMART_VECTOR(person_list) = Vector_new();
+
         Vector_push(person_list, &wison, sizeof(Person));
         Vector_push(person_list, &fion, sizeof(Person));
         Vector_push(person_list, &nobody, sizeof(Person));
@@ -378,7 +393,6 @@ call.
             DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].age: %u", index,
                     temp_person_arr[index].age);
         }
-        Vector_free(person_list);
 
         // (D) [ Main ] > test_vector - person_list_iter[0].first_name: Wison
         // (D) [ Main ] > test_vector - person_list_iter[0].last_name: Ye
@@ -389,6 +403,7 @@ call.
         // (D) [ Main ] > test_vector - person_list_iter[2].first_name: Nobody
         // (D) [ Main ] > test_vector - person_list_iter[2].last_name: Nothing
         // (D) [ Main ] > test_vector - person_list_iter[2].age: 100
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5473360, length: 3
         ```
 
         </br>
