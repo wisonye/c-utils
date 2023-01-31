@@ -522,7 +522,8 @@ doas make install
 
 ```bash
 # Make sure you're in the project root folder
-./configure_c.sh
+./configure_memory_leak_checking.sh
+
 ```
 
 </br>
@@ -535,30 +536,33 @@ It Generates everything needs into `build_c` folder and the
 Compile and run:
 
 ```bash
-./build_and_run_c.sh
-```
+./run_memory_leak_checking.sh
 
-</br>
-
-Memory leak check:
-
-```bash
-valgrind --leak-check=full --show-reachable=yes build_c/c-utils
-
-# ==58532== Memcheck, a memory error detector
-# ==58532== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-# ==58532== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-# ==58532== Command: build_c/c-utils
-# ==58532==
-# ==58532==
-# ==58532== HEAP SUMMARY:
-# ==58532==     in use at exit: 0 bytes in 0 blocks
-# ==58532==   total heap usage: 4 allocs, 4 frees, 48 bytes allocated
-# ==58532==
-# ==58532== All heap blocks were freed -- no leaks are possible
-# ==58532==
-# ==58532== For lists of detected and suppressed errors, rerun with: -s
-# ==58532== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+# [100%] Built target c-utils
+# ==85724== Memcheck, a memory error detector
+# ==85724== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+# ==85724== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
+# ==85724== Command: ./c-utils
+# ==85724==
+# 
+# // ...ignore...
+# 
+# ==85724== HEAP SUMMARY:
+# ==85724==     in use at exit: 4,096 bytes in 1 blocks
+# ==85724==   total heap usage: 37 allocs, 36 frees, 4,633 bytes allocated
+# ==85724==
+# ==85724== LEAK SUMMARY:
+# ==85724==    definitely lost: 0 bytes in 0 blocks
+# ==85724==    indirectly lost: 0 bytes in 0 blocks
+# ==85724==      possibly lost: 0 bytes in 0 blocks
+# ==85724==    still reachable: 0 bytes in 0 blocks
+# ==85724==         suppressed: 4,096 bytes in 1 blocks
+# ==85724==
+# ==85724== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+# --85724--
+# --85724-- used_suppression:      1 MEMCHECK-LIBC-REACHABLE-1 /usr/local/libexec/valgrind/default.supp:582 suppressed: 4,096 bytes in 1 blocks
+# ==85724==
+# ==85724== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
 </br>
@@ -568,7 +572,7 @@ valgrind --leak-check=full --show-reachable=yes build_c/c-utils
 
 ```bash
 # Make sure you're in the project root folder
-./configure_cpp.sh
+./configure_unit_test.sh
 ```
 
 It Generates everything needs into `build_unit_test` folder and the
@@ -591,7 +595,7 @@ the header files and link `GTest::gtest` and `GTest::gtest_main` libraries.
 Compile and run all unit test:
 
 ```bash
-./build_and_run_unit_test.sh
+./run_unit_test.sh
 
 # [100%] Linking CXX executable c-utils-unit-test
 # [100%] Built target c-utils-unit-test
