@@ -64,7 +64,7 @@ add_executable("${PROJECT_NAME}"
 # More details from here:
 # https://cmake.org/cmake/help/v3.0/command/target_compile_definitions.html?highlight=target_compile_de
 # -----------------------------------------------------------------------------
-# target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
+target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
 
 
 # -----------------------------------------------------------------------------
