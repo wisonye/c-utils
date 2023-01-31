@@ -1,3 +1,3 @@
 #!/bin/sh
 
-rm -rf ./build_c ./build ./build_unit_test
+rm -rf ./build_memory_leak_checking ./build_unit_test ./build
