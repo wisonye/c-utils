@@ -10,96 +10,112 @@ call.
 
     ```c
     /*
-    * Create from empty
-    */
+     * Define smart `String` var that calls `Str_free()` automatically when the
+     * variable is out of the scope
+     *
+     * ```c
+     * SMART_STRING(src_str) = Str_from_str("Hey:)");
+     *
+     * // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5473850, as_str: Hey:)
+     * ```
+     */
+    #define SMART_STRING(x) \
+        __attribute__((cleanup(auto_free_string))) String x
+
+    /*
+     * Create from empty
+     */
     String Str_from_empty();
 
     /*
-    * Create from `char[]`
-    */
+     * Create from `char[]`
+     */
     String Str_from_arr(const char arr[]);
 
     /*
-    * Create from `char*`
-    */
+     * Create from `char*`
+     */
     String Str_from_str(const char *str);
 
     /*
-    * Clone from given `Str` instance
-    */
+     * Clone from given `Str` instance
+     */
     String Str_clone(const String other);
 
     /*
-    * Push other `String *` at the end
-    */
+     * Push other `String *` at the end
+     */
     void Str_push_other(String self, const String other);
 
     /*
-    * Push the given `char *` at the end
-    */
+     * Push the given `char *` at the end
+     */
     void Str_push_str(String self, const char *str_to_push);
 
     /*
-    * Insert `String *` to the beginning
-    */
+     * Insert `String *` to the beginning
+     */
     void Str_insert_other_to_begin(String self, const String other);
 
     /*
-    * Insert `char *` to the beginning
-    */
+     * Insert `char *` to the beginning
+     */
     void Str_insert_str_to_begin(String self, const char *str_to_insert);
 
     /*
-    * Insert `char *` at the given index
-    */
+     * Insert `char *` at the given index
+     */
     void Str_insert_at_index(String self, const char *str_to_insert,
                             usize index_to_insert);
 
     /*
-    * Get back string length
-    */
+     * Get back string length
+     */
     const usize Str_length(const String self);
 
     /*
-    * Get back `char *`
-    */
+     * Get back `char *`
+     */
     const char *Str_as_str(const String self);
 
     /*
-    * Find the given `char *` index, return `-1` if not found.
-    */
+     * Find the given `char *` index, return `-1` if not found.
+     */
     const long Str_index_of(const String self, const char *str_to_find);
 
     /*
-    * Find the given `char *` (case sensitive) index, return `-1` if not found.
-    */
+     * Find the given `char *` (case sensitive) index, return `-1` if not found.
+     */
     const long Str_index_of_case_sensitive(const String self,
                                         const char *str_to_find);
 
     /*
-    * Check whether contain the given `char *` or not
-    */
+     * Check whether contain the given `char *` or not
+     */
     const bool Str_contains(const String self, char *str_to_check);
 
     /*
-    * Reset  to empty string
-    */
+     * Reset  to empty string
+     */
     void Str_reset_to_empty(String self);
 
     /*
-    * Free allocated memory, reset length to 0 and internal buffer to `NULL`
-    */
+     * Free allocated memory, reset length to 0 and internal buffer to `NULL`
+     */
     void Str_free(String self);
+    ```
 
-    //
-    // Examples
-    //
-    String my_name = Str_from_str("Wison Ye:)");
+    </br>
 
-    String empty_str_1 = Str_from_str(NULL);
-    String empty_str_2 = Str_from_str("");
+    Example:
 
-    String clone_from_empty_str = Str_clone(my_name);
+    ```c
+    SMART_STRING(my_name) = Str_from_str("Wison Ye:)");
+
+    SMART_STRING(empty_str_1) = Str_from_str(NULL);
+    SMART_STRING(empty_str_2) = Str_from_str("");
+
+    SMART_STRING(clone_from_empty_str) = Str_clone(my_name);
     DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
               Str_length(clone_from_empty_str),
               Str_as_str(clone_from_empty_str) == NULL
@@ -113,13 +129,19 @@ call.
     String str_1 = Str_from_arr(temp_id);
     String str_2 = Str_from_arr(temp_id_2);
 
-    Str_free(my_name);
-    Str_free(empty_str_1);
-    Str_free(empty_str_2);
-    Str_free(clone_from_empty_str);
-    Str_free(str_1);
-    Str_free(str_2);
+    //
+    // If you use `SMART_STRING()` macro, then you don't need to free string
+    // explicitly. `Str_free()` will be guaranteed to be called when variables
+    // are out of scope.
+    //
+    // Str_free(my_name);
+    // Str_free(empty_str_1);
+    // Str_free(empty_str_2);
+    // Str_free(clone_from_empty_str);
+    // Str_free(str_1);
+    // Str_free(str_2);
     ```
+
     </br>
 
 - `Log`: Handy logging implementation.
