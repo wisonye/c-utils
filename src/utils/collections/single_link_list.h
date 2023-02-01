@@ -26,12 +26,12 @@ typedef struct LLNode *LinkListNode;
 /*
  * Return node data pointer
  */
-void *LL_get_data(const LinkListNode self);
+void *LLNode_get_data(const LinkListNode self);
 
 /*
  * Return next node pointer
  */
-LinkListNode LL_get_next(const LinkListNode self);
+LinkListNode LLNode_get_next(const LinkListNode self);
 
 //----------------------------------------------------------------------------
 // LinkList opaque pointer to `struct LL`

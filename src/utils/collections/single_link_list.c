@@ -30,7 +30,7 @@ void *LLNode_get_data(const LinkListNode self) { return self->_data; }
 /*
  * Return next node pointer
  */
-LinkListNode LL_get_next(const LinkListNode self) { return self->_next; }
+LinkListNode LLNode_get_next(const LinkListNode self) { return self->_next; }
 
 //----------------------------------------------------------------------------
 // LinkList

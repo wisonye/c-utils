@@ -22,11 +22,11 @@ extern "C" {
 //
 TEST(SingleLinkList, CreateEmptyList) {
     LinkList list = LL_from_empty();
-    ASSERT_EQ(list._len, 0);
-    ASSERT_EQ(list._head, NULL);
-    ASSERT_EQ(list._tail, NULL);
+    ASSERT_EQ(LL_length(list), 0);
+    ASSERT_EQ(LL_get_head(list), NULL);
+    ASSERT_EQ(LL_get_tail(list), NULL);
 
-    LL_free(&list, NULL);
+    LL_free(list, NULL);
 }
 
 //
@@ -40,17 +40,14 @@ LinkList create_integer_list() {
 
 TEST(SingleLinkList, IntegerListWithOneNode) {
     LinkList int_list = create_integer_list();
-    ASSERT_EQ(int_list._len, 1);
-    ASSERT_NE(int_list._head, NULL);
-    ASSERT_NE(int_list._tail, NULL);
-    ASSERT_EQ(int_list._head->_next, NULL);
-    ASSERT_EQ(*((size_t *)LL_get_head_data(&int_list)), 9999);
-    ASSERT_EQ(*((size_t *)int_list._head->_data), 9999);
+    LinkListNode head = LL_get_head(int_list);
+    ASSERT_EQ(LL_length(int_list), 1);
+    ASSERT_NE(head, NULL);
+    ASSERT_NE(LL_get_tail(int_list), NULL);
+    ASSERT_EQ(LLNode_get_next(head), NULL);
+    ASSERT_EQ(*((size_t *)LL_get_head_data(int_list)), 9999);
 
-    LL_free(&int_list, NULL);
-    ASSERT_EQ(int_list._len, 0);
-    ASSERT_EQ(int_list._head, NULL);
-    ASSERT_EQ(int_list._tail, NULL);
+    LL_free(int_list, NULL);
 }
 
 //
@@ -65,19 +62,16 @@ LinkList create_double_list() {
 
 TEST(SingleLinkList, DoubleListWithOneNode) {
     LinkList double_list = create_double_list();
-    ASSERT_EQ(double_list._len, 1);
-    ASSERT_NE(double_list._head, NULL);
-    ASSERT_NE(double_list._tail, NULL);
-    ASSERT_EQ(double_list._head->_next, NULL);
+    LinkListNode head = LL_get_head(double_list);
+    ASSERT_EQ(LL_length(double_list), 1);
+    ASSERT_NE(head, NULL);
+    ASSERT_NE(LL_get_tail(double_list), NULL);
+    ASSERT_EQ(LLNode_get_next(head), NULL);
     /* double double_data = *((double *)double_list.head->data); */
     /* printf("\n>>> double_data: %f", double_data); */
-    ASSERT_EQ(*((double *)LL_get_head_data(&double_list)), 8888.888);
-    ASSERT_EQ(*((double *)double_list._head->_data), 8888.888);
+    ASSERT_EQ(*((double *)LL_get_head_data(double_list)), 8888.888);
 
-    LL_free(&double_list, NULL);
-    ASSERT_EQ(double_list._len, 0);
-    ASSERT_EQ(double_list._head, NULL);
-    ASSERT_EQ(double_list._tail, NULL);
+    LL_free(double_list, NULL);
 }
 
 TEST(SingleLinkList, IntListAppendNode) {
@@ -85,18 +79,18 @@ TEST(SingleLinkList, IntListAppendNode) {
 
     // Append a few nodes
     size_t values[] = {111, 222, 333, 444, 555};
-    LL_append_value(&short_int_list, sizeof(uint16_t), &values[0], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16_t), &values[1], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16_t), &values[2], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16_t), &values[3], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16_t), &values[4], NULL);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[0], NULL);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[1], NULL);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[2], NULL);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[3], NULL);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[4], NULL);
 
-    ASSERT_EQ(short_int_list._len, 5);
-    ASSERT_NE(short_int_list._head, NULL);
-    ASSERT_NE(short_int_list._tail, NULL);
+    ASSERT_EQ(LL_length(short_int_list), 5);
+    ASSERT_NE(LL_get_head(short_int_list), NULL);
+    ASSERT_NE(LL_get_tail(short_int_list), NULL);
 
     // Get back the iter and check all data
-    LLIterator *iter = LL_iter(&short_int_list);
+    LLIterator *iter = LL_iter(short_int_list);
     for (size_t iter_index = 0; iter_index < iter->length; iter_index++) {
         size_t temp_value = *((uint16_t *)iter->data_arr[iter_index]);
         // printf("\n>>> temp_value: %lu", temp_value);
@@ -106,8 +100,5 @@ TEST(SingleLinkList, IntListAppendNode) {
     LL_free_iter(iter);
 
     //
-    LL_free(&short_int_list, NULL);
-    ASSERT_EQ(short_int_list._len, 0);
-    ASSERT_EQ(short_int_list._head, NULL);
-    ASSERT_EQ(short_int_list._tail, NULL);
+    LL_free(short_int_list, NULL);
 }
