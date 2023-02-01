@@ -457,15 +457,40 @@ Vector create_vector() {
     return inner_vec;
 }
 
+void test_vector_element_destructor() {
+    SMART_VECTOR(vec) = Vector_new();
+
+    SMART_STRING(str1) = Str_from_str("String in vector");
+    SMART_STRING(str2) = Str_from_str("Second string in vector");
+    Vector_push(vec, str1, Str_struct_size());
+    Vector_push(vec, str2, Str_struct_size());
+    printf("\n>>> Str_struct_size(): %lu", Str_struct_size());
+
+    const String ele1 = (const String)Vector_get(vec, 0, Str_struct_size());
+    const String ele2 = (const String)Vector_get(vec, 1, Str_struct_size());
+    printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1));
+    printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2));
+
+    const VectorIteractor vec_it = Vector_iter(vec);
+    void *it_string_item = vec_it.items;
+    for (usize i = 0; i < vec_it.length; i++) {
+        String temp_str = (String)(it_string_item + i * Str_struct_size());
+        DEBUG_LOG(Main, test_vector_element_destructor,
+                  "vec element ptr: %p, string value: %s", temp_str,
+                  Str_as_str(temp_str));
+    }
+}
+
 //
 //
 //
 int main(int argc, char **argv) {
     /* test_link_list(); */
-    /* test_string(); */
+    test_string();
     /* test_log_macro(); */
     test_vector();
     Vector outer_vec = create_vector();
+    test_vector_element_destructor();
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */
     /* LOG_VAR(sizeof(long int)); */
