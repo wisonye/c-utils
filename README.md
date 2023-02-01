@@ -2,7 +2,52 @@
 
 This is my personal `C` utilities which contains the following modules:
 
-- `Collection`: All kinds of list, stack and queue.
+- `Collection/SingleLinkList`: Heap allocated single link list.
+
+    This `LinkList` doesn't support normal generic `<T>` (no auto element type
+    inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
+    appending an element to the `LinkList`.
+
+    When appending an element, `LinkList` executes a shallow copy which means
+    doesn't copy the internal heap-allocated content!!!
+
+    </br>
+
+    Examples:
+
+    ```c
+    SMART_LINKLIST(short_int_list) = LL_from_empty();
+
+    // Append a few nodes
+    usize values[] = {111, 222, 333, 444, 555};
+    LL_append_value(short_int_list, sizeof(uint16), &values[0], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[1], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[2], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[3], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[4], NULL);
+
+    // Get back the iter and check all data
+    SMART_LINKLIST_ITERATOR(iter) = LL_iter(short_int_list);
+    for (usize iter_index = 0; iter_index < iter->length; iter_index++) {
+        usize temp_value = *((uint16_t *)iter->data_arr[iter_index]);
+        printf("\n>>>> temp_value: %lu", temp_value);
+    }
+
+
+    // (D) [ SingleLinkList ] > from_empty - self ptr: 0x54732e0
+    // (D) [ SingleLinkList ] > LL_iter - self ptr: 0x54732e0, iter ptr: 0x5473660
+    // >>>> temp_value: 111
+    // >>>> temp_value: 222
+    // >>>> temp_value: 333
+    // >>>> temp_value: 444
+    // >>>> temp_value: 555
+    // (D) [ SingleLinkList ] > auto_free_linklist_iter - out of scope with LinkListIterator ptr: 0x5473660
+    // (D) [ SingleLinkList ] > auto_free_linklist - out of scope with LinkList ptr: 0x54732e0
+    // (D) [ SingleLinkList ] > free - self ptr: 0x54732e0, total free node amount: 5, total free node data amount: 5
+    ```
+
+    </br>
+
 
 - `String`: Wrap and hide all `null-terminated` C-style string in `struct`,
 hide the `null-terminated` detail and pointer, just deal with normal function
