@@ -13,9 +13,9 @@
 //
 //
 //
-LL create_integer_list() {
+LinkList create_integer_list() {
     usize stack_value = 9999;
-    LL list = LL_from_value(sizeof(usize), &stack_value, NULL);
+    LinkList list = LL_from_value(sizeof(usize), &stack_value, NULL);
     return list;
 }
 
@@ -39,23 +39,23 @@ String clone_string(const String original) { return Str_clone(original); }
 void test_link_list() {
     LinkList list = LL_from_empty();
     LinkList int_list = create_integer_list();
-    LL int_list_2 = create_integer_list();
-    LL_free(&list, NULL);
-    LL_free(&int_list, NULL);
-    LL_free(&int_list_2, NULL);
+    LinkList int_list_2 = create_integer_list();
+    LL_free(list, NULL);
+    LL_free(int_list, NULL);
+    LL_free(int_list_2, NULL);
 
-    LL short_int_list = LL_from_empty();
+    LinkList short_int_list = LL_from_empty();
 
     // Append a few nodes
     usize values[] = {111, 222, 333, 444, 555};
-    LL_append_value(&short_int_list, sizeof(uint16), &values[0], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16), &values[1], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16), &values[2], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16), &values[3], NULL);
-    LL_append_value(&short_int_list, sizeof(uint16), &values[4], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[0], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[1], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[2], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[3], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[4], NULL);
 
     // Get back the iter and check all data
-    LLIterator *iter = LL_iter(&short_int_list);
+    LLIterator *iter = LL_iter(short_int_list);
     for (usize iter_index = 0; iter_index < iter->length; iter_index++) {
         usize temp_value = *((uint16_t *)iter->data_arr[iter_index]);
         printf("\n>>>> temp_value: %lu", temp_value);
@@ -63,7 +63,7 @@ void test_link_list() {
     LL_free_iter(iter);
 
     //
-    LL_free(&short_int_list, NULL);
+    LL_free(short_int_list, NULL);
 }
 
 //
@@ -485,12 +485,12 @@ void test_vector_element_destructor() {
 //
 //
 int main(int argc, char **argv) {
-    /* test_link_list(); */
-    test_string();
+    test_link_list();
+    /* test_string(); */
     /* test_log_macro(); */
-    test_vector();
-    Vector outer_vec = create_vector();
-    test_vector_element_destructor();
+    /* test_vector(); */
+    /* Vector outer_vec = create_vector(); */
+    /* test_vector_element_destructor(); */
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */
     /* LOG_VAR(sizeof(long int)); */
