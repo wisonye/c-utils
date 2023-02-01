@@ -25,7 +25,7 @@ String Str_from_empty() {
     String string = malloc(sizeof(struct Str));
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, from_empty, "self pointer: %p", string);
+    DEBUG_LOG(String, from_empty, "self ptr: %p", string);
 #endif
 
     *string = (struct Str){
@@ -44,11 +44,6 @@ String Str_from_arr(const char arr[]) {
 
     String string = malloc(sizeof(struct Str));
 
-#if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, from_arr, "self pointer: %p, from_arr: %s", string,
-              arr);
-#endif
-
     *string = (struct Str){
         ._len = temp_len > 0 ? temp_len : 0,
         ._buffer = NULL,
@@ -56,6 +51,11 @@ String Str_from_arr(const char arr[]) {
 
     if (temp_len > 0) {
         string->_buffer = malloc(temp_len + 1);
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, from_arr,
+                  "self ptr: %p, malloc ptr: %p, from_arr: %s", string,
+                  string->_buffer, arr);
+#endif
         memcpy(string->_buffer, arr, temp_len);
         string->_buffer[temp_len] = '\0';
     }
@@ -71,11 +71,6 @@ String Str_from_str(const char *str) {
 
     String string = malloc(sizeof(struct Str));
 
-#if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, from_str, "self pointer: %p, from_str: %s", string,
-              str);
-#endif
-
     *string = (struct Str){
         ._len = temp_len > 0 ? temp_len : 0,
         ._buffer = NULL,
@@ -83,6 +78,11 @@ String Str_from_str(const char *str) {
 
     if (temp_len > 0) {
         string->_buffer = malloc(temp_len + 1);
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, from_str,
+                  "self ptr: %p, malloc ptr: %p, from_str: %s", string,
+                  string->_buffer, str);
+#endif
         memcpy(string->_buffer, str, temp_len);
         string->_buffer[temp_len] = '\0';
     }
@@ -306,8 +306,9 @@ void Str_free(String self) {
  */
 void auto_free_string(String *ptr) {
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, auto_free_string, "out of scope with string ptr: %p, as_str: %s",
-              *ptr, Str_as_str(*ptr));
+    DEBUG_LOG(String, auto_free_string,
+              "out of scope with string ptr: %p, as_str: %s", *ptr,
+              Str_as_str(*ptr));
 #endif
     Str_free(*ptr);
 }
