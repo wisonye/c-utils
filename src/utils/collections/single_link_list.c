@@ -226,12 +226,22 @@ void LL_append_value(LinkList self, size_t item_size, void *value,
 LLIterator *LL_iter(const LinkList self) {
     if (self->_len <= 0) {
         LLIterator *iter = malloc(sizeof(LLIterator));
+
+#ifdef ENABLE_DEBUG_LOG
+        DEBUG_LOG(SingleLinkList, LL_iter, "self ptr: %p, iter ptr: %p", self,
+                  iter);
+#endif
         iter->length = 0;
 
         return iter;
     }
 
     LLIterator *iter = malloc(sizeof(LLIterator) + self->_len * sizeof(void *));
+
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(SingleLinkList, LL_iter, "self ptr: %p, iter ptr: %p", self, iter);
+#endif
+
     iter->length = self->_len;
 
     // Pointer to first node
@@ -261,6 +271,17 @@ void LL_free_iter(LLIterator *iter) {
 #endif
         free(iter);
     }
+}
+
+/*
+ *
+ */
+void auto_free_linklist_iter(LLIterator **ptr) {
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(SingleLinkList, auto_free_linklist_iter,
+              "out of scope with LinkListIterator ptr: %p", *ptr);
+#endif
+    LL_free_iter(*ptr);
 }
 
 //
@@ -323,4 +344,15 @@ void LL_free(LinkList self, FreeFunc free_func) {
               "amount: %lu",
               self, free_node_amount, free_node_data_amount);
 #endif
+}
+
+/*
+ *  Auto free `LinkList`
+ */
+void auto_free_linklist(LinkList *ptr) {
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(SingleLinkList, auto_free_linklist,
+              "out of scope with LinkList ptr: %p", *ptr);
+#endif
+    LL_free(*ptr, NULL);
 }

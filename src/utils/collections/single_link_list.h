@@ -39,6 +39,24 @@ LinkListNode LLNode_get_next(const LinkListNode self);
 typedef struct LL *LinkList;
 
 /*
+ * Auto free `LinkList`
+ */
+void auto_free_linklist(LinkList *ptr);
+
+/*
+ * Define smart `LinkList` var that calls `LL_free()` automatically when the
+ * variable is out of the scope
+ *
+ * ```c
+ * SMART_LINKLIST(temp_list) = LL_from_empty();
+ *
+ * // (D) [ SingleLinkList ] > free - self ptr: 0x5472040, total free node
+ * amount: 0, total free node data amount: 0
+ * ```
+ */
+#define SMART_LINKLIST(x) __attribute__((cleanup(auto_free_linklist))) LinkList x
+
+/*
  * Create empty list
  */
 LinkList LL_from_empty();
@@ -110,6 +128,28 @@ typedef struct {
     size_t length;
     void *data_arr[];
 } LLIterator;
+
+/*
+ *
+ */
+void auto_free_linklist_iter(LLIterator **ptr);
+
+/*
+ * Define smart `LinkList` var that calls `LL_free()` automatically when the
+ * variable is out of the scope
+ *
+ * ```c
+ *  // Get back the iter and check all data
+ *  SMART_LINKLIST_ITERATOR(iter) = LL_iter(short_int_list);
+ *  for (usize iter_index = 0; iter_index < iter->length; iter_index++) {
+ *      usize temp_value = *((uint16_t *)iter->data_arr[iter_index]);
+ *      printf("\n>>>> temp_value: %lu", temp_value);
+ *  }
+ *
+ * //
+ * ```
+ */
+#define SMART_LINKLIST_ITERATOR(x) __attribute__((cleanup(auto_free_linklist_iter))) LLIterator *x
 
 /*
  * Return a `Iterator` pointer from the `LinkLiist`:
