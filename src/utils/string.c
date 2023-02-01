@@ -18,6 +18,14 @@ struct Str {
     char *_buffer;
 };
 
+//
+// `String` is an opaque pointer which uses to hide the `struct Str` detail,
+// which means `struct Str` doesn't exists in the outside world. If you want
+// to get back `sizeof(struct Str)` for some reasons, this function is the
+// anwser.
+//
+const usize Str_struct_size() { return sizeof(struct Str); }
+
 /*
  * Create from empty
  */

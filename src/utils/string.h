@@ -11,6 +11,14 @@
 typedef struct Str *String;
 
 //
+// `String` is an opaque pointer which uses to hide the `struct Str` detail,
+// which means `struct Str` doesn't exists in the outside world. If you want
+// to get back `sizeof(struct Str)` for some reasons, this function is the
+// anwser.
+//
+const usize Str_struct_size();
+
+//
 //
 //
 void auto_free_string(String *ptr);
@@ -22,11 +30,11 @@ void auto_free_string(String *ptr);
  * ```c
  * SMART_STRING(src_str) = Str_from_str("Hey:)");
  *
- * // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5473850, as_str: Hey:)
+ * // (D) [ String ] > auto_free_string - out of scope with string ptr:
+ * 0x5473850, as_str: Hey:)
  * ```
  */
-#define SMART_STRING(x) \
-    __attribute__((cleanup(auto_free_string))) String x
+#define SMART_STRING(x) __attribute__((cleanup(auto_free_string))) String x
 
 /*
  * Create from empty
