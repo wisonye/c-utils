@@ -208,7 +208,14 @@ call.
 
         </br>
 
-- `Vector`: Heap allocated dynamic array
+- `Vector`: Heap allocated dynamic array.
+
+    This `Vector` doesn't support normal generic `<T>` (no auto element type
+    inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
+    pushing an element into it or getting back by index.
+
+    </br>
+
 
     ```c
     /*
