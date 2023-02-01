@@ -9,6 +9,19 @@ hide the `null-terminated` detail and pointer, just deal with normal function
 call.
 
     ```c
+    //
+    // Heap allocated string
+    //
+    typedef struct Str *String;
+    
+    //
+    // `String` is an opaque pointer which uses to hide the `struct Str` detail,
+    // which means `struct Str` doesn't exists in the outside world. If you want
+    // to get back `sizeof(struct Str)` for some reasons, this function is the
+    // anwser.
+    //
+    const usize Str_struct_size();
+
     /*
      * Define smart `String` var that calls `Str_free()` automatically when the
      * variable is out of the scope
@@ -409,14 +422,50 @@ call.
         </br>
 
 
+    - Use `String` (struct Str*) case:
 
+        ```c
+        SMART_VECTOR(vec) = Vector_new();
 
+        //
+        // Create smart string: de-allocated automatic when out of scope
+        //
+        SMART_STRING(str1) = Str_from_str("String in vector");
+        SMART_STRING(str2) = Str_from_str("Second string in vector");
 
+        //
+        // `Str_struct_size()` return `sizeof(struct Str)`, otherwise, it
+        // won't work without correct struct size!!!
+        //
+        Vector_push(vec, str1, Str_struct_size());
+        Vector_push(vec, str2, Str_struct_size());
+        printf("\n>>> Str_struct_size(): %lu", Str_struct_size());
 
+        const String ele1 = (const String)Vector_get(vec, 0, Str_struct_size());
+        const String ele2 = (const String)Vector_get(vec, 1, Str_struct_size());
+        printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1));
+        printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2));
 
+        const VectorIteractor vec_it = Vector_iter(vec);
+        void *it_string_item = vec_it.items;
 
+        //
+        // As `it_string_item[i]` is `struct Str` which doesn't exis in the
+        // outside world, that's why you CANNOT access String element in
+        // that way.
+        //
+        // You have to use `void *` + offset to get back the correct `String`
+        // (opaque pointer to `struct Str`) before accessing `String` element.
+        //
+        for (usize i = 0; i < vec_it.length; i++) {
+            String temp_str = (String)(it_string_item + i * Str_struct_size());
+            DEBUG_LOG(Main, test_vector_element_destructor,
+                      "vec element ptr: %p, string value: %s", temp_str,
+                      Str_as_str(temp_str));
+        }
+        ```
 
-</br>
+        </br>
 
 ### 0. `CMake` configurations
 
