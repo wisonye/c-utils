@@ -214,6 +214,9 @@ call.
     inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
     pushing an element into it or getting back by index.
 
+    When pushing an element, `Vector` executes a shallow copy which means doesn't
+    copy the internal heap-allocated content!!!
+
     </br>
 
 

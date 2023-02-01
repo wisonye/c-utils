@@ -138,17 +138,20 @@ const void *LL_get_tail_data(const LinkList self) {
 /*
  * Append to the tail
  *
+ * LinkList executes a shallow copy which means doesn't copy the internal
+ * heap-allocated content!!!
+ *
  * Example:
  *
  * ```c
  * // Append a few nodes
- * LL short_int_list = LL_from_empty();
+ * LinkList short_int_list = LL_from_empty();
  * size_t values[] = {111, 222, 333, 444, 555};
- * LL_append_value(&short_int_list, sizeof(uint16_t), &values[0], NULL);
- * LL_append_value(&short_int_list, sizeof(uint16_t), &values[1], NULL);
- * LL_append_value(&short_int_list, sizeof(uint16_t), &values[2], NULL);
- * LL_append_value(&short_int_list, sizeof(uint16_t), &values[3], NULL);
- * LL_append_value(&short_int_list, sizeof(uint16_t), &values[4], NULL);
+ * LL_append_value(short_int_list, sizeof(uint16_t), &values[0], NULL);
+ * LL_append_value(short_int_list, sizeof(uint16_t), &values[1], NULL);
+ * LL_append_value(short_int_list, sizeof(uint16_t), &values[2], NULL);
+ * LL_append_value(short_int_list, sizeof(uint16_t), &values[3], NULL);
+ * LL_append_value(short_int_list, sizeof(uint16_t), &values[4], NULL);
  * ```
  *
  */

@@ -57,6 +57,9 @@ Vector Vector_with_capacity(usize capacity, usize element_type_size) {
 
 /*
  * Push element to the end of the vector
+ *
+ * Vector executes a shallow copy which means doesn't copy the internal
+ * heap-allocated content!!!
  */
 void Vector_push(Vector self, void *element, usize element_type_size) {
     // ensure the vector has enough space to save all elements;
