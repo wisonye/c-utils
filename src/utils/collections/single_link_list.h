@@ -19,37 +19,24 @@ typedef void *(*CloneFromFunc)(void *original_value);
 typedef void *(*FreeFunc)(void *data_to_free);
 
 //----------------------------------------------------------------------------
-// LinkListNdoe
+// LinkListNdoe opaque pointer to `struct LLNode`
 //----------------------------------------------------------------------------
-
-typedef struct LLNode {
-    // The heap-allocated `data` should own by copyit via the `CloneFromFunc`
-    // if `data` is NOT a primitive type.
-    void *_data;
-    struct LLNode *_next;
-
-} LLNode, LLN;
+typedef struct LLNode *LinkListNode;
 
 /*
  * Return node data pointer
  */
-void *LL_get_data(const LLNode *self);
+void *LL_get_data(const LinkListNode self);
 
 /*
  * Return next node pointer
  */
-LLNode *LL_get_next(const LLNode *self);
+LinkListNode LL_get_next(const LinkListNode self);
 
 //----------------------------------------------------------------------------
-// LinkList
+// LinkList opaque pointer to `struct LL`
 //----------------------------------------------------------------------------
-
-typedef struct {
-    size_t _len;
-    LLNode *_head;
-    LLNode *_tail;
-
-} LinkList, LL;
+typedef struct LL *LinkList;
 
 /*
  * Create empty list
@@ -71,27 +58,27 @@ LinkList LL_from_array(size_t item_size, void *array,
 /*
  * Return the link length
  */
-size_t LL_length(const LL *self);
+size_t LL_length(const LinkList self);
 
 /*
  * Return the header (first node) pointer
  */
-const LLNode *LL_get_head(const LL *self);
+const LinkListNode LL_get_head(const LinkList self);
 
 /*
  * Return the header (first node) data pointer
  */
-const void *LL_get_head_data(const LL *self);
+const void *LL_get_head_data(const LinkList self);
 
 /*
  * Return the tail (last node) pointer
  */
-const LLNode *LL_get_tail(const LL *self);
+const LinkListNode LL_get_tail(const LinkList self);
 
 /*
  * Return the tail (last node) data pointer
  */
-const void *LL_get_tail_data(const LL *self);
+const void *LL_get_tail_data(const LinkList self);
 
 /*
  * Append to the tail
@@ -110,7 +97,7 @@ const void *LL_get_tail_data(const LL *self);
  * ```
  *
  */
-void LL_append_value(LL *self, size_t item_size, void *value,
+void LL_append_value(LinkList self, size_t item_size, void *value,
                      CloneFromFunc clone_from_func);
 
 /*
@@ -127,8 +114,8 @@ typedef struct {
  * `Iterator.length`: Shows how many data pointer in `Iterator.data_arr`.
  *
  * `Iterator.data_arr`: Stores all list node data pointer, you need to convert
- *                      the correct data type before using it. If `Iterator.length`
- *                      is zeor, DO NOT access this array!!!
+ *                      the correct data type before using it. If
+ * `Iterator.length` is zeor, DO NOT access this array!!!
  *
  * The returned `Iterator` pointer has to be freed by calling `LL_free_iter()`.
  *
@@ -148,7 +135,7 @@ typedef struct {
  *
  * ```
  */
-LLIterator *LL_iter(const LL *self);
+LLIterator *LL_iter(const LinkList self);
 
 /*
  * Free the given `LLIterator`
@@ -158,7 +145,7 @@ void LL_free_iter(LLIterator *iter);
 //
 // Querys
 //
-LLNode *LL_find(const void *query);
+LinkListNode LL_find(const void *query);
 
 /*
  * `free_func`:
@@ -167,6 +154,6 @@ LLNode *LL_find(const void *query);
  * is to call the original `DataType.free(node->data)`, just in case `data` is
  * a complicated struct instance
  */
-void LL_free(LL *self, FreeFunc free_func);
+void LL_free(LinkList self, FreeFunc free_func);
 
 #endif
