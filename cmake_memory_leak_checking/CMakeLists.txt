@@ -40,6 +40,7 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/string.c"
     "../src/utils/hex_buffer.c"
     "../src/utils/vector.c"
+    "../src/utils/memory.c"
     "../src/main.c")
 
 
