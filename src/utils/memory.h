@@ -9,10 +9,14 @@
 #define PRINT_MEMORY_BLOCK(TYPE_NAME, VAR_NAME)                             \
     print_memory_block((char *)#TYPE_NAME " " #VAR_NAME, sizeof(TYPE_NAME), \
                        &VAR_NAME);
+
+#define PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(TYPE_NAME, VAR_NAME, TYPE_SIZE) \
+    print_memory_block((char *)#TYPE_NAME " " #VAR_NAME, TYPE_SIZE, VAR_NAME);
 #else
 
 /** Define as nothing when `ENABLE_DEBUG_LOG` is undefined!!! **/
 #define PRINT_MEMORY_BLOCK(TYPE_NAME, VAR_NAME)
+#define PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(TYPE_NAME, VAR_NAME, TYPE_SIZE)
 
 #endif
 
