@@ -538,8 +538,7 @@ call.
 
 - `Memory`: Handy memory utils.
 
-    - `PRINT_MEMORY_BLOCK` macro, , only available when `ENABLE_DEBUG_LOG`
-    is defined!!!
+    - `PRINT_MEMORY_BLOCK` macro, only available when `ENABLE_DEBUG_LOG` is defined!!!
 
         used to print the memory block data in HEX format from a given variable.
 
@@ -567,6 +566,37 @@ call.
         // (D) [ Memory ] > print_memory_block - --------
         // (D) [ Memory ] > print_memory_block - 0A000000
         // (D) [ Memory ] > print_memory_block - --------
+        ```
+
+        </br>
+
+    - `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro, only available when
+    `ENABLE_DEBUG_LOG` is defined!!!
+
+        It works like the same with the `PRINT_MEMORY_BLOCK` macro but focuses
+        on the`SMART_XXXX` variable case, as those variables are `opaque pointer`
+        types without the original `struct` type available.
+
+        ```c
+        SMART_STRING(str1) = Str_from_str("String in vector");
+        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+
+        // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
+        // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
+        // (D) [ Memory ] > print_memory_block - --------------------------------
+        // (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
+        // (D) [ Memory ] > print_memory_block - --------------------------------
+        ```
+
+        As you can see above, proven by the `lldb` memory block printing in
+        `Big Endian` order:
+
+        ```bash
+        (lldb) v str1
+        # (String) str1 = 0x000000082346a000
+
+        (lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
+        # 0x82346a000: 0x000000082346B0000000000000000010
         ```
 
         </br>

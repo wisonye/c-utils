@@ -534,5 +534,9 @@ int main(int argc, char **argv) {
     PRINT_MEMORY_BLOCK(int, data);
     PRINT_MEMORY_BLOCK(struct Person, me)
 
+    SMART_STRING(str1) = Str_from_str("String in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+    printf("\n>>>\n");
+
     return 0;
 }
