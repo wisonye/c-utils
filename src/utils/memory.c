@@ -32,5 +32,5 @@ void print_memory_block(char *type_name, usize type_size, void *value) {
     }
     memory_bytes[hex_len_in_char] = '\0';
     DEBUG_LOG(Memory, print_memory_block, "%s", memory_bytes);
-    DEBUG_LOG(Memory, print_memory_block, "%s", hr);
+    DEBUG_LOG(Memory, print_memory_block, "%s\n", hr);
 }
