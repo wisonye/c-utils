@@ -2,6 +2,8 @@
 
 This is my personal `C` utilities which contains the following modules:
 
+</br>
+
 - `Collection/SingleLinkList`: Heap allocated single link list.
 
     This `LinkList` doesn't support normal generic `<T>` (no auto element type
@@ -45,6 +47,9 @@ This is my personal `C` utilities which contains the following modules:
     // (D) [ SingleLinkList ] > auto_free_linklist - out of scope with LinkList ptr: 0x54732e0
     // (D) [ SingleLinkList ] > free - self ptr: 0x54732e0, total free node amount: 5, total free node data amount: 5
     ```
+
+    The `SMART_LINKLIST` macro ensures the `SingleLinkList` instance auto-free
+    heap-allocated memory when it goes out of its scope.
 
     </br>
 
@@ -200,58 +205,10 @@ call.
     // Str_free(str_2);
     ```
 
+    The `SMART_STRING` macro ensures the `SingleLinkList` instance auto-free
+    heap-allocated memory when it goes out of its scope.
+
     </br>
-
-- `Log`: Handy logging implementation.
-
-    - `LOG_VAR` macro, only available when `ENABLE_DEBUG_LOG ` is defined!!!
-
-        Use to print the single variable's value, only for debugging purpose.
-
-        ```c
-        char *string_value = "Wison Ye";
-        char char_value = 'c';
-        u8 u8_value = 255;
-
-        LOG_VAR(string_value);
-        LOG_VAR(char_value);
-        LOG_VAR(u8_value);
-
-        LOG_VAR(sizeof(int));
-        LOG_VAR(sizeof(long));
-
-        // >>> string_value: Wison Ye
-        // >>> char_value: c
-        // >>> u8_value: 255
-        // >>> sizeof(int): 4
-        // >>> sizeof(long): 8
-        ```
-
-        </br>
-
-    - `printf` liked formatted logger
-
-        ```c
-        #include "utils/log.h"
-        #include "utils/string.h"
-
-        String my_str = Str_from_str("My name is Wison Ye");
-        DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
-        DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-        DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-        INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-        WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-        ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-
-        // (D) [ Main ] > main - add(2, 3): 5
-        // (D) [ Main ] > main - 2 + 2 :4
-        // (D) [ Main ] > main - my_str value is: My name is Wison Ye
-        // (I) [ Main ] > main - my_str value is: My name is Wison Ye
-        // (W) [ Main ] > main - my_str value is: My name is Wison Ye
-        // (E) [ Main ] > main - my_str value is: My name is Wison Ye⏎
-        ```
-
-        </br>
 
 - `Vector`: Heap allocated dynamic array.
 
@@ -328,6 +285,11 @@ call.
     </br>
 
     Examples:
+
+    The `SMART_VECTOR` macro ensures the `Vec` instance auto-free heap-allocated
+    memory when it goes out of its scope.
+
+    </br>
 
     - Create empty vector:
 
@@ -521,6 +483,94 @@ call.
         ```
 
         </br>
+
+- `Log`: Handy logging implementation.
+
+    - `LOG_VAR` macro, only available when `ENABLE_DEBUG_LOG` is defined!!!
+
+        Use to print the single variable's value, only for debugging purpose.
+
+        ```c
+        char *string_value = "Wison Ye";
+        char char_value = 'c';
+        u8 u8_value = 255;
+
+        LOG_VAR(string_value);
+        LOG_VAR(char_value);
+        LOG_VAR(u8_value);
+
+        LOG_VAR(sizeof(int));
+        LOG_VAR(sizeof(long));
+
+        // >>> string_value: Wison Ye
+        // >>> char_value: c
+        // >>> u8_value: 255
+        // >>> sizeof(int): 4
+        // >>> sizeof(long): 8
+        ```
+
+        </br>
+
+    - `printf` liked formatted logger
+
+        ```c
+        #include "utils/log.h"
+        #include "utils/string.h"
+
+        String my_str = Str_from_str("My name is Wison Ye");
+        DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
+        DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
+        DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+        INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+        WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+        ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+
+        // (D) [ Main ] > main - add(2, 3): 5
+        // (D) [ Main ] > main - 2 + 2 :4
+        // (D) [ Main ] > main - my_str value is: My name is Wison Ye
+        // (I) [ Main ] > main - my_str value is: My name is Wison Ye
+        // (W) [ Main ] > main - my_str value is: My name is Wison Ye
+        // (E) [ Main ] > main - my_str value is: My name is Wison Ye⏎
+        ```
+
+        </br>
+
+
+- `Memory`: Handy memory utils.
+
+    - `PRINT_MEMORY_BLOCK` macro, , only available when `ENABLE_DEBUG_LOG`
+    is defined!!!
+
+        used to print the memory block data in HEX format from a given variable.
+
+        ```c
+        struct Person {
+            char birthday[9];
+            u8 age;
+        };
+
+        struct Person me = {
+            .birthday = "19880531",
+            .age = 0xAA,
+        };
+        PRINT_MEMORY_BLOCK(struct Person, me)
+
+        int data = 10;
+        PRINT_MEMORY_BLOCK(int, data);
+
+        // (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
+        // (D) [ Memory ] > print_memory_block - --------------------
+        // (D) [ Memory ] > print_memory_block - 313938383035333100AA
+        // (D) [ Memory ] > print_memory_block - --------------------
+        //
+        // (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
+        // (D) [ Memory ] > print_memory_block - --------
+        // (D) [ Memory ] > print_memory_block - 0A000000
+        // (D) [ Memory ] > print_memory_block - --------
+        ```
+
+        </br>
+
 
 ### 0. `CMake` configurations
 

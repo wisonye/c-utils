@@ -2,11 +2,13 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "utils/collections/single_link_list.h"
 #include "utils/data_types.h"
 #include "utils/hex_buffer.h"
 #include "utils/log.h"
+#include "utils/memory.h"
 #include "utils/string.h"
 #include "utils/vector.h"
 
@@ -474,11 +476,18 @@ void test_vector_element_destructor() {
     }
 }
 
+struct Person {
+    /* char first_name[10]; */
+    /* char last_name[5]; */
+    char birthday[9];
+    u8 age;
+};
+
 //
 //
 //
 int main(int argc, char **argv) {
-    test_link_list();
+    /* test_link_list(); */
     /* test_string(); */
     /* test_log_macro(); */
     /* test_vector(); */
@@ -515,4 +524,15 @@ int main(int argc, char **argv) {
     // Str_free(&clone_from_empty_str);
 
     // test_hex_buffer();
+
+    int data = 10;
+
+    struct Person me = {
+        .birthday = "19880531",
+        .age = 0xAA,
+    };
+    PRINT_MEMORY_BLOCK(int, data);
+    PRINT_MEMORY_BLOCK(struct Person, me)
+
+    return 0;
 }
