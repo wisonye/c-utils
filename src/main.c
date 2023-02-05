@@ -10,8 +10,8 @@
 #include "utils/log.h"
 #include "utils/memory.h"
 #include "utils/string.h"
+#include "utils/timer.h"
 #include "utils/vector.h"
-
 //
 //
 //
@@ -476,12 +476,41 @@ void test_vector_element_destructor() {
     }
 }
 
+//
+//
+//
+void test_timer() {
+    long double start_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double end_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double elapsed_time = end_time - start_time;
+
+    DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);
+}
+
 struct Person {
     /* char first_name[10]; */
     /* char last_name[5]; */
     char birthday[9];
     u8 age;
 };
+
+//
+//
+//
+void test_memory() {
+    int data = 10;
+
+    struct Person me = {
+        .birthday = "19880531",
+        .age = 0xAA,
+    };
+    PRINT_MEMORY_BLOCK(int, data);
+    PRINT_MEMORY_BLOCK(struct Person, me)
+
+    SMART_STRING(str1) = Str_from_str("String in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+    printf("\n>>>\n");
+}
 
 //
 //
@@ -524,19 +553,9 @@ int main(int argc, char **argv) {
     // Str_free(&clone_from_empty_str);
 
     // test_hex_buffer();
+    // test_memory();
 
-    int data = 10;
-
-    struct Person me = {
-        .birthday = "19880531",
-        .age = 0xAA,
-    };
-    PRINT_MEMORY_BLOCK(int, data);
-    PRINT_MEMORY_BLOCK(struct Person, me)
-
-    SMART_STRING(str1) = Str_from_str("String in vector");
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
-    printf("\n>>>\n");
+    test_timer();
 
     return 0;
 }

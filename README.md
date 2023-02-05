@@ -602,6 +602,54 @@ call.
         </br>
 
 
+- `Timer`: High resolution timer utils
+
+    ```c
+    //
+    // Time unit
+    //
+    typedef enum TimeUnit {
+        TU_NANOSECONDS = 0x01,
+        TU_MICROSECONDS = 0x02,
+        TU_MILLISECONDS = 0x03,
+        TU_SECONDS = 0x04,
+    } TimeUnit;
+
+    /*
+     * Get back current time in the given time unit
+     */
+    long double Timer_get_current_time(TimeUnit time_unit);
+    ```
+
+    </br>
+
+    Example:
+
+    ```c
+    long double start_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double end_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double elapsed_time = end_time - start_time;
+
+    DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);
+    ```
+
+    </br>
+
+    ```bash
+    time ./build_memory_leak_checking/c-utils
+
+    # (D) [ Timer ] > Timer_get_current_time - FreeBSD Initialization
+    # (D) [ Main ] > test_timer - elapsed_time: 238.000000
+    # 
+    # ________________________________________________________
+    # Executed in    3.35 millis    fish           external
+    #    usr time    0.98 millis  981.00 micros    0.00 millis
+    #    sys time    5.93 millis    0.00 micros    5.93 millis
+    ```
+
+    </br>
+
+
 ### 0. `CMake` configurations
 
 This project has 2 `cmake` setups for different purposes:
