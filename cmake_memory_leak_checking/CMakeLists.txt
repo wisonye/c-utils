@@ -41,6 +41,7 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/hex_buffer.c"
     "../src/utils/vector.c"
     "../src/utils/memory.c"
+    "../src/utils/timer.c"
     "../src/main.c")
 
 
