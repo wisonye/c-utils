@@ -649,6 +649,57 @@ call.
 
     </br>
 
+- `Smart ptr`:
+
+    `make_unique_ptr` simulates the `std::make_unique` in `C++`:
+
+    </br>
+
+    ```c
+    String return_string_on_the_heap() {
+        String str_on_the_heap = Str_from_str("String allocated on the heap:)");
+        return str_on_the_heap;
+    }
+
+    Vector return_vector_on_the_heap() {
+        usize double_size = sizeof(double);
+        Vector temp_vec = Vector_with_capacity(5, double_size);
+        double d = 888.88;
+        Vector_push(temp_vec, &d, double_size);
+        return temp_vec;
+    }
+
+    void test_smart_ptr() {
+        //
+        // `return_str` will be destroyed by calling `auto_free_string` automatic
+        //
+        make_unique_ptr(String return_str = return_string_on_the_heap(),
+                        auto_free_string);
+
+        //
+        // `return_vector` will be destroyed by calling `auto_free_vector` automatic
+        //
+        make_unique_ptr(Vector return_vec = return_vector_on_the_heap(),
+                        auto_free_vector);
+
+        DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
+                  Str_as_str(return_str));
+        DEBUG_LOG(Main, test_smart_ptr,
+                  "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
+                  Vector_len(return_vec),
+                  *((double *)Vector_get(return_vec, 0, sizeof(double))));
+    }
+
+    // (D) [ String ] > from_str - self ptr: 0x5472040, malloc ptr: 0x5472090, from_str: String allocated on the heap:)
+    // (D) [ Vector ] > with_capacity - self pointer: 0x5474130, capacity: 5
+    // (D) [ Main ] > test_smart_ptr - return_str: 0x5472040, value: String allocated on the heap:)
+    // (D) [ Main ] > test_smart_ptr - return_vec: 0x5474130, len: 1, first elemnt: 888.880000
+    // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5474130, length: 1
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5472040, as_str: String allocated on the heap:)==42550==
+    ```
+
+    </br>
+
 
 ### 0. `CMake` configurations
 

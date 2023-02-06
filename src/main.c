@@ -9,9 +9,11 @@
 #include "utils/hex_buffer.h"
 #include "utils/log.h"
 #include "utils/memory.h"
+#include "utils/smart_ptr.h"
 #include "utils/string.h"
 #include "utils/timer.h"
 #include "utils/vector.h"
+
 //
 //
 //
@@ -512,14 +514,48 @@ void test_memory() {
     printf("\n>>>\n");
 }
 
+String return_string_on_the_heap() {
+    String str_on_the_heap = Str_from_str("String allocated on the heap:)");
+    return str_on_the_heap;
+}
+
+Vector return_vector_on_the_heap() {
+    usize double_size = sizeof(double);
+    Vector temp_vec = Vector_with_capacity(5, double_size);
+    double d = 888.88;
+    Vector_push(temp_vec, &d, double_size);
+    return temp_vec;
+}
+
+void test_smart_ptr() {
+    //
+    // `return_str` will be destroyed by calling `auto_free_string` automatic
+    //
+    make_unique_ptr(String return_str = return_string_on_the_heap(),
+                    auto_free_string);
+
+    //
+    // `return_vector` will be destroyed by calling `auto_free_vector` automatic
+    //
+    make_unique_ptr(Vector return_vec = return_vector_on_the_heap(),
+                    auto_free_vector);
+
+    DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
+              Str_as_str(return_str));
+    DEBUG_LOG(Main, test_smart_ptr,
+              "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
+              Vector_len(return_vec),
+              *((double *)Vector_get(return_vec, 0, sizeof(double))));
+}
+
 //
 //
 //
 int main(int argc, char **argv) {
-    /* test_link_list(); */
-    /* test_string(); */
-    /* test_log_macro(); */
-    /* test_vector(); */
+    test_link_list();
+    test_string();
+    test_log_macro();
+    test_vector();
     /* Vector outer_vec = create_vector(); */
     /* test_vector_element_destructor(); */
     /* LOG_VAR(sizeof(int)); */
@@ -552,10 +588,10 @@ int main(int argc, char **argv) {
     // Str_free(&my_name_str);
     // Str_free(&clone_from_empty_str);
 
-    // test_hex_buffer();
-    // test_memory();
-
+    test_hex_buffer();
+    test_memory();
     test_timer();
+    test_smart_ptr();
 
     return 0;
 }
