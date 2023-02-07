@@ -355,30 +355,29 @@ void test_hex_buffer() {
 //
 //
 void test_vector() {
-    SMART_VECTOR(empty_vec) = Vector_new();
-
     usize u16_type_size = sizeof(u16);
-    SMART_VECTOR(u16_vec) = Vector_with_capacity(10, u16_type_size);
+    SMART_VECTOR(empty_vec) = Vec_new(u16_type_size);
+    SMART_VECTOR(u16_vec) = Vec_with_capacity(10, u16_type_size);
     //
     // `capacity` should NOT change and no `realloc` will be called before
     // pushing the 11th elements
     //
     u16 short_arr[] = {5000, 5001, 5002, 5003, 5004, 5005,
                        5006, 5007, 5008, 5009, 6000};
-    Vector_push(u16_vec, &short_arr[0], u16_type_size);
-    Vector_push(u16_vec, &short_arr[1], u16_type_size);
-    Vector_push(u16_vec, &short_arr[2], u16_type_size);
-    Vector_push(u16_vec, &short_arr[3], u16_type_size);
-    Vector_push(u16_vec, &short_arr[4], u16_type_size);
-    Vector_push(u16_vec, &short_arr[5], u16_type_size);
-    Vector_push(u16_vec, &short_arr[6], u16_type_size);
-    Vector_push(u16_vec, &short_arr[7], u16_type_size);
-    Vector_push(u16_vec, &short_arr[8], u16_type_size);
-    Vector_push(u16_vec, &short_arr[9], u16_type_size);
+    Vec_push(u16_vec, &short_arr[0]);
+    Vec_push(u16_vec, &short_arr[1]);
+    Vec_push(u16_vec, &short_arr[2]);
+    Vec_push(u16_vec, &short_arr[3]);
+    Vec_push(u16_vec, &short_arr[4]);
+    Vec_push(u16_vec, &short_arr[5]);
+    Vec_push(u16_vec, &short_arr[6]);
+    Vec_push(u16_vec, &short_arr[7]);
+    Vec_push(u16_vec, &short_arr[8]);
+    Vec_push(u16_vec, &short_arr[9]);
     // `capacity` should change to `20`
-    Vector_push(u16_vec, &short_arr[10], u16_type_size);
+    Vec_push(u16_vec, &short_arr[10]);
     // Element value check
-    VectorIteractor short_arr_iter = Vector_iter(u16_vec);
+    VectorIteractor short_arr_iter = Vec_iter(u16_vec);
     u16 *temp_short_arr = (u16 *)short_arr_iter.items;
     for (usize sa_index = 0; sa_index < short_arr_iter.length; sa_index++) {
         DEBUG_LOG(Main, test_vector, "short_arr_iter[%lu]: %d", sa_index,
@@ -387,12 +386,12 @@ void test_vector() {
 
     // int vec
     int int_arr[] = {100, 200, 300};
-    SMART_VECTOR(int_vec) = Vector_new();
-    Vector_push(int_vec, &int_arr[0], sizeof(int));
-    Vector_push(int_vec, &int_arr[1], sizeof(int));
-    Vector_push(int_vec, &int_arr[2], sizeof(int));
+    SMART_VECTOR(int_vec) = Vec_new(sizeof(int));
+    Vec_push(int_vec, &int_arr[0]);
+    Vec_push(int_vec, &int_arr[1]);
+    Vec_push(int_vec, &int_arr[2]);
 
-    VectorIteractor int_arr_iter = Vector_iter(int_vec);
+    VectorIteractor int_arr_iter = Vec_iter(int_vec);
     int *temp_int_arr = (int *)int_arr_iter.items;
     for (usize index = 0; index < int_arr_iter.length; index++) {
         DEBUG_LOG(Main, test_vector, "int_arr_iter[%lu]: %d", index,
@@ -410,12 +409,12 @@ void test_vector() {
     Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
     Person nobody = {
         .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-    SMART_VECTOR(person_list) = Vector_new();
-    Vector_push(person_list, &wison, sizeof(Person));
-    Vector_push(person_list, &fion, sizeof(Person));
-    Vector_push(person_list, &nobody, sizeof(Person));
+    SMART_VECTOR(person_list) = Vec_new(sizeof(Person));
+    Vec_push(person_list, &wison);
+    Vec_push(person_list, &fion);
+    Vec_push(person_list, &nobody);
 
-    VectorIteractor person_list_iter = Vector_iter(person_list);
+    VectorIteractor person_list_iter = Vec_iter(person_list);
     Person *temp_person_arr = (Person *)person_list_iter.items;
     for (usize index = 0; index < person_list_iter.length; index++) {
         DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].first_name: %s",
@@ -432,50 +431,51 @@ void test_vector() {
     usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
     SMART_VECTOR(double_vec) =
-        Vector_with_capacity(double_arr_len, double_type_size);
+        Vec_with_capacity(double_arr_len, double_type_size);
     for (usize di = 0; di < double_arr_len; di++) {
-        Vector_push(double_vec, &double_arr[di], double_type_size);
+        Vec_push(double_vec, &double_arr[di]);
     }
 
-    const double *d_value_1 =
-        (const double *)Vector_get(double_vec, 0, double_type_size);
-    const double *d_value_2 =
-        (const double *)Vector_get(double_vec, 1, double_type_size);
-    const double *d_value_3 =
-        (const double *)Vector_get(double_vec, 2, double_type_size);
+    const double *d_value_1 = (const double *)Vec_get(double_vec, 0);
+    const double *d_value_2 = (const double *)Vec_get(double_vec, 1);
+    const double *d_value_3 = (const double *)Vec_get(double_vec, 2);
 
     DEBUG_LOG(Main, test_vector, "d_value_1: %f", *d_value_1);
     DEBUG_LOG(Main, test_vector, "d_value_2: %f", *d_value_2);
     DEBUG_LOG(Main, test_vector, "d_value_3: %f", *d_value_3);
 }
 
-Vector create_vector() {
-    SMART_VECTOR(inner_vec) = Vector_new();
-    return inner_vec;
-}
-
 void test_vector_element_destructor() {
-    SMART_VECTOR(vec) = Vector_new();
+    SMART_VECTOR(vec) =
+        // Vec_new(VEC_DESTRUCTOR(auto_free_string), Str_struct_size());
+        Vec_with_capacity(2, Str_struct_size());
 
-    SMART_STRING(str1) = Str_from_str("String in vector");
-    SMART_STRING(str2) = Str_from_str("Second string in vector");
-    Vector_push(vec, str1, Str_struct_size());
-    Vector_push(vec, str2, Str_struct_size());
+    String str1 = Str_from_str("String in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+    String str2 = Str_from_str("Second string in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str2, Str_struct_size());
+
+    Vec_push(vec, str1);
+    Vec_push(vec, str2);
     printf("\n>>> Str_struct_size(): %lu", Str_struct_size());
 
-    const String ele1 = (const String)Vector_get(vec, 0, Str_struct_size());
-    const String ele2 = (const String)Vector_get(vec, 1, Str_struct_size());
-    printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1));
-    printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2));
+    /* const String ele1 = (const String)Vec_get(vec, 0, Str_struct_size()); */
+    /* const String ele2 = (const String)Vec_get(vec, 1, Str_struct_size()); */
+    /* printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1)); */
+    /* printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2)); */
 
-    const VectorIteractor vec_it = Vector_iter(vec);
-    void *it_string_item = vec_it.items;
-    for (usize i = 0; i < vec_it.length; i++) {
-        String temp_str = (String)(it_string_item + i * Str_struct_size());
-        DEBUG_LOG(Main, test_vector_element_destructor,
-                  "vec element ptr: %p, string value: %s", temp_str,
-                  Str_as_str(temp_str));
-    }
+    /* const VectorIteractor vec_it = Vec_iter(vec); */
+    /* void *it_string_item = vec_it.items; */
+    /* for (usize i = 0; i < vec_it.length; i++) { */
+    /*     String temp_str = (String)(it_string_item + i * Str_struct_size());
+     */
+    /*     DEBUG_LOG(Main, test_vector_element_destructor, */
+    /*               "vec element ptr: %p, string value: %s", temp_str, */
+    /*               Str_as_str(temp_str)); */
+    /* } */
+
+    DEBUG_LOG(Main, test_vector_element_destructor,
+              "Before smart vector out of scope", "");
 }
 
 //
@@ -521,9 +521,9 @@ String return_string_on_the_heap() {
 
 Vector return_vector_on_the_heap() {
     usize double_size = sizeof(double);
-    Vector temp_vec = Vector_with_capacity(5, double_size);
+    Vector temp_vec = Vec_with_capacity(5, double_size);
     double d = 888.88;
-    Vector_push(temp_vec, &d, double_size);
+    Vec_push(temp_vec, &d);
     return temp_vec;
 }
 
@@ -544,8 +544,7 @@ void test_smart_ptr() {
               Str_as_str(return_str));
     DEBUG_LOG(Main, test_smart_ptr,
               "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
-              Vector_len(return_vec),
-              *((double *)Vector_get(return_vec, 0, sizeof(double))));
+              Vec_len(return_vec), *((double *)Vec_get(return_vec, 0)));
 }
 
 //
@@ -556,7 +555,6 @@ int main(int argc, char **argv) {
     test_string();
     test_log_macro();
     test_vector();
-    /* Vector outer_vec = create_vector(); */
     /* test_vector_element_destructor(); */
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */

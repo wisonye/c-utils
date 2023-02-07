@@ -214,7 +214,7 @@ call.
 
     This `Vector` doesn't support normal generic `<T>` (no auto element type
     inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
-    pushing an element into it or getting back by index.
+    creating a `Venctor`.
 
     When pushing an element, `Vector` executes a shallow copy which means doesn't
     copy the internal heap-allocated content!!!
@@ -224,62 +224,65 @@ call.
 
     ```c
     /*
-     * Define smart `Vector` var that calls `Vector_free()` automatically when the
+     * Define smart `Vector` var that calls `Vec_free()` automatically when the
      * variable is out of the scope
      *
      * ```c
-     * SMART_VECTOR(empty_vec) = Vector_new();
+     * SMART_VECTOR(empty_vec) = Vec_new();
      *
-     * // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
+     * // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr:
+     * 0x5472040, length: 0
      * ```
      */
-    #define SMART_VECTOR(x) \
-        __attribute__((cleanup(auto_free_vector))) Vector x
-
+    #define SMART_VECTOR(x) __attribute__((cleanup(auto_free_vector))) Vector x
+    
     /*
      * Create empty vector
      */
-    Vector Vector_new();
-
+    Vector Vec_new(usize element_type_size);
+    
     /*
      * Create an empty vector that ability to hold `capacity` elements
      */
-    Vector Vector_with_capacity(usize capacity, usize element_type_size);
-
+    Vector Vec_with_capacity(usize capacity, usize element_type_size);
+    
     /*
-     * Push element to the end of the vector
+     * Push element to the end of the vector:
+     *
+     * Vector executes a shallow copy which means doesn't copy the internal
+     * heap-allocated content!!!
      */
-    void Vector_push(Vector self, void *element, usize element_type_size);
-
+    void Vec_push(Vector self, void *element);
+    
     /*
      * Return the length
      */
-    const usize Vector_len(const Vector self);
-
+    const usize Vec_len(const Vector self);
+    
     /*
      * Return the capacity
      */
-    const usize Vector_capacity(const Vector self);
-
+    const usize Vec_capacity(const Vector self);
+    
     /*
      * Return the item iterator
      */
-    const VectorIteractor Vector_iter(const Vector self);
-
+    const VectorIteractor Vec_iter(const Vector self);
+    
     /*
      * Return the given index item, return `NULL` is not exists.
      */
-    const void *Vector_get(const Vector self, usize index, usize element_type_size);
-
+    const void *Vec_get(const Vector self, usize index);
+    
     /*
      * Join all elements and return a string
      */
-    const char *Vector_join(const Vector self, char *delemiter);
-
+    const char *Vec_join(const Vector self, char *delemiter);
+    
     /*
      * Free allocated memory
      */
-    void Vector_free(Vector self);
+    void Vec_free(Vector self);
     ```
 
     </br>
@@ -317,20 +320,20 @@ call.
             6000
         };
 
-        Vector_push(u16_vec, &short_arr[0], u16_type_size);
-        Vector_push(u16_vec, &short_arr[1], u16_type_size);
-        Vector_push(u16_vec, &short_arr[2], u16_type_size);
-        Vector_push(u16_vec, &short_arr[3], u16_type_size);
-        Vector_push(u16_vec, &short_arr[4], u16_type_size);
-        Vector_push(u16_vec, &short_arr[5], u16_type_size);
-        Vector_push(u16_vec, &short_arr[6], u16_type_size);
-        Vector_push(u16_vec, &short_arr[7], u16_type_size);
-        Vector_push(u16_vec, &short_arr[8], u16_type_size);
-        Vector_push(u16_vec, &short_arr[9], u16_type_size);
+        Vector_push(u16_vec, &short_arr[0]);
+        Vector_push(u16_vec, &short_arr[1]);
+        Vector_push(u16_vec, &short_arr[2]);
+        Vector_push(u16_vec, &short_arr[3]);
+        Vector_push(u16_vec, &short_arr[4]);
+        Vector_push(u16_vec, &short_arr[5]);
+        Vector_push(u16_vec, &short_arr[6]);
+        Vector_push(u16_vec, &short_arr[7]);
+        Vector_push(u16_vec, &short_arr[8]);
+        Vector_push(u16_vec, &short_arr[9]);
 
         // This push should trigger `realloc` be called and `capacity`
         // should change to `20` after this statement
-        Vector_push(u16_vec, &short_arr[10], u16_type_size);
+        Vector_push(u16_vec, &short_arr[10]);
 
         // Get back iteractor to access all elements
         VectorIteractor short_arr_iter = Vector_iter(u16_vec);
@@ -370,15 +373,12 @@ call.
         SMART_VECTOR(double_vec) =
             Vector_with_capacity(double_arr_len, double_type_size);
         for (usize di = 0; di < double_arr_len; di++) {
-            Vector_push(double_vec, &double_arr[di], double_type_size);
+            Vector_push(double_vec, &double_arr[di]);
         }
 
-        const double *d_value_1 =
-            (const double *)Vector_get(double_vec, 0, double_type_size);
-        const double *d_value_2 =
-            (const double *)Vector_get(double_vec, 1, double_type_size);
-        const double *d_value_3 =
-            (const double *)Vector_get(double_vec, 2, double_type_size);
+        const double *d_value_1 = (const double *)Vec_get(double_vec, 0);
+        const double *d_value_2 = (const double *)Vec_get(double_vec, 1);
+        const double *d_value_3 = (const double *)Vec_get(double_vec, 2);
 
         DEBUG_LOG(Main, test_vector, "d_value_1: %f", *d_value_1);
         DEBUG_LOG(Main, test_vector, "d_value_2: %f", *d_value_2);
@@ -407,11 +407,11 @@ call.
         Person nobody = {
             .first_name = "Nobody", .last_name = "Nothing", .age = 100};
 
-        SMART_VECTOR(person_list) = Vector_new();
+        SMART_VECTOR(person_list) = Vec_new(sizeof(Person));
 
-        Vector_push(person_list, &wison, sizeof(Person));
-        Vector_push(person_list, &fion, sizeof(Person));
-        Vector_push(person_list, &nobody, sizeof(Person));
+        Vector_push(person_list, &wison);
+        Vector_push(person_list, &fion);
+        Vector_push(person_list, &nobody);
 
         VectorIteractor person_list_iter = Vector_iter(person_list);
         Person *temp_person_arr = (Person *)person_list_iter.items;
@@ -442,7 +442,7 @@ call.
     - Use `String` (struct Str*) case:
 
         ```c
-        SMART_VECTOR(vec) = Vector_new();
+        SMART_VECTOR(vec) = Vector_new(Str_struct_size());
 
         //
         // Create smart string: de-allocated automatic when out of scope
@@ -454,12 +454,12 @@ call.
         // `Str_struct_size()` return `sizeof(struct Str)`, otherwise, it
         // won't work without correct struct size!!!
         //
-        Vector_push(vec, str1, Str_struct_size());
-        Vector_push(vec, str2, Str_struct_size());
+        Vector_push(vec, str1);
+        Vector_push(vec, str2);
         printf("\n>>> Str_struct_size(): %lu", Str_struct_size());
 
-        const String ele1 = (const String)Vector_get(vec, 0, Str_struct_size());
-        const String ele2 = (const String)Vector_get(vec, 1, Str_struct_size());
+        const String ele1 = (const String)Vector_get(vec, 0);
+        const String ele2 = (const String)Vector_get(vec, 1);
         printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1));
         printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2));
 
