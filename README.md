@@ -930,8 +930,7 @@ doas make install
 
 ```bash
 # Make sure you're in the project root folder
-./configure_memory_leak_checking.sh
-
+./configure_valgrind.sh
 ```
 
 </br>
@@ -944,7 +943,7 @@ It Generates everything needs into `build_c` folder and the
 Compile and run:
 
 ```bash
-./run_memory_leak_checking.sh
+./run_valgrind.sh
 
 # [100%] Built target c-utils
 # ==85724== Memcheck, a memory error detector
@@ -971,6 +970,66 @@ Compile and run:
 # --85724-- used_suppression:      1 MEMCHECK-LIBC-REACHABLE-1 /usr/local/libexec/valgrind/default.supp:582 suppressed: 4,096 bytes in 1 blocks
 # ==85724==
 # ==85724== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+</br>
+
+#### 2.1.1 Use `C` compiler to compile `main.c` but use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) instead of `valgrind` for checking memory leaking:
+
+```bash
+# Make sure you're in the project root folder
+./configure_address_sanitizer.sh
+```
+
+</br>
+
+It Generates everything needs into `build_c` folder and the
+`build/compile_commands.json` for `clangd_extensions` neovim plugin
+
+</br>
+
+
+By default, `BSD` builtin `clang/clang++` doesn't support `AddressSanitizer`.
+
+If you want to enable `AddressSanitizer` in BSD (`MacOS` or `FreeBSD`), then
+have to use installed `llvm clang/clang++` instead of the builtin `clang/clang++`!!!
+
+Also, you need to add the following env var setting when running your binary:
+
+```bash
+ASAN_OPTIONS=detect_leaks=1 YOUR_BINARY_HERE
+```
+
+</br>
+
+
+Compile and run:
+
+```bash
+./run_address_sanitizer.sh
+
+# [100%] Built target c-utils
+#
+# // ...ignore...
+#
+# =================================================================
+# ==49381==ERROR: LeakSanitizer: detected memory leaks
+#
+# Direct leak of 16 byte(s) in 1 object(s) allocated from:
+#     #0 0x10d795000 in wrap_malloc+0xa0 (libclang_rt.asan_osx_dynamic.dylib:x86_64+0x4a000) (BuildId: eb137767d72432a1a6e32c107b9c74d42400000010000000000a0a0000010c00)
+#     #1 0x10d71c549 in Str_from_str string.c:80
+#     #2 0x10d71f2bd in test_string main.c:74
+#     #3 0x10d722768 in main main.c:556
+#     #4 0x7fff204faf3c in start+0x0 (libdyld.dylib:x86_64+0x15f3c) (BuildId: 5fbd0e1aacce36dbb11c622f26c8513232000000200000000100000000060b00)
+#
+# Indirect leak of 11 byte(s) in 1 object(s) allocated from:
+#     #0 0x10d795000 in wrap_malloc+0xa0 (libclang_rt.asan_osx_dynamic.dylib:x86_64+0x4a000) (BuildId: eb137767d72432a1a6e32c107b9c74d42400000010000000000a0a0000010c00)
+#     #1 0x10d71c593 in Str_from_str string.c:88
+#     #2 0x10d71f2bd in test_string main.c:74
+#     #3 0x10d722768 in main main.c:556
+#     #4 0x7fff204faf3c in start+0x0 (libdyld.dylib:x86_64+0x15f3c) (BuildId: 5fbd0e1aacce36dbb11c622f26c8513232000000200000000100000000060b00)
+#
+# SUMMARY: AddressSanitizer: 27 byte(s) leaked in 2 allocation(s).
 ```
 
 </br>
