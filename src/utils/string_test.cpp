@@ -1,26 +1,13 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-
-//
-// For comparing the pointer and `NULL`:
-//
-// Plz Make sure include inside `extern C`
-// block. Otherwise, `gtest` will include `std::nullptr_t` (CPP type) which
-// doesn't match the type, and you will end up with the following error:
-//
-// error: invalid operands to binary expression ('const LinkList' and 'const
-// std::nullptr_t')
-//
-#include <stddef.h>
-
 #include "string.h"
 }
 
 TEST(String, EmptyString) {
-    SMART_STRING(empty_str) = Str_from_str(NULL);
+    SMART_STRING(empty_str) = Str_from_str(nullptr);
     ASSERT_EQ(Str_length(empty_str), 0);
-    ASSERT_EQ(Str_as_str(empty_str), NULL);
+    ASSERT_EQ(Str_as_str(empty_str), nullptr);
 }
 
 TEST(String, StringFromArray) {
@@ -36,14 +23,14 @@ TEST(String, StringClone) {
     ASSERT_EQ(Str_length(str), strlen(arr));
     ASSERT_EQ(strcmp(Str_as_str(str), arr), 0);
 
-    SMART_STRING(clone_1) = Str_clone(str);
+    SMART_STRING(clone_1) = Str_clone_from(str);
     ASSERT_EQ(Str_length(clone_1), strlen(arr));
     ASSERT_EQ(strcmp(Str_as_str(clone_1), arr), 0);
 
     SMART_STRING(empty_str) = Str_from_str("");
-    SMART_STRING(clone_from_empty) = Str_clone(empty_str);
+    SMART_STRING(clone_from_empty) = Str_clone_from(empty_str);
     ASSERT_EQ(Str_length(clone_from_empty), 0);
-    ASSERT_EQ(Str_as_str(clone_from_empty), NULL);
+    ASSERT_EQ(Str_as_str(clone_from_empty), nullptr);
 }
 
 TEST(String, FindSubString) {
@@ -76,7 +63,7 @@ TEST(String, ResetToEmpty) {
     Str_reset_to_empty(temp_str);
 
     ASSERT_EQ(Str_length(temp_str), 0);
-    ASSERT_EQ(Str_as_str(temp_str), NULL);
+    ASSERT_EQ(Str_as_str(temp_str), nullptr);
 }
 
 TEST(String, Push) {
