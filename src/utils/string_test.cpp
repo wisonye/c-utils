@@ -105,3 +105,18 @@ TEST(String, InsertAtBegin) {
     /*        Str_length(init_empty_str), Str_as_str(init_empty_str)); */
     ASSERT_EQ(Str_length(init_empty_str), strlen("0000123456789"));
 }
+
+TEST(String, MoveSemantic) {
+    SMART_STRING(s1) = Str_from_str("123456");
+    SMART_STRING(clone_from_s1) = Str_clone_from(s1);
+    ASSERT_EQ(Str_length(clone_from_s1), Str_length(s1));
+    ASSERT_EQ(strcmp(Str_as_str(clone_from_s1), Str_as_str(s1)), 0);
+
+    SMART_STRING(move_from_clone_s1) = Str_move_from(clone_from_s1);
+    ASSERT_EQ(Str_length(move_from_clone_s1), Str_length(s1));
+    ASSERT_EQ(strcmp(Str_as_str(move_from_clone_s1), Str_as_str(s1)), 0);
+
+    // `clone_from_s1` should be empty after MOVE to `move_from_clone_s1`
+    ASSERT_EQ(Str_length(clone_from_s1), 0);
+    ASSERT_EQ(Str_as_str(clone_from_s1), nullptr);
+}
