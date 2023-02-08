@@ -324,17 +324,24 @@ void unimplemented_function() {
 //
 void test_hex_buffer() {
     char hex_str_1[] = "AABBCCDD";
-    HexBuffer *buffer_1 = Hex_from_string(hex_str_1);
+    HexBuffer buffer_1 = Hex_from_string(hex_str_1);
 
-    char hex_string[Hex_length(buffer_1) * 2];
-    usize return_hex_len =
-        Hex_to_string(buffer_1, hex_string, Hex_length(buffer_1) * 2);
+    // `+1` is for the `null-terminated` character
+    usize out_buffer_size = Hex_length(buffer_1) * 2 + 1;
+
+    // Create return `char *` buffer and init to all `0`
+    char hex_string[out_buffer_size];
+    memset(hex_string, 0, out_buffer_size);
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char[], hex_string, out_buffer_size);
+    usize return_hex_len = Hex_to_string(buffer_1, hex_string, out_buffer_size);
     DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
     if (return_hex_len > 0) {
-        DEBUG_LOG(Main, test_hex_buffer, "hex_string: %s", hex_string);
+        DEBUG_LOG(Main, test_hex_buffer, "hex_string len: %lu, value: %s",
+                  strlen(hex_string), hex_string);
     }
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char[], hex_string, out_buffer_size);
 
-    HexBuffer *buffer_2 = Hex_from_string(
+    HexBuffer buffer_2 = Hex_from_string(
         " A $%@@!!@!@!`"
         ""
         ""
