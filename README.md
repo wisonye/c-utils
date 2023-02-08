@@ -211,9 +211,10 @@ call.
     String Str_from_str(const char *str);
 
     /*
-     * Clone from given `Str` instance
+     * Move from the given `String` instance and move ownership of the
+     * heap-allocated memory to the newly created `String` instance
      */
-    String Str_clone(const String other);
+    String Str_move_from(String other);
 
     /*
      * Push other `String *` at the end

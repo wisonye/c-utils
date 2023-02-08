@@ -35,7 +35,7 @@ String create_string(const char str[]) {
     return temp_str;
 }
 
-String clone_string(const String original) { return Str_clone(original); }
+String clone_string(const String original) { return Str_clone_from(original); }
 
 //
 //
@@ -79,7 +79,7 @@ void test_string() {
     printf("\n>> empty_str_2 len: %lu, value: '%s'", Str_length(empty_str_2),
            Str_as_str(empty_str_2) == NULL ? "NULL" : Str_as_str(empty_str_2));
 
-    SMART_STRING(clone_from_empty_str) = Str_clone(empty_str_2);
+    SMART_STRING(clone_from_empty_str) = Str_clone_from(empty_str_2);
     printf("\n>> clone_from_empty_str len: %lu, value: '%s'",
            Str_length(clone_from_empty_str),
            Str_as_str(clone_from_empty_str) == NULL
@@ -104,7 +104,7 @@ void test_string() {
     printf("\n>> str_3 len: %lu, value: %s", Str_length(str_3),
            Str_as_str(str_3));
 
-    SMART_STRING(clone_from_order_str) = Str_clone(str_3);
+    SMART_STRING(clone_from_order_str) = Str_clone_from(str_3);
     printf("\n>> clone_from_order_str len: %lu, value: %s",
            Str_length(clone_from_order_str),
            Str_as_str(clone_from_order_str) == NULL
@@ -189,6 +189,23 @@ void test_string() {
     printf("\n>> empty_str_before_insert len: %lu, value: %s",
            Str_length(empty_str_before_insert),
            Str_as_str(empty_str_before_insert));
+
+    SMART_STRING(s1) = Str_from_str("123456");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, s1, Str_struct_size());
+
+    SMART_STRING(clone_from_s1) = Str_clone_from(s1);
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, Str_struct_size());
+
+    SMART_STRING(move_from_clone_s1) = Str_move_from(clone_from_s1);
+
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, Str_struct_size());
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, move_from_clone_s1,
+                                      Str_struct_size());
+
+    printf("\n>>> clone_from_1 - len: %lu, value: %s",
+           Str_length(clone_from_s1), Str_as_str(clone_from_s1));
+    printf("\n>>> move_from_clone_s1 - len: %lu, value: %s",
+           Str_length(move_from_clone_s1), Str_as_str(move_from_clone_s1));
 }
 
 //
