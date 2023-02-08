@@ -86,28 +86,25 @@ String Str_from_str(const char *str) {
 
     if (temp_len > 0) {
         string->_buffer = malloc(temp_len + 1);
+        memcpy(string->_buffer, str, temp_len);
+        string->_buffer[temp_len] = '\0';
+
 #if ENABLE_DEBUG_LOG
         DEBUG_LOG(String, from_str,
                   "self ptr: %p, malloc ptr: %p, from_str: %s", string,
                   string->_buffer, str);
 #endif
-        memcpy(string->_buffer, str, temp_len);
-        string->_buffer[temp_len] = '\0';
     }
 
     return string;
 }
 
 /*
- * Clone from given `Str` instance
+ * Clone from the given `String` instance but don't touch the heap-allocated
+ * memory if owned
  */
-String Str_clone(const String other) {
+String Str_clone_from(const String other) {
     String string = malloc(sizeof(struct Str));
-
-#if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, clone, "self pointer: %p, from_other: %s", string,
-              Str_as_str(other));
-#endif
 
     *string = (struct Str){
         ._len = 0,
@@ -119,7 +116,60 @@ String Str_clone(const String other) {
         string->_buffer = malloc(other->_len + 1);
         memcpy(string->_buffer, other->_buffer, other->_len);
         string->_buffer[string->_len] = '\0';
+
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, clone_from, "self ptr: %p, malloc ptr: %p, other: %s",
+                  string, string->_buffer, Str_as_str(other));
+#endif
+    } else {
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, clone_from, "self ptr: %p, other: %s", string,
+                  Str_as_str(other));
+#endif
     }
+
+    return string;
+}
+
+/*
+ * Move from the given `String` instance and move ownership of the
+ * heap-allocated memory to the newly created `String` instance
+ */
+String Str_move_from(String other) {
+    String string = malloc(sizeof(struct Str));
+
+    *string = (struct Str){
+        ._len = 0,
+        ._buffer = NULL,
+    };
+
+    if (other != NULL && other->_len > 0 && other->_buffer != NULL) {
+        string->_len = other->_len;
+
+        //
+        // Copy the `other->_buffer` and delete before returning this fuction,
+        // that's `MOVE` semantic in `C++`
+        //
+        string->_buffer = other->_buffer;
+
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, move_from, "self ptr: %p, malloc ptr: %p, other: %s",
+                  string, string->_buffer, Str_as_str(other));
+#endif
+    } else {
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, move_from, "self ptr: %p, other: %s", string,
+                  Str_as_str(other));
+#endif
+    }
+
+    //
+    // Reset the `other` to empty, so the newly created `string->_buffer`
+    // becomes the only one pointer to the previous heap-allocated memory, it
+    // becomes the owner of that chunk of memory.
+    //
+    other->_len = 0;
+    other->_buffer = NULL;
 
     return string;
 }

@@ -52,9 +52,16 @@ String Str_from_arr(const char arr[]);
 String Str_from_str(const char *str);
 
 /*
- * Clone from given `Str` instance
+ * Clone from the given `String` instance but don't touch the heap-allocated
+ * memory if owned
  */
-String Str_clone(const String other);
+String Str_clone_from(const String other);
+
+/*
+ * Move from the given `String` instance and move ownership of the
+ * heap-allocated memory to the newly created `String` instance
+ */
+String Str_move_from(String other);
 
 /*
  * Push other `String *` at the end
