@@ -98,7 +98,7 @@ usize Hex_length(HexBuffer *self) {
 }
 
 /*
- * Return `out20j_buffer` size (same with strlen()) if `HexBuffer` is an valid
+ * Return `out_buffer` size (same with strlen()) if `HexBuffer` is an valid
  * `HexBuffer`.
  *
  * Return 0 when something wrong
@@ -109,6 +109,12 @@ int Hex_to_string(const HexBuffer *self, char *out_buffer,
     if (self == NULL || self->_len <= 0) return 0;
 
     usize copied_buffer_size = self->_len * 2;
+
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(HexBuffer, Hex_to_string,
+              "copied_buffer_size: %lu, out_buffer_size: %lu",
+              copied_buffer_size, out_buffer_size);
+#endif
 
     if (copied_buffer_size > out_buffer_size) return -1;
 
@@ -138,7 +144,7 @@ int Hex_to_string(const HexBuffer *self, char *out_buffer,
         memcpy(copy_ptr, hex_value, 2);
         copy_ptr += 2;
     }
-    out_buffer[copied_buffer_size] = '\0';
+    out_buffer[out_buffer_size - 1] = '\0';
 
     return self->_len * 2;
 }
