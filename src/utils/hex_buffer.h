@@ -9,6 +9,14 @@
 typedef struct _HexBuffer *HexBuffer;
 
 /*
+ * Iteractor
+ */
+typedef struct {
+    usize length;
+    u8 *arr;
+} HexBufferIteractor;
+
+/*
  * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
  * characters, all another characters will be ignored.
  *
@@ -33,6 +41,11 @@ usize Hex_length(HexBuffer self);
  */
 int Hex_to_string(const HexBuffer self, char *out_buffer,
                   usize out_buffer_size);
+
+/*
+ * Return the u8 array iterator
+ */
+const HexBufferIteractor Hex_iter(const HexBuffer self);
 
 /*
  * Free

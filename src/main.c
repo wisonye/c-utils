@@ -325,6 +325,10 @@ void unimplemented_function() {
 void test_hex_buffer() {
     char hex_str_1[] = "AABBCCDD";
     HexBuffer buffer_1 = Hex_from_string(hex_str_1);
+    HexBufferIteractor hex_iter = Hex_iter(buffer_1);
+    for (usize index = 0; index < hex_iter.length; index++) {
+        printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
+    }
 
     // `+1` is for the `null-terminated` character
     usize out_buffer_size = Hex_length(buffer_1) * 2 + 1;

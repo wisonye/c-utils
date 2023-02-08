@@ -654,6 +654,14 @@ call.
     typedef struct _HexBuffer *HexBuffer;
 
     /*
+     * Iteractor
+     */
+    typedef struct {
+        usize length;
+        u8 *arr;
+    } HexBufferIteractor;
+
+    /*
      * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
      * characters, all another characters will be ignored.
      *
@@ -680,6 +688,11 @@ call.
                       usize out_buffer_size);
 
     /*
+     * Return the u8 array iterator
+     */
+    const HexBufferIteractor Hex_iter(const HexBuffer self);
+
+    /*
      * Free
      */
     void Hex_free(HexBuffer self);
@@ -694,6 +707,24 @@ call.
         ```c
         char hex_str_1[] = "AABBCCDD";
         HexBuffer buffer_1 = Hex_from_string(hex_str_1);
+        HexBufferIteractor hex_iter = Hex_iter(buffer_1);
+        for (usize index = 0; index < hex_iter.length; index++) {
+            printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
+        }
+
+        // (D) [ HexBuffer ] > Hex_from_string - valid_hex_str len: 8, value: AABBCCDD
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: AA, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[0]: AA
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: BB, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[1]: BB
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: CC, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[2]: CC
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: DD, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[3]: DD
+        // >>> hex_iter[0]: 0xAA
+        // >>> hex_iter[1]: 0xBB
+        // >>> hex_iter[2]: 0xCC
+        // >>> hex_iter[3]: 0xDD
         ```
 
         </br>

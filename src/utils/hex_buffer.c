@@ -167,6 +167,13 @@ int Hex_to_string(const HexBuffer self, char *out_buffer,
 }
 
 /*
+ * Return the u8 array iterator
+ */
+const HexBufferIteractor Hex_iter(const HexBuffer self) {
+    return (HexBufferIteractor){.length = self->_len, .arr = self->_buffer};
+}
+
+/*
  * Free
  */
 void Hex_free(HexBuffer self) {
