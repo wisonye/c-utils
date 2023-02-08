@@ -10,6 +10,23 @@
 #include "log.h"
 #endif
 
+//
+//
+//
+struct _HexBuffer {
+    usize _len;
+
+    //
+    // `Flexible Array Member(FAM)` is a feature introduced in `C99` standard
+    // of the C programming language. The `FAM` has the following feature and
+    // limitation:
+    //
+    // - Declare with out dimension size
+    // - Must be the last member of the struct
+    //
+    u8 _buffer[];
+};
+
 /*
  * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
  * characters, all another characters will be ignored.
@@ -19,7 +36,7 @@
  * - `hex_str` is NULL or empty string
  * - `hex_str` (after ignored all invalid characters) has an odd length
  */
-HexBuffer *Hex_from_string(const char *hex_str) {
+HexBuffer Hex_from_string(const char *hex_str) {
     if (hex_str == NULL) return NULL;
 
     usize hex_str_len = strlen(hex_str);
@@ -61,7 +78,7 @@ HexBuffer *Hex_from_string(const char *hex_str) {
     // enitre `HexBuffer` and that fixed array space.
     //
     usize buffer_size = sizeof(char) * valid_hex_str_len / 2;
-    HexBuffer *buffer = malloc(sizeof(HexBuffer) + buffer_size);
+    HexBuffer buffer = malloc(sizeof(HexBuffer) + buffer_size);
     buffer->_len = buffer_size;
 
     char *copy_str = (char *)valid_hex_str;
@@ -91,7 +108,7 @@ HexBuffer *Hex_from_string(const char *hex_str) {
 /*
  * Return the hex buffer length
  */
-usize Hex_length(HexBuffer *self) {
+usize Hex_length(HexBuffer self) {
     if (self == NULL || self->_len < 0) return 0;
 
     return self->_len;
@@ -104,7 +121,7 @@ usize Hex_length(HexBuffer *self) {
  * Return 0 when something wrong
  * Return -1 when `out_buffer_size` is not big enough to hold the hex string.
  */
-int Hex_to_string(const HexBuffer *self, char *out_buffer,
+int Hex_to_string(const HexBuffer self, char *out_buffer,
                   usize out_buffer_size) {
     if (self == NULL || self->_len <= 0) return 0;
 
@@ -152,7 +169,7 @@ int Hex_to_string(const HexBuffer *self, char *out_buffer,
 /*
  * Free
  */
-void Hex_free(HexBuffer *self) {
+void Hex_free(HexBuffer self) {
     if (self != NULL) {
         free(self);
     }
