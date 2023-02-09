@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "utils/bits.h"
 #include "utils/collections/single_link_list.h"
 #include "utils/data_types.h"
 #include "utils/hex_buffer.h"
@@ -578,6 +579,23 @@ void test_smart_ptr() {
 //
 //
 //
+void test_bits() {
+    unsigned char status = 0x3D;
+    PRINT_BITS(status);
+
+    unsigned short int status_16 = 0x376D;
+    PRINT_BITS(status_16);
+
+    int status_32 = 0x376DAA0B;
+    PRINT_BITS(status_32);
+
+    long long status_64 = 0x376DAA0B5F8E9ABC;
+    PRINT_BITS(status_64);
+}
+
+//
+//
+//
 int main(int argc, char **argv) {
     test_link_list();
     test_string();
@@ -618,6 +636,7 @@ int main(int argc, char **argv) {
     test_memory();
     test_timer();
     test_smart_ptr();
+    test_bits();
 
     return 0;
 }

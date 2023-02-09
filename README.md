@@ -935,6 +935,30 @@ call.
 
     </br>
 
+- `Bits`: handy macros to print bits, only available when `ENABLE_DEBUG_LOG` is defined!!!
+
+    ```c
+    unsigned char status = 0x3D;
+    PRINT_BITS(status);
+
+    unsigned short int status_16 = 0x376D;
+    PRINT_BITS(status_16);
+
+    int status_32 = 0x376DAA0B;
+    PRINT_BITS(status_32);
+
+    long long status_64 = 0x376DAA0B5F8E9ABC;
+    PRINT_BITS(status_64);
+
+    // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0x3D bits: 00111101
+    // (D) [ Bits ] > PRINT_BITS "u16" - >>> 0x376D bits: 0011011101101101
+    // (D) [ Bits ] > PRINT_BITS "u32" - >>> 0x376DAA0B bits: 00110111011011011010101000001011
+    // (D) [ Bits ] > PRINT_BITS "u64" - >>> 0x376DAA0B5F8E9ABC bits: 0011011101101101101010100000101101011111100011101001101010111100
+    ```
+
+    </br>
+
+
 
 ### 0. `CMake` configurations
 
