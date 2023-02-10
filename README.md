@@ -935,28 +935,73 @@ call.
 
     </br>
 
-- `Bits`: handy macros to print bits, only available when `ENABLE_DEBUG_LOG` is defined!!!
+- `Bits`: handy macros to handle bits, only available when `ENABLE_DEBUG_LOG` is defined!!!
 
-    ```c
-    unsigned char status = 0x3D;
-    PRINT_BITS(status);
+    - `PRINT_BITS`
 
-    unsigned short int status_16 = 0x376D;
-    PRINT_BITS(status_16);
+        ```c
+        unsigned char status = 0x3D;
+        PRINT_BITS(status);
 
-    int status_32 = 0x376DAA0B;
-    PRINT_BITS(status_32);
+        unsigned short int status_16 = 0x376D;
+        PRINT_BITS(status_16);
 
-    long long status_64 = 0x376DAA0B5F8E9ABC;
-    PRINT_BITS(status_64);
+        int status_32 = 0x376DAA0B;
+        PRINT_BITS(status_32);
 
-    // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0x3D bits: 00111101
-    // (D) [ Bits ] > PRINT_BITS "u16" - >>> 0x376D bits: 0011011101101101
-    // (D) [ Bits ] > PRINT_BITS "u32" - >>> 0x376DAA0B bits: 00110111011011011010101000001011
-    // (D) [ Bits ] > PRINT_BITS "u64" - >>> 0x376DAA0B5F8E9ABC bits: 0011011101101101101010100000101101011111100011101001101010111100
-    ```
+        long long status_64 = 0x376DAA0B5F8E9ABC;
+        PRINT_BITS(status_64);
 
-    </br>
+        // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0x3D bits: 00111101
+        // (D) [ Bits ] > PRINT_BITS "u16" - >>> 0x376D bits: 0011011101101101
+        // (D) [ Bits ] > PRINT_BITS "u32" - >>> 0x376DAA0B bits: 00110111011011011010101000001011
+        // (D) [ Bits ] > PRINT_BITS "u64" - >>> 0x376DAA0B5F8E9ABC bits: 0011011101101101101010100000101101011111100011101001101010111100
+        ```
+
+        </br>
+
+    - `IS_BIT_1`: Check whether the given bit is `1` or not
+
+        ```c
+        v = 0xCD;
+        PRINT_BITS(v);
+        which_bit = 1;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 2;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 3;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 4;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 5;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 6;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 7;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 8;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+
+        // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0xCD bits: 11001101
+        // >>> bit 1 in '0xCD' is 1?: Yes
+        // >>> bit 2 in '0xCD' is 1?: No
+        // >>> bit 3 in '0xCD' is 1?: Yes
+        // >>> bit 4 in '0xCD' is 1?: Yes
+        // >>> bit 5 in '0xCD' is 1?: No
+        // >>> bit 6 in '0xCD' is 1?: No
+        // >>> bit 7 in '0xCD' is 1?: Yes
+        // >>> bit 8 in '0xCD' is 1?: Yes
+        ```
+
+        </br>
 
 
 

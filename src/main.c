@@ -591,16 +591,53 @@ void test_bits() {
 
     long long status_64 = 0x376DAA0B5F8E9ABC;
     PRINT_BITS(status_64);
+
+    u8 v = 0x02;
+    u8 which_bit = 2;
+    printf("\n>>> bit %d in '0x%02X' is 1?: result: 0x%02X, %s\n", which_bit, v,
+           v >> (which_bit - 1), v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+
+    v = 0x08;
+    which_bit = 4;
+    printf("\n>>> bit %d in '0x%02X' is 1?: result: 0x%02X, %s\n", which_bit, v,
+           v >> (which_bit - 1), v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+
+    v = 0xCD;
+    PRINT_BITS(v);
+    which_bit = 1;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 2;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 3;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 4;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 5;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 6;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 7;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    which_bit = 8;
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
 }
 
 //
 //
 //
 int main(int argc, char **argv) {
-    test_link_list();
-    test_string();
-    test_log_macro();
-    test_vector();
+    /* test_link_list(); */
+    /* test_string(); */
+    /* test_log_macro(); */
+    /* test_vector(); */
     /* test_vector_element_destructor(); */
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */
@@ -632,10 +669,10 @@ int main(int argc, char **argv) {
     // Str_free(&my_name_str);
     // Str_free(&clone_from_empty_str);
 
-    test_hex_buffer();
-    test_memory();
-    test_timer();
-    test_smart_ptr();
+    /* test_hex_buffer(); */
+    /* test_memory(); */
+    /* test_timer(); */
+    /* test_smart_ptr(); */
     test_bits();
 
     return 0;
