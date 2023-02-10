@@ -39,6 +39,7 @@
 /* } */
 
 #ifdef ENABLE_DEBUG_LOG
+
 //
 //
 //
@@ -93,11 +94,17 @@
         }                                                                      \
     })
 
+//
+//
+//
+#define BIT_IS_1(V, WHICH_BIT) (v >> (which_bit - 1) & 0x01)
+
 #else
 
 /** Define as nothing when `ENABLE_DEBUG_LOG` is undefined!!! **/
 #define _FILL_BITS(V)
 #define PRINT_BITS(V)
+#define BIT_IS_1(V, WHICH_BIT)
 
 #endif
 
