@@ -18,9 +18,20 @@
 //
 //
 //
-LinkList create_integer_list() {
+LinkList create_integer_list_on_heap() {
     usize stack_value = 9999;
     LinkList list = LL_from_value(sizeof(usize), &stack_value, NULL);
+    return list;
+}
+
+//
+//
+//
+struct LL create_integer_list_on_stack(usize init_value) {
+    struct LL list;
+    LL_init_empty(&list);
+    LL_append_value(&list, sizeof(usize), &init_value, NULL);
+    printf("\n>>> create_integer_list_on_stack, list ptr: %p", &list);
     return list;
 }
 
@@ -42,11 +53,59 @@ String clone_string(const String original) { return Str_clone_from(original); }
 //
 //
 void test_link_list() {
-    SMART_LINKLIST(list) = LL_from_empty();
-    SMART_LINKLIST(int_list) = create_integer_list();
-    SMART_LINKLIST(int_list_2) = create_integer_list();
+    // Just for init the timer, so the following `Timer_get_current_time`
+    // compare is more fair.
+    long double no_use = Timer_get_current_time(TU_MICROSECONDS);
 
+    int temp = 0;
+
+    long double start_time_2 = Timer_get_current_time(TU_MICROSECONDS);
+
+    struct LL stack_list;
+    LL_init_empty(&stack_list);
+    struct LL stack_int_list = create_integer_list_on_stack(8888);
+    printf("\n>>> stack_int_list ptr: %p", &stack_int_list);
+    struct LL stack_int_list_2 = create_integer_list_on_stack(1234);
+    printf("\n>>> stack_int_list_2 ptr: %p", &stack_int_list_2);
+    struct LL stack_short_int_list;
+    LL_init_empty(&stack_short_int_list);
+
+    long double end_time_2 = Timer_get_current_time(TU_MICROSECONDS);
+    long double elapsed_time_2 = end_time_2 - start_time_2;
+    DEBUG_LOG(Main, test_link_list,
+              "Time to create 4 smart LinkList instance (stack-allocated): %Lf "
+              "microseconds\n",
+              elapsed_time_2);
+
+    SMART_LINKLIST_ITERATOR(temp_iter) = LL_iter(&stack_int_list);
+    for (usize iter_index = 0; iter_index < temp_iter->length; iter_index++) {
+        usize temp_value = *((usize *)temp_iter->data_arr[iter_index]);
+        printf("\n>>>> stack_int_list - node_value: %lu", temp_value);
+    }
+    SMART_LINKLIST_ITERATOR(temp_iter_2) = LL_iter(&stack_int_list_2);
+    for (usize iter_index = 0; iter_index < temp_iter_2->length; iter_index++) {
+        usize temp_value = *((usize *)temp_iter_2->data_arr[iter_index]);
+        printf("\n>>>> stack_int_list_2 - node_value: %lu", temp_value);
+    }
+
+    LL_free(&stack_list, false, NULL);
+    LL_free(&stack_short_int_list, false, NULL);
+    LL_free(&stack_int_list, false, NULL);
+    LL_free(&stack_int_list_2, false, NULL);
+
+    long double start_time = Timer_get_current_time(TU_MICROSECONDS);
+
+    SMART_LINKLIST(list) = LL_from_empty();
+    /* SMART_LINKLIST(int_list) = create_integer_list_on_heap(); */
+    /* SMART_LINKLIST(int_list_2) = create_integer_list_on_heap(); */
     SMART_LINKLIST(short_int_list) = LL_from_empty();
+
+    long double end_time = Timer_get_current_time(TU_MICROSECONDS);
+    long double elapsed_time = end_time - start_time;
+    DEBUG_LOG(Main, test_link_list,
+              "Time to create 4 smart LinkList instance (heap-allocated): %Lf "
+              "microseconds\n",
+              elapsed_time);
 
     // Append a few nodes
     usize values[] = {111, 222, 333, 444, 555};
@@ -634,7 +693,7 @@ void test_bits() {
 //
 //
 int main(int argc, char **argv) {
-    /* test_link_list(); */
+    test_link_list();
     /* test_string(); */
     /* test_log_macro(); */
     /* test_vector(); */
@@ -673,7 +732,7 @@ int main(int argc, char **argv) {
     /* test_memory(); */
     /* test_timer(); */
     /* test_smart_ptr(); */
-    test_bits();
+    /* test_bits(); */
 
     return 0;
 }
