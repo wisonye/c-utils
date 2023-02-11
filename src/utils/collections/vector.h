@@ -1,7 +1,7 @@
 #ifndef __UTILS_VECTOR_H__
 #define __UTILS_VECTOR_H__
 
-#include "data_types.h"
+#include "../data_types.h"
 
 /*
  * Vector: Heap allocated dynamic array

@@ -5,9 +5,9 @@ project("c-utils")
 add_executable("${PROJECT_NAME}"
     "../src/utils/log.c"
     "../src/utils/collections/single_link_list.c"
+    "../src/utils/collections/vector.c"
     "../src/utils/string.c"
     "../src/utils/hex_buffer.c"
-    "../src/utils/vector.c"
     "../src/utils/memory.c"
     "../src/utils/timer.c"
     "../src/main.c")

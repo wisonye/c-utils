@@ -6,6 +6,7 @@
 
 #include "utils/bits.h"
 #include "utils/collections/single_link_list.h"
+#include "utils/collections/vector.h"
 #include "utils/data_types.h"
 #include "utils/hex_buffer.h"
 #include "utils/log.h"
@@ -13,7 +14,6 @@
 #include "utils/smart_ptr.h"
 #include "utils/string.h"
 #include "utils/timer.h"
-#include "utils/vector.h"
 
 //
 //
@@ -696,7 +696,7 @@ int main(int argc, char **argv) {
     test_link_list();
     /* test_string(); */
     /* test_log_macro(); */
-    /* test_vector(); */
+    test_vector();
     /* test_vector_element_destructor(); */
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */

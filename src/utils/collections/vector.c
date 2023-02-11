@@ -6,9 +6,9 @@
 #ifdef ENABLE_DEBUG_LOG
 #include <stdio.h>
 
-#include "log.h"
-#include "memory.h"
-#include "string.h"
+#include "../log.h"
+#include "../memory.h"
+#include "../string.h"
 #endif
 
 /*
