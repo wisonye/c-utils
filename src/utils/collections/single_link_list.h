@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /*
  * When creating a `LLNode` instance, the best way to avoid memory issue
@@ -34,6 +35,15 @@ void *LLNode_get_data(const LinkListNode self);
 LinkListNode LLNode_get_next(const LinkListNode self);
 
 //----------------------------------------------------------------------------
+// LinkList
+//----------------------------------------------------------------------------
+struct LL {
+    size_t _len;
+    LinkListNode _head;
+    LinkListNode _tail;
+};
+
+//----------------------------------------------------------------------------
 // LinkList opaque pointer to `struct LL`
 //----------------------------------------------------------------------------
 typedef struct LL *LinkList;
@@ -57,18 +67,29 @@ void auto_free_linklist(LinkList *ptr);
 #define SMART_LINKLIST(x) __attribute__((cleanup(auto_free_linklist))) LinkList x
 
 /*
- * Create empty list
+ * Init empty list
  */
-LinkList LL_from_empty();
+void LL_init_empty(LinkList self);
 
 /*
- * Create list and insert first node that copies from value
+ * Create list and insert first node that copies from value on the heap
  */
 LinkList LL_from_value(size_t item_size, void *value,
                        CloneFromFunc clone_from_func);
 
 /*
- * Create list and insert first node that copies from value
+ * Create empty list on the heap
+ */
+LinkList LL_from_empty();
+
+/*
+ * Create list and insert first node that copies from value on the heap
+ */
+LinkList LL_from_value(size_t item_size, void *value,
+                       CloneFromFunc clone_from_func);
+
+/*
+ * Create list and insert first node that copies from value on the heap
  */
 LinkList LL_from_array(size_t item_size, void *array,
                        CloneFromFunc clone_from_func);
@@ -191,12 +212,14 @@ void LL_free_iter(LLIterator *iter);
 LinkListNode LL_find(const void *query);
 
 /*
+ * `need_to_free_myself`: If `self` is stack-allocated, set to false!!!
+ *
  * `free_func`:
  *
  * When freeing a `LLNode` instance, the best way to avoid memory issue
  * is to call the original `DataType.free(node->data)`, just in case `data` is
  * a complicated struct instance
  */
-void LL_free(LinkList self, FreeFunc free_func);
+void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func);
 
 #endif

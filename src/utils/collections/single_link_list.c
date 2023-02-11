@@ -35,11 +35,15 @@ LinkListNode LLNode_get_next(const LinkListNode self) { return self->_next; }
 //----------------------------------------------------------------------------
 // LinkList
 //----------------------------------------------------------------------------
-struct LL {
-    size_t _len;
-    LinkListNode _head;
-    LinkListNode _tail;
-};
+
+/*
+ * Init empty list
+ */
+void LL_init_empty(LinkList self) {
+    self->_len = 0;
+    self->_head = NULL;
+    self->_tail = NULL;
+}
 
 /*
  * Create empty list
@@ -239,7 +243,8 @@ LLIterator *LL_iter(const LinkList self) {
     LLIterator *iter = malloc(sizeof(LLIterator) + self->_len * sizeof(void *));
 
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(SingleLinkList, LL_iter, "self ptr: %p, iter ptr: %p", self, iter);
+    DEBUG_LOG(SingleLinkList, LL_iter, "self ptr: %p, iter ptr: %p", self,
+              iter);
 #endif
 
     iter->length = self->_len;
@@ -290,13 +295,15 @@ void auto_free_linklist_iter(LLIterator **ptr) {
 LinkListNode LL_find(const void *query);
 
 /*
+ * `need_to_free_myself`: If `self` is stack-allocated, set to false!!!
+ *
  * `free_func`:
  *
  * When freeing a `LLNode` instance, the best way to avoid memory issue
  * is to call the original `DataType.free(node->data)`, just in case `data` is
  * a complicated struct instance
  */
-void LL_free(LinkList self, FreeFunc free_func) {
+void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func) {
     if (self == NULL) return;
 
 #ifdef ENABLE_DEBUG_LOG
@@ -336,7 +343,10 @@ void LL_free(LinkList self, FreeFunc free_func) {
     self->_len = 0;
     self->_head = NULL;
     self->_tail = NULL;
-    free(self);
+
+    if (need_to_free_myself == true) {
+        free(self);
+    }
 
 #ifdef ENABLE_DEBUG_LOG
     DEBUG_LOG(SingleLinkList, free,
@@ -354,5 +364,5 @@ void auto_free_linklist(LinkList *ptr) {
     DEBUG_LOG(SingleLinkList, auto_free_linklist,
               "out of scope with LinkList ptr: %p", *ptr);
 #endif
-    LL_free(*ptr, NULL);
+    LL_free(*ptr, true, NULL);
 }
