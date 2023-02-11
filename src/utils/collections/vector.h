@@ -2,6 +2,7 @@
 #define __UTILS_VECTOR_H__
 
 #include "../data_types.h"
+#include "../string.h"
 
 /*
  * Vector: Heap allocated dynamic array
@@ -75,7 +76,7 @@ const void *Vec_get(const Vector self, usize index);
 /*
  * Join all elements and return a string
  */
-const char *Vec_join(const Vector self, char *delemiter);
+const String Vec_join(const Vector self, char *delemiter);
 
 /*
  * Free allocated memory

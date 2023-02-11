@@ -15,10 +15,10 @@
  * Vector: Heap allocated dynamic array
  */
 struct Vec {
-    usize capacity;
-    usize length;
-    usize element_type_size;
-    void *items;
+    usize _capacity;
+    usize _length;
+    usize _element_type_size;
+    void *_items;
 };
 
 /*
@@ -33,10 +33,10 @@ Vector Vec_new(usize element_type_size) {
 #endif
 
     *vec = (struct Vec){
-        .capacity = 0,
-        .length = 0,
-        .element_type_size = element_type_size,
-        .items = NULL,
+        ._capacity = 0,
+        ._length = 0,
+        ._element_type_size = element_type_size,
+        ._items = NULL,
     };
     return vec;
 }
@@ -48,17 +48,17 @@ Vector Vec_with_capacity(usize capacity, usize element_type_size) {
     Vector vec = malloc(sizeof(struct Vec));
 
     *vec = (struct Vec){
-        .capacity = capacity,
-        .length = 0,
-        .element_type_size = element_type_size,
-        .items = malloc(element_type_size * capacity),
+        ._capacity = capacity,
+        ._length = 0,
+        ._element_type_size = element_type_size,
+        ._items = malloc(element_type_size * capacity),
     };
 
 #if ENABLE_DEBUG_LOG
     DEBUG_LOG(Vector, with_capacity,
               "self pointer: %p, element_type_size: %llu, capacity: %lu, "
               "self->items: %p",
-              vec, element_type_size, capacity, vec->items);
+              vec, element_type_size, capacity, vec->_items);
 #endif
     return vec;
 }
@@ -72,17 +72,18 @@ Vector Vec_with_capacity(usize capacity, usize element_type_size) {
 void Vec_push(Vector self, void *element) {
     // ensure the vector has enough space to save all elements;
     // capacity >= self->length + 1
-    if (self->capacity < self->length + 1) {
-        usize old_capacity = self->capacity;
-        self->capacity = (self->capacity == 0) ? 1 : self->capacity * 2;
-        self->items =
-            realloc(self->items, self->element_type_size * self->capacity);
+    if (self->_capacity < self->_length + 1) {
+        usize old_capacity = self->_capacity;
+        self->_capacity = (self->_capacity == 0) ? 1 : self->_capacity * 2;
+        self->_items =
+            realloc(self->_items, self->_element_type_size * self->_capacity);
 
 #ifdef ENABLE_DEBUG_LOG
         DEBUG_LOG(Vector, Vec_Push,
                   "Realloc needed, current capacity: %lu, length+1: %lu, after "
                   "capacity: %lu, self->item: %p",
-                  old_capacity, self->length + 1, self->capacity, self->items);
+                  old_capacity, self->_length + 1, self->_capacity,
+                  self->_items);
 #endif
     }
 
@@ -99,51 +100,68 @@ void Vec_push(Vector self, void *element) {
     //
     // Instead, you have to use `memcpy` to deal `void *` data assignment.
     //
-    memcpy(self->items + self->element_type_size * self->length, element,
-           self->element_type_size);
+    memcpy(self->_items + self->_element_type_size * self->_length, element,
+           self->_element_type_size);
 
 #ifdef ENABLE_DEBUG_LOG
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec, self, sizeof(struct Vec));
 #endif
 
-    self->length += 1;
+    self->_length += 1;
 
 #ifdef ENABLE_DEBUG_LOG
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec items, self->items,
-                                      self->length * self->element_type_size);
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec items, self->_items,
+                                      self->_length * self->_element_type_size);
 #endif
 }
 
 /*
  * Return the length
  */
-const usize Vec_len(const Vector self) { return self->length; }
+const usize Vec_len(const Vector self) { return self->_length; }
 
 /*
  * Return the capacity
  */
-const usize Vec_capacity(Vector self) { return self->capacity; }
+const usize Vec_capacity(Vector self) { return self->_capacity; }
 
 /*
  * Return the item iterator
  */
 const VectorIteractor Vec_iter(const Vector self) {
-    return (VectorIteractor){.length = self->length, .items = self->items};
+    return (VectorIteractor){.length = self->_length, .items = self->_items};
 }
 
 /*
  * Return the given index item, return `NULL` is not exists.
  */
 const void *Vec_get(const Vector self, usize index) {
-    if (index < 0 || index > self->length - 1) return NULL;
+    if (index < 0 || index > self->_length - 1) return NULL;
 
-    return self->items + (index * self->element_type_size);
+    return self->_items + (index * self->_element_type_size);
 }
 
 /*
  * Join all elements and return a string
  */
-const char *Vec_join(const Vector self, char *delemiter);
+const String Vec_join(const Vector self, char *delemiter) {
+    if (self == NULL || self->_length <= 0) return Str_from_empty();
+
+    /* usize capacity = self->_length * self->_element_type_size; */
+    /* if (delemiter != NULL) { */
+    /*     capacity += strlen(delemiter); */
+    /* } */
+
+    /* String result = Str_from_empty(); */
+
+    /* char *data_type = TYPE_NAME(self->_items); */
+    /* for (usize index=0; index<self->_length; index++) { */
+
+    /* } */
+
+    /* return result; */
+    return Str_from_str("Unimplemented");
+}
 
 /*
  * Free allocated memory
@@ -151,16 +169,16 @@ const char *Vec_join(const Vector self, char *delemiter);
 void Vec_free(Vector self) {
     if (self == NULL) return;
 
-    if (self->items != NULL) {
+    if (self->_items != NULL) {
         //
         // Free `items` meory
         //
-        void *ptr_to_free = self->items;
-        self->items = NULL;
+        void *ptr_to_free = self->_items;
+        self->_items = NULL;
         free(ptr_to_free);
     }
-    self->capacity = 0;
-    self->length = 0;
+    self->_capacity = 0;
+    self->_length = 0;
     free(self);
 }
 
