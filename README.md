@@ -487,7 +487,7 @@ call.
         // (D) [ Main ] > test_vector - short_arr_iter[10]: 6000
 
         // `Vec_join` get back a `String` instance
-        String u16_vec_desc = Vec_join(u16_vec, " , ");
+        String u16_vec_desc = Vec_join(u16_vec, " , ", NULL);
         printf("\n>>> u16_vec_desc: %s\n", Str_as_str(u16_vec_desc));
         Str_free(u16_vec_desc);
         // (D) [ String ] > from_empty - self ptr: 0x54743a0
@@ -544,7 +544,7 @@ call.
         Vec_push(string_vec, temp_str_2);
         Vec_push(string_vec, temp_str_3);
 
-        String string_vec_desc = Vec_join(string_vec, " , ");
+        String string_vec_desc = Vec_join(string_vec, " , ", NULL);
         printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
         Str_free(string_vec_desc);
 
@@ -563,91 +563,66 @@ call.
     - Custom struct case:
 
         ```c
-        // Person list
         typedef struct {
             char first_name[10];
             char last_name[10];
             u8 age;
         } Person;
 
-        Person wison = {.first_name = "Wison", .last_name = "Ye", .age = 88};
-        Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
-        Person nobody = {
-            .first_name = "Nobody", .last_name = "Nothing", .age = 100};
+        // Used in `Vec_join`: Get back custom `String`
+        String get_person_desc(Person *self) {
+            usize buffer_size = sizeof(Person) + 34 + 1;
+            char buffer[sizeof(Person) + 34 + 1] = {0};
+            snprintf(buffer, buffer_size, "(first_name: %s, last_name: %s, age: %u)",
+                     self->first_name, self->last_name, self->age);
+            String desc = Str_from_str(buffer);
+            return desc;
+        }
 
-        SMART_VECTOR(person_list) = Vec_new(sizeof(Person));
+        //
+        // Person list
+        //
+        SMART_VECTOR(person_list, Person);
+        // (D) [ Vector ] > with_capacity - self pointer: 0x54755c0, element_type_size: 21, capacity: 3, self->items: 0x5475630
 
-        Vector_push(person_list, &wison);
-        Vector_push(person_list, &fion);
-        Vector_push(person_list, &nobody);
+        Person wison = {.first_name = "Mr C", .last_name = "cool", .age = 88};
+        Person fion = {.first_name = "Mr CPP", .last_name = "not bad", .age = 99};
+        Person nobody = {.first_name = "Nobody", .last_name = "Nothing", .age = 100};
+        Vec_push(person_list, &wison);
+        Vec_push(person_list, &fion);
+        Vec_push(person_list, &nobody);
 
-        VectorIteractor person_list_iter = Vector_iter(person_list);
+        // Print element value
+        VectorIteractor person_list_iter = Vec_iter(person_list);
         Person *temp_person_arr = (Person *)person_list_iter.items;
         for (usize index = 0; index < person_list_iter.length; index++) {
             DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].first_name: %s",
-                    index, temp_person_arr[index].first_name);
+                      index, temp_person_arr[index].first_name);
             DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].last_name: %s",
-                    index, temp_person_arr[index].last_name);
+                      index, temp_person_arr[index].last_name);
             DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].age: %u", index,
-                    temp_person_arr[index].age);
+                      temp_person_arr[index].age);
         }
 
-        // (D) [ Main ] > test_vector - person_list_iter[0].first_name: Wison
-        // (D) [ Main ] > test_vector - person_list_iter[0].last_name: Ye
+        // (D) [ Main ] > test_vector - person_list_iter[0].first_name: Mr C
+        // (D) [ Main ] > test_vector - person_list_iter[0].last_name: cool
         // (D) [ Main ] > test_vector - person_list_iter[0].age: 88
-        // (D) [ Main ] > test_vector - person_list_iter[1].first_name: Fion
-        // (D) [ Main ] > test_vector - person_list_iter[1].last_name: Li
+        // (D) [ Main ] > test_vector - person_list_iter[1].first_name: Mr CPP
+        // (D) [ Main ] > test_vector - person_list_iter[1].last_name: not bad
         // (D) [ Main ] > test_vector - person_list_iter[1].age: 99
         // (D) [ Main ] > test_vector - person_list_iter[2].first_name: Nobody
         // (D) [ Main ] > test_vector - person_list_iter[2].last_name: Nothing
         // (D) [ Main ] > test_vector - person_list_iter[2].age: 100
-        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5473360, length: 3
-        ```
-
-        </br>
 
 
-    - Use `String` (struct Str*) case:
+        String person_vec_desc = Vec_join(
+            person_list, " , ", (struct Str * (*)(void *)) get_person_desc);
+        printf("\n>>> person_vec: %s\n", Str_as_str(person_vec_desc));
+        Str_free(person_vec_desc);
 
-        ```c
-        SMART_VECTOR(vec) = Vector_new(Str_struct_size());
+        // >>> person_vec: (first_name: Mr C, last_name: cool, age: 88) , (first_name: Mr CPP, last_name: not bad, age: 99) , (first_name: Nobody, last_name: Nothing, age: 100)
 
-        //
-        // Create smart string: de-allocated automatic when out of scope
-        //
-        SMART_STRING(str1) = Str_from_str("String in vector");
-        SMART_STRING(str2) = Str_from_str("Second string in vector");
-
-        //
-        // `Str_struct_size()` return `sizeof(struct Str)`, otherwise, it
-        // won't work without correct struct size!!!
-        //
-        Vector_push(vec, str1);
-        Vector_push(vec, str2);
-        printf("\n>>> Str_struct_size(): %lu", Str_struct_size());
-
-        const String ele1 = (const String)Vector_get(vec, 0);
-        const String ele2 = (const String)Vector_get(vec, 1);
-        printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1));
-        printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2));
-
-        const VectorIteractor vec_it = Vector_iter(vec);
-        void *it_string_item = vec_it.items;
-
-        //
-        // As `it_string_item[i]` is `struct Str` which doesn't exis in the
-        // outside world, that's why you CANNOT access String element in
-        // that way.
-        //
-        // You have to use `void *` + offset to get back the correct `String`
-        // (opaque pointer to `struct Str`) before accessing `String` element.
-        //
-        for (usize i = 0; i < vec_it.length; i++) {
-            String temp_str = (String)(it_string_item + i * Str_struct_size());
-            DEBUG_LOG(Main, test_vector_element_destructor,
-                      "vec element ptr: %p, string value: %s", temp_str,
-                      Str_as_str(temp_str));
-        }
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x54755c0, length: 3
         ```
 
         </br>

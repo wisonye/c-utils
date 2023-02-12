@@ -442,6 +442,21 @@ void test_hex_buffer() {
 //
 //
 //
+typedef struct {
+    char first_name[10];
+    char last_name[10];
+    u8 age;
+} Person;
+
+String get_person_desc(Person *self) {
+    usize buffer_size = sizeof(Person) + 34 + 1;
+    char buffer[sizeof(Person) + 34 + 1] = {0};
+    snprintf(buffer, buffer_size, "(first_name: %s, last_name: %s, age: %u)",
+             self->first_name, self->last_name, self->age);
+    String desc = Str_from_str(buffer);
+    return desc;
+}
+
 void test_vector() {
     //
     // Bool vec
@@ -454,7 +469,7 @@ void test_vector() {
     Vec_push(bool_vec, &false_value);
     Vec_push(bool_vec, &false_value);
     Vec_push(bool_vec, &true_value);
-    String bool_vec_desc = Vec_join(bool_vec, " , ");
+    String bool_vec_desc = Vec_join(bool_vec, " , ", NULL);
     printf("\n>>> bool_vec_desc: %s\n", Str_as_str(bool_vec_desc));
     Str_free(bool_vec_desc);
 
@@ -492,7 +507,7 @@ void test_vector() {
         DEBUG_LOG(Main, test_vector, "short_arr_iter[%lu]: %d", sa_index,
                   temp_short_arr[sa_index]);
     }
-    String u16_vec_desc = Vec_join(u16_vec, " , ");
+    String u16_vec_desc = Vec_join(u16_vec, " , ", NULL);
     printf("\n>>> u16_vec_desc: %s\n", Str_as_str(u16_vec_desc));
     Str_free(u16_vec_desc);
 
@@ -511,7 +526,7 @@ void test_vector() {
         DEBUG_LOG(Main, test_vector, "int_arr_iter[%lu]: %d", index,
                   temp_int_arr[index]);
     }
-    String int_vec_desc = Vec_join(int_vec, " , ");
+    String int_vec_desc = Vec_join(int_vec, " , ", NULL);
     printf("\n>>> int_vec_desc: %s\n", Str_as_str(int_vec_desc));
     Str_free(int_vec_desc);
 
@@ -528,22 +543,18 @@ void test_vector() {
     Vec_push(string_vec, temp_str_2);
     Vec_push(string_vec, temp_str_3);
 
-    String string_vec_desc = Vec_join(string_vec, " , ");
+    String string_vec_desc = Vec_join(string_vec, " , ", NULL);
     printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
     Str_free(string_vec_desc);
 
+    //
     // Person list
-    typedef struct {
-        char first_name[10];
-        char last_name[10];
-        u8 age;
-    } Person;
-
-    Person wison = {.first_name = "Wison", .last_name = "Ye", .age = 88};
-    Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
+    //
+    Person wison = {.first_name = "Mr C", .last_name = "cool", .age = 88};
+    Person fion = {.first_name = "Mr CPP", .last_name = "not bad", .age = 99};
     Person nobody = {
         .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-    SMART_VECTOR(person_list, Person);
+    SMART_VECTOR_WITH_CAPACITY(person_list, Person, 3);
     Vec_push(person_list, &wison);
     Vec_push(person_list, &fion);
     Vec_push(person_list, &nobody);
@@ -558,6 +569,10 @@ void test_vector() {
         DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].age: %u", index,
                   temp_person_arr[index].age);
     }
+    String person_vec_desc = Vec_join(
+        person_list, " , ", (struct Str * (*)(void *)) get_person_desc);
+    printf("\n>>> person_vec: %s\n", Str_as_str(person_vec_desc));
+    Str_free(person_vec_desc);
 
     // Double list
     double double_arr[] = {11.11, 22.22, 33.33};
