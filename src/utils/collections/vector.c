@@ -251,7 +251,7 @@ const String Vec_join(const Vector self, char *delemiter,
             if (custom_struct_desc != NULL) {
                 SMART_STRING(temp_str) = custom_struct_desc(
                     self->_items + index * self->_element_type_size);
-                Str_push_other_copy(result, temp_str);
+                Str_push_other(result, temp_str);
             }
         }
 

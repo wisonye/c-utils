@@ -253,158 +253,235 @@ This is my personal `C` utilities which contains the following modules:
 hide the `null-terminated` detail and pointer, just deal with normal function
 call.
 
-    ```c
-    //
-    // Heap allocated string
-    //
-    typedef struct Str *String;
-    
-    //
-    // `String` is an opaque pointer which uses to hide the `struct Str` detail,
-    // which means `struct Str` doesn't exists in the outside world. If you want
-    // to get back `sizeof(struct Str)` for some reasons, this function is the
-    // anwser.
-    //
-    const usize Str_struct_size();
+    The `SMART_STRING` and `SMART_STRING_WITH_CAPACITY` macro ensures the
+    heap-allocated instance auto-free heap-allocated memory when it goes out of
+    its scope.
 
-    /*
-     * Define smart `String` var that calls `Str_free()` automatically when the
-     * variable is out of the scope
-     *
-     * ```c
-     * SMART_STRING(src_str) = Str_from_str("Hey:)");
-     *
-     * // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5473850, as_str: Hey:)
-     * ```
-     */
-    #define SMART_STRING(x) \
-        __attribute__((cleanup(auto_free_string))) String x
-
-    /*
-     * Create from empty
-     */
-    String Str_from_empty();
-
-    /*
-     * Create from `char[]`
-     */
-    String Str_from_arr(const char arr[]);
-
-    /*
-     * Create from `char*`
-     */
-    String Str_from_str(const char *str);
-
-    /*
-     * Move from the given `String` instance and move ownership of the
-     * heap-allocated memory to the newly created `String` instance
-     */
-    String Str_move_from(String other);
-
-    /*
-     * Push other `String *` at the end
-     */
-    void Str_push_other(String self, const String other);
-
-    /*
-     * Push the given `char *` at the end
-     */
-    void Str_push_str(String self, const char *str_to_push);
-
-    /*
-     * Insert `String *` to the beginning
-     */
-    void Str_insert_other_to_begin(String self, const String other);
-
-    /*
-     * Insert `char *` to the beginning
-     */
-    void Str_insert_str_to_begin(String self, const char *str_to_insert);
-
-    /*
-     * Insert `char *` at the given index
-     */
-    void Str_insert_at_index(String self, const char *str_to_insert,
-                            usize index_to_insert);
-
-    /*
-     * Get back string length
-     */
-    const usize Str_length(const String self);
-
-    /*
-     * Get back `char *`
-     */
-    const char *Str_as_str(const String self);
-
-    /*
-     * Find the given `char *` index, return `-1` if not found.
-     */
-    const long Str_index_of(const String self, const char *str_to_find);
-
-    /*
-     * Find the given `char *` (case sensitive) index, return `-1` if not found.
-     */
-    const long Str_index_of_case_sensitive(const String self,
-                                        const char *str_to_find);
-
-    /*
-     * Check whether contain the given `char *` or not
-     */
-    const bool Str_contains(const String self, char *str_to_check);
-
-    /*
-     * Reset  to empty string
-     */
-    void Str_reset_to_empty(String self);
-
-    /*
-     * Free allocated memory, reset length to 0 and internal buffer to `NULL`
-     */
-    void Str_free(String self);
-    ```
+    Examples:
 
     </br>
 
-    Example:
+    - Create empty string
 
-    ```c
-    SMART_STRING(my_name) = Str_from_str("Wison Ye:)");
+        ```c
+        // `SMART_STRING(variable_name);`
+        SMART_STRING(empty_str) = Str_from_empty();
+        SMART_STRING(empty_str_2) = Str_from_str(NULL);
 
-    SMART_STRING(empty_str_1) = Str_from_str(NULL);
-    SMART_STRING(empty_str_2) = Str_from_str("");
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d0, as_str: (null)
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b0, as_str: (null)
+        ```
 
-    SMART_STRING(clone_from_empty_str) = Str_clone(my_name);
-    DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
-              Str_length(clone_from_empty_str),
-              Str_as_str(clone_from_empty_str) == NULL
-                  ? "NULL"
-                  : Str_as_str(clone_from_empty_str));
+        </br>
 
-    // (D) [ Main ] > StringTest - clone_from_empty_str len: 8, value: Wison Ye⏎
+    - Create from `char *` or `char []`
 
-    char temp_id[] = "123456789";
-    char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
-    String str_1 = Str_from_arr(temp_id);
-    String str_2 = Str_from_arr(temp_id_2);
+        ```c
+        SMART_STRING(str) = Str_from_str("Hey:)");
 
-    //
-    // If you use `SMART_STRING()` macro, then you don't need to free string
-    // explicitly. `Str_free()` will be guaranteed to be called when variables
-    // are out of scope.
-    //
-    // Str_free(my_name);
-    // Str_free(empty_str_1);
-    // Str_free(empty_str_2);
-    // Str_free(clone_from_empty_str);
-    // Str_free(str_1);
-    // Str_free(str_2);
-    ```
+        char arr[] = "Unit Test:)";
+        SMART_STRING(str_2) = Str_from_arr(arr);
 
-    The `SMART_STRING` macro ensures the `SingleLinkList` instance auto-free
-    heap-allocated memory when it goes out of its scope.
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000330, as_str: Hey:)
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000002f0, as_str: Unit Test:)
+        ```
 
-    </br>
+        </br>
+
+    - Clone from other `String`
+
+        Clone from the given `String` instance but don't touch the heap-allocated
+        memory it owned
+
+        ```c
+        SMART_STRING(original_str) = Str_from_str("I'm original:)");
+        SMART_STRING(clone_from_other_str) = Str_clone_from(original_str);
+
+        // `clone_from_other_str` is a deep clone, so `original_str` doesn't changes
+        assert(Str_length(original_str) == 12);
+
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d2, as_str: I'm original:)
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b1, as_str: I'm original:)
+        ```
+
+        </br>
+
+    - Move from other `String`
+
+        Move from the given `String` instance and move ownership of the
+        heap-allocated memory to the newly created `String` instance. The original
+        `String` becomes an empty string, as it points to nothing!!!
+
+        ```c
+        SMART_STRING(original_str) = Str_from_str("I'm original:)");
+        SMART_STRING(move_from_other_str) = Str_move_from(original_str);
+
+        // After that, `original_str` becomes an empty string
+        assert(Str_length(original_str) == 0);
+        assert(Str_as_str(original_str) == NULL);
+
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d8, as_str: (null)
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b9, as_str: I'm original:)
+        ```
+
+        </br>
+
+    - Push at the end, get back length and get back `char *`
+
+        ```c
+        SMART_STRING(original_str) = Str_from_str("I'm original:)");
+        SMART_STRING(empty_str) = Str_from_empty();
+
+        // Push from `char *`
+        Str_push_str(empty_str, "123_");
+
+        // Push from other `String`
+        Str_push_other(empty_str, original_str);
+
+        // Get back length
+        assert(Str_length(empty_str) == strlen("123_I'm original:)"));
+
+        // Get back `char *`
+        assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
+
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
+        ```
+
+        </br>
+
+    - Insert at beginning
+
+        ```c
+        SMART_STRING(original_str) = Str_from_str("I'm original:)");
+        SMART_STRING(empty_str) = Str_from_empty();
+
+        // Insert other `String` to the beginning
+        Str_push_other(empty_str, original_str);
+
+        // Insert `char *` to the beginning
+        Str_insert_str_to_begin(empty_str, "123_");
+
+        // Get back length
+        assert(Str_length(empty_str) == strlen("123_I'm original:)"));
+
+        // Get back `char *`
+        assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
+
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
+        ```
+
+        </br>
+
+    - Find substring
+
+        ```c
+        SMART_STRING(original_str) = Str_from_str("I'm original:)");
+        SMART_STRING(empty_str) = Str_move_from(original_str);
+
+        //
+        // Find the given `char *` index, return `-1` if not found
+        //
+        assert(Str_index_of(empty_str, "I'm") == 0);
+        assert(Str_index_of(empty_str, "nal") == 9);
+        assert(Str_index_of(empty_str, "RIG") == 5);
+        assert(Str_index_of(empty_str, "ABC") == -1);
+
+        //
+        // Find the given `char *`(case-sensitive) index, return `-1` if not found
+        //
+        assert(Str_index_of_case_sensitive(empty_str, "RIG") == -1);
+
+        //
+        // Check whether contain the given `char *` or not
+        //
+        assert(Str_contains(empty_str, "rig") == true);
+        assert(Str_contains(empty_str, "RIG") == true);
+        assert(Str_contains(empty_str, "ABC") == false);
+        ```
+
+        </br>
+
+    - Reset to empty
+
+        ```c
+        SMART_STRING(str) = Str_from_str("Hello");
+        Str_reset_to_empty(str);
+
+        assert(Str_length(str) == 0);
+        assert(Str_as_str(str) == NULL);
+
+        // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: (null)⏎
+        ```
+
+        </br>
+
+    - Create `String` on the stack and free it manually
+
+        Usually, it's convenient to use `SMART_STRING` to create a `String`
+        instance,  it's an opaque pointer to `struct Str`. The variable created
+        via `SMART_STRING` will be freed automatically when the variable goes
+        out of scope.
+
+        Here is what `SMART_STRING(abc) = Str_from_empty();` does under the hood:
+
+        1. Create `struct Str` instance on the heap, attach the `cleanup` attribute
+        to that variable, then the `auto_free_string` function gets call when
+        it out of scope.
+
+            ```c
+            __attribute__((cleanup(auto_free_string))) String abc = Str_from_empty();
+            ```
+
+            </br>
+
+        2. But the disadvantage is that it calls `malloc` twice:
+            - One for creating `String` (struct str *) itself
+            - One for the internal `_buffer` member to hold the auctal `char *`
+            on the heap
+
+            </br>
+
+        So you might choose to create `struct Str` on the stack when you need
+        to create a lot of instances and know their lifetime won't go out of the
+        current scope, it avoids a lot of unnecessary `malloc` calls.
+
+        Here is the example:
+
+        You need to create 1000 `struct Str` to handle a complicated logic in a
+        loop. By creating `struct Str` on the stack, you will save 1000 calls on
+        `malloc` and `free`!!!
+
+        ```c
+        for (usize index = 0; index < 1000; index++) {
+            // Create on stack and init
+            struct Str temp_str;
+            Str_init(&temp_str);
+
+            // Modify it
+            char temp_buffer[12];
+            snprintf(temp_buffer, sizeof(temp_buffer), "index %lu", index);
+            Str_push_str(&temp_str, temp_buffer);
+
+            //
+            // ...Another complex logic here
+            // ...Another complex logic here
+            // ...Another complex logic here
+            //
+            printf("\n>>> Index in complicated logic: %s", Str_as_str(&temp_str));
+
+            //
+            // Make sure free it manually!!!
+            // You should call `Str_free_buffer_only` instead of `Str_free`, as
+            // you don't need to free `temp_str`, it's stack-allocated instance,
+            // it's NOT a pointer!!!
+            //
+            Str_free_buffer_only(&temp_str);
+        }
+        ```
+
+        </br>
 
 - `Vector`: Heap allocated dynamic array.
 
