@@ -45,6 +45,11 @@ void auto_free_string(String *ptr);
 #define SMART_STRING(x) __attribute__((cleanup(auto_free_string))) String x
 
 /*
+ * Init empty `struct Str`
+ */
+void Str_init(String self);
+
+/*
  * Create from empty
  */
 String Str_from_empty();
@@ -61,7 +66,7 @@ String Str_from_str(const char *str);
 
 /*
  * Clone from the given `String` instance but don't touch the heap-allocated
- * memory if owned
+ * memory it owned
  */
 String Str_clone_from(const String other);
 
@@ -76,10 +81,10 @@ String Str_move_from(String other);
  */
 void Str_push_other(String self, String other);
 
-/*
- * Push from the given `String` instance and copy `other->_buffer`
- */
-void Str_push_other_copy(String self, const String other);
+// /*
+//  * Push from the given `String` instance and copy `other->_buffer`
+//  */
+// void Str_push_other_copy(String self, const String other);
 
 /*
  * Push the given `char *` at the end
@@ -137,5 +142,11 @@ void Str_reset_to_empty(String self);
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`
  */
 void Str_free(String self);
+
+/*
+ * Free allocated memory, reset length to 0 and internal buffer to `NULL`
+ * But NOT free `self`. Usually, use this on stack-allocated variable
+ */
+void Str_free_buffer_only(String self);
 
 #endif

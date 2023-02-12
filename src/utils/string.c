@@ -19,6 +19,20 @@
 const usize Str_struct_size() { return sizeof(struct Str); }
 
 /*
+ * Init empty `struct Str`
+ */
+void Str_init(String self) {
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, init, "self ptr: %p", self);
+#endif
+
+    *self = (struct Str){
+        ._len = 0,
+        ._buffer = NULL,
+    };
+}
+
+/*
  * Create from empty
  */
 String Str_from_empty() {
@@ -93,7 +107,7 @@ String Str_from_str(const char *str) {
 
 /*
  * Clone from the given `String` instance but don't touch the heap-allocated
- * memory if owned
+ * memory it owned
  */
 String Str_clone_from(const String other) {
     String string = malloc(sizeof(struct Str));
@@ -211,39 +225,39 @@ void Str_push_str(String self, const char *str_to_push) {
     self->_buffer = new_buffer;
 }
 
-/*
- * Push from the given `String` instance and copy `other->_buffer`
- */
-void Str_push_other_copy(String self, const String other) {
-    if (self == NULL || other == NULL) {
-        return;
-    }
-
-    usize str_to_push_len = strlen(other->_buffer);
-    if (str_to_push_len <= 0) {
-        return;
-    }
-
-    usize new_buffer_len = self->_len + str_to_push_len + 1;
-    char *new_buffer = malloc(new_buffer_len);
-    char *copy_ptr = new_buffer;
-
-    // Copy original value (NOT include the `\0`)
-    if (self->_len > 0) {
-        memcpy(copy_ptr, self->_buffer, self->_len);
-        copy_ptr += self->_len;
-    }
-
-    memcpy(copy_ptr, other->_buffer, str_to_push_len);
-    new_buffer[new_buffer_len - 1] = '\0';
-
-    // Update
-    self->_len = new_buffer_len - 1;  // Not count the '\0'
-    if (self->_buffer != NULL) {
-        free(self->_buffer);
-    }
-    self->_buffer = new_buffer;
-}
+// /*
+//  * Push from the given `String` instance and copy `other->_buffer`
+//  */
+// void Str_push_other_copy(String self, const String other) {
+//     if (self == NULL || other == NULL) {
+//         return;
+//     }
+//
+//     usize str_to_push_len = strlen(other->_buffer);
+//     if (str_to_push_len <= 0) {
+//         return;
+//     }
+//
+//     usize new_buffer_len = self->_len + str_to_push_len + 1;
+//     char *new_buffer = malloc(new_buffer_len);
+//     char *copy_ptr = new_buffer;
+//
+//     // Copy original value (NOT include the `\0`)
+//     if (self->_len > 0) {
+//         memcpy(copy_ptr, self->_buffer, self->_len);
+//         copy_ptr += self->_len;
+//     }
+//
+//     memcpy(copy_ptr, other->_buffer, str_to_push_len);
+//     new_buffer[new_buffer_len - 1] = '\0';
+//
+//     // Update
+//     self->_len = new_buffer_len - 1;  // Not count the '\0'
+//     if (self->_buffer != NULL) {
+//         free(self->_buffer);
+//     }
+//     self->_buffer = new_buffer;
+// }
 
 /*
  * Insert `String *` to the beginning
@@ -383,6 +397,22 @@ void Str_free(String self) {
 
     self->_len = 0;
     free(self);
+}
+
+/*
+ * Free allocated memory, reset length to 0 and internal buffer to `NULL`
+ * But NOT free `self`. Usually, use this on stack-allocated variable
+ */
+void Str_free_buffer_only(String self) {
+    if (self == NULL) return;
+
+    if (self->_buffer != NULL) {
+        void *ptr_to_free = self->_buffer;
+        self->_buffer = NULL;
+        free(ptr_to_free);
+    }
+
+    self->_len = 0;
 }
 
 /*
