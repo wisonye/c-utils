@@ -8,6 +8,14 @@
 //
 // Heap allocated string
 //
+struct Str {
+    usize _len;
+    char *_buffer;
+};
+
+//
+// Heap allocated string
+//
 typedef struct Str *String;
 
 //
