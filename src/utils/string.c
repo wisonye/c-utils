@@ -212,6 +212,40 @@ void Str_push_str(String self, const char *str_to_push) {
 }
 
 /*
+ * Push from the given `String` instance and copy `other->_buffer`
+ */
+void Str_push_other_copy(String self, const String other) {
+    if (self == NULL || other == NULL) {
+        return;
+    }
+
+    usize str_to_push_len = strlen(other->_buffer);
+    if (str_to_push_len <= 0) {
+        return;
+    }
+
+    usize new_buffer_len = self->_len + str_to_push_len + 1;
+    char *new_buffer = malloc(new_buffer_len);
+    char *copy_ptr = new_buffer;
+
+    // Copy original value (NOT include the `\0`)
+    if (self->_len > 0) {
+        memcpy(copy_ptr, self->_buffer, self->_len);
+        copy_ptr += self->_len;
+    }
+
+    memcpy(copy_ptr, other->_buffer, str_to_push_len);
+    new_buffer[new_buffer_len - 1] = '\0';
+
+    // Update
+    self->_len = new_buffer_len - 1;  // Not count the '\0'
+    if (self->_buffer != NULL) {
+        free(self->_buffer);
+    }
+    self->_buffer = new_buffer;
+}
+
+/*
  * Insert `String *` to the beginning
  */
 void Str_insert_other_to_begin(String self, const String other) {

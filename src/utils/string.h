@@ -74,7 +74,12 @@ String Str_move_from(String other);
 /*
  * Push other `String *` at the end
  */
-void Str_push_other(String self, const String other);
+void Str_push_other(String self, String other);
+
+/*
+ * Push from the given `String` instance and copy `other->_buffer`
+ */
+void Str_push_other_copy(String self, const String other);
 
 /*
  * Push the given `char *` at the end
