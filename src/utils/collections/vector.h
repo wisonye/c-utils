@@ -88,7 +88,8 @@ const void *Vec_get(const Vector self, usize index);
 /*
  * Join all elements and return a string
  */
-const String Vec_join(const Vector self, char *delemiter);
+const String Vec_join(const Vector self, char *delemiter,
+                      String (*custom_struct_desc)(void *ptr));
 
 /*
  * Free allocated memory

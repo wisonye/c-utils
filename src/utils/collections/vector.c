@@ -151,7 +151,8 @@ const void *Vec_get(const Vector self, usize index) {
 /*
  * Join all elements and return a string
  */
-const String Vec_join(const Vector self, char *delemiter) {
+const String Vec_join(const Vector self, char *delemiter,
+                      String (*custom_struct_desc)(void *ptr)) {
     if (self == NULL || self->_length <= 0) return Str_from_empty();
 
     /* usize capacity = self->_length * self->_element_type_size; */
@@ -245,6 +246,13 @@ const String Vec_join(const Vector self, char *delemiter) {
             String temp_str =
                 (String)(self->_items + index * Str_struct_size());
             Str_push_str(result, Str_as_str(temp_str));
+        } else {
+            // Custom struct: Use provided callback to get back `String`
+            if (custom_struct_desc != NULL) {
+                SMART_STRING(temp_str) = custom_struct_desc(
+                    self->_items + index * self->_element_type_size);
+                Str_push_other_copy(result, temp_str);
+            }
         }
 
         if (delemiter != NULL && index + 1 < self->_length) {
