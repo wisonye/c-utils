@@ -150,3 +150,24 @@ TEST(DataTypes, TYPE_SIZE) {
     ASSERT_EQ(sizeof(double *), TYPE_SIZE(double_ptr));
     ASSERT_EQ(sizeof(long double *), TYPE_SIZE(long_double_ptr));
 }
+
+TEST(DataTypes, TYPE_SIZE_FROM_TYPE) {
+    ASSERT_EQ(sizeof(char), TYPE_SIZE_FROM_TYPE(char));
+    ASSERT_EQ(sizeof(unsigned char), TYPE_SIZE_FROM_TYPE(unsigned char));
+    ASSERT_EQ(sizeof(unsigned short int),
+              TYPE_SIZE_FROM_TYPE(unsigned short int));
+    ASSERT_EQ(sizeof(unsigned int), TYPE_SIZE_FROM_TYPE(unsigned int));
+    ASSERT_EQ(sizeof(unsigned long int),
+              TYPE_SIZE_FROM_TYPE(unsigned long int));
+    ASSERT_EQ(sizeof(signed char), TYPE_SIZE_FROM_TYPE(signed char));
+    ASSERT_EQ(sizeof(short int), TYPE_SIZE_FROM_TYPE(short int));
+    ASSERT_EQ(sizeof(int), TYPE_SIZE_FROM_TYPE(int));
+    ASSERT_EQ(sizeof(long int), TYPE_SIZE_FROM_TYPE(long int));
+    ASSERT_EQ(sizeof(int), TYPE_SIZE_FROM_TYPE(int));
+    ASSERT_EQ(sizeof(long int), TYPE_SIZE_FROM_TYPE(long int));
+    ASSERT_EQ(sizeof(long long int), TYPE_SIZE_FROM_TYPE(long long int));
+    ASSERT_EQ(sizeof(float), TYPE_SIZE_FROM_TYPE(float));
+    ASSERT_EQ(sizeof(double), TYPE_SIZE_FROM_TYPE(double));
+    ASSERT_EQ(sizeof(long double), TYPE_SIZE_FROM_TYPE(long double));
+    ASSERT_EQ(sizeof(bool), TYPE_SIZE_FROM_TYPE(bool));
+}

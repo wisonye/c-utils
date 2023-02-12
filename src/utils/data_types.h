@@ -88,7 +88,7 @@ typedef char *_str;
 #define TYPE_NAME_TO_STRING(T) #T
 
 //
-// Type size from type
+// Type size from variable
 //
 #define TYPE_SIZE(V) \
     _Generic((V),                                               \
@@ -124,5 +124,11 @@ typedef char *_str;
     double *: sizeof(double*),                                  \
     long double *: sizeof(long double*),                        \
     default : 0)
+
+
+//
+// Type size from type name
+//
+#define TYPE_SIZE_FROM_TYPE(T) sizeof(T)
 
 #endif
