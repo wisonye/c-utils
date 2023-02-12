@@ -18,14 +18,16 @@ struct Vec {
     usize _capacity;
     usize _length;
     usize _element_type_size;
+    char *_element_type;
     void *_items;
 };
 
 /*
  * Create empty vector
  */
-Vector Vec_new(usize element_type_size) {
+Vector Vec_new(usize element_type_size, char *element_type) {
     Vector vec = malloc(sizeof(struct Vec));
+    // usize element_type_size = sizeof(TYPE_NAME)
 
 #if ENABLE_DEBUG_LOG
     DEBUG_LOG(Vector, new, "self pointer: %p, element_type_size: %llu", vec,
@@ -36,6 +38,7 @@ Vector Vec_new(usize element_type_size) {
         ._capacity = 0,
         ._length = 0,
         ._element_type_size = element_type_size,
+        ._element_type = element_type,
         ._items = NULL,
     };
     return vec;
@@ -44,13 +47,15 @@ Vector Vec_new(usize element_type_size) {
 /*
  * Create an empty vector that ability to hold `capacity` elements
  */
-Vector Vec_with_capacity(usize capacity, usize element_type_size) {
+Vector Vec_with_capacity(usize element_type_size, char *element_type,
+                         usize capacity) {
     Vector vec = malloc(sizeof(struct Vec));
 
     *vec = (struct Vec){
         ._capacity = capacity,
         ._length = 0,
         ._element_type_size = element_type_size,
+        ._element_type = element_type,
         ._items = malloc(element_type_size * capacity),
     };
 
@@ -103,16 +108,18 @@ void Vec_push(Vector self, void *element) {
     memcpy(self->_items + self->_element_type_size * self->_length, element,
            self->_element_type_size);
 
-#ifdef ENABLE_DEBUG_LOG
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec, self, sizeof(struct Vec));
-#endif
+    /* #ifdef ENABLE_DEBUG_LOG */
+    /*     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec, self, sizeof(struct
+     * Vec)); */
+    /* #endif */
 
     self->_length += 1;
 
-#ifdef ENABLE_DEBUG_LOG
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec items, self->_items,
-                                      self->_length * self->_element_type_size);
-#endif
+    /* #ifdef ENABLE_DEBUG_LOG */
+    /*     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec items, self->_items, */
+    /*                                       self->_length *
+     * self->_element_type_size); */
+    /* #endif */
 }
 
 /*
@@ -152,15 +159,100 @@ const String Vec_join(const Vector self, char *delemiter) {
     /*     capacity += strlen(delemiter); */
     /* } */
 
-    /* String result = Str_from_empty(); */
+    String result = Str_from_empty();
 
-    /* char *data_type = TYPE_NAME(self->_items); */
-    /* for (usize index=0; index<self->_length; index++) { */
+    for (usize index = 0; index < self->_length; index++) {
+        // printf("\n>>> JOIN, element_type: %s", self->_element_type);
+        //
+        if (strcmp("_Bool", self->_element_type) == 0) {
+            bool *ptr = self->_items;
+            bool *current_ptr = ptr + index;
+            Str_push_str(result, *current_ptr == true ? "True" : "False");
+        } else if (strcmp("u8", self->_element_type) == 0 ||
+                   strcmp("uint8_t", self->_element_type) == 0 ||
+                   strcmp("unsigned char", self->_element_type) == 0) {
+            // Max: 255
+            char str_buffer[4] = {0};
+            snprintf(str_buffer, 4, "%u",
+                     *((unsigned char *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("u16", self->_element_type) == 0 ||
+                   strcmp("uint16_t", self->_element_type) == 0 ||
+                   strcmp("unsigned short int", self->_element_type) == 0) {
+            // Max: 65535
+            char str_buffer[6] = {0};
+            snprintf(str_buffer, 6, "%u",
+                     *((unsigned short int *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("u32", self->_element_type) == 0 ||
+                   strcmp("uint32_t", self->_element_type) == 0 ||
+                   strcmp("unsigned int", self->_element_type) == 0) {
+            // Max: 4294967295
+            char str_buffer[11] = {0};
+            snprintf(str_buffer, 11, "%u",
+                     *((unsigned int *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("u64", self->_element_type) == 0 ||
+                   strcmp("usize", self->_element_type) == 0 ||
+                   strcmp("size_t", self->_element_type) == 0 ||
+                   strcmp("uint64_t", self->_element_type) == 0 ||
+                   strcmp("unsigned long long int", self->_element_type) == 0 ||
+                   strcmp("unsigned long int", self->_element_type) == 0) {
+            // Max: 4294967295
+            char str_buffer[21] = {0};
+            snprintf(str_buffer, 21, "%llu",
+                     *((unsigned long long int *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("i8", self->_element_type) == 0 ||
+                   strcmp("int8_t", self->_element_type) == 0 ||
+                   strcmp("signed char", self->_element_type) == 0 ||
+                   strcmp("char", self->_element_type) == 0) {
+            // Range: -127 ~ +128
+            char str_buffer[5] = {0};
+            snprintf(str_buffer, 5, "%i",
+                     *((signed char *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("i16", self->_element_type) == 0 ||
+                   strcmp("int16_t", self->_element_type) == 0 ||
+                   strcmp("signed short int", self->_element_type) == 0 ||
+                   strcmp("short int", self->_element_type) == 0) {
+            // Range: −32768 ~ +32767
+            char str_buffer[7] = {0};
+            snprintf(str_buffer, 7, "%i", *((short int *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("i32", self->_element_type) == 0 ||
+                   strcmp("int32_t", self->_element_type) == 0 ||
+                   strcmp("int", self->_element_type) == 0 ||
+                   strcmp("signed int", self->_element_type) == 0) {
+            // Range: −2147483648 ~ +2147483647
+            char str_buffer[12] = {0};
+            snprintf(str_buffer, 12, "%i", *((int *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("i64", self->_element_type) == 0 ||
+                   strcmp("int64_t", self->_element_type) == 0 ||
+                   strcmp("long", self->_element_type) == 0 ||
+                   strcmp("long int", self->_element_type) == 0 ||
+                   strcmp("long long int", self->_element_type) == 0 ||
+                   strcmp("signed long long int", self->_element_type) == 0 ||
+                   strcmp("long long", self->_element_type) == 0) {
+            // Range: -9223372036854775808 ~ +9223372036854775807
+            char str_buffer[21] = {0};
+            snprintf(str_buffer, 21, "%lli",
+                     *((long long int *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("struct Str", self->_element_type) == 0) {
+            // String
+            String temp_str =
+                (String)(self->_items + index * Str_struct_size());
+            Str_push_str(result, Str_as_str(temp_str));
+        }
 
-    /* } */
+        if (delemiter != NULL && index + 1 < self->_length) {
+            Str_push_str(result, delemiter);
+        }
+    }
 
-    /* return result; */
-    return Str_from_str("Unimplemented");
+    return result;
 }
 
 /*

@@ -27,23 +27,35 @@ void auto_free_vector(Vector *ptr);
  * variable is out of the scope
  *
  * ```c
- * SMART_VECTOR(empty_vec) = Vec_new();
+ * SMART_VECTOR(vec, int);
+ * SMART_VECTOR_WITH_CAPACITY(usize_vec, usize, 10);
  *
- * // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr:
- * 0x5472040, length: 0
+ * (D) [ Vector ] > new - self pointer: 0x5472040, element_type_size: 4
+ * (D) [ Vector ] > with_capacity - self pointer: 0x54730f0, element_type_size:
+ * 8, capacity: 10, self->items: 0x5473160 (D) [ Vector ] > auto_free_vector -
+ * out of scope with vector ptr: 0x54730f0, length: 0 (D) [ Vector ] >
+ * auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
  * ```
  */
-#define SMART_VECTOR(x) __attribute__((cleanup(auto_free_vector))) Vector x
+#define SMART_VECTOR(v_name, element_type)                              \
+    __attribute__((cleanup(auto_free_vector))) Vector v_name = Vec_new( \
+        TYPE_SIZE_FROM_TYPE(element_type), TYPE_NAME_TO_STRING(element_type))
+
+#define SMART_VECTOR_WITH_CAPACITY(v_name, element_type, capacity) \
+    __attribute__((cleanup(auto_free_vector))) Vector v_name =     \
+        Vec_with_capacity(TYPE_SIZE_FROM_TYPE(element_type),       \
+                          TYPE_NAME_TO_STRING(element_type), capacity)
 
 /*
  * Create empty vector
  */
-Vector Vec_new(usize element_type_size);
+Vector Vec_new(usize element_type_size, char *element_type);
 
 /*
  * Create an empty vector that ability to hold `capacity` elements
  */
-Vector Vec_with_capacity(usize capacity, usize element_type_size);
+Vector Vec_with_capacity(usize element_type_size, char *element_type,
+                         usize capacity);
 
 /*
  * Push element to the end of the vector:
