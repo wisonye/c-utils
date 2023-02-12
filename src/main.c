@@ -443,9 +443,30 @@ void test_hex_buffer() {
 //
 //
 void test_vector() {
-    usize u16_type_size = sizeof(u16);
-    SMART_VECTOR(empty_vec) = Vec_new(u16_type_size);
-    SMART_VECTOR(u16_vec) = Vec_with_capacity(10, u16_type_size);
+    //
+    // Bool vec
+    //
+    SMART_VECTOR_WITH_CAPACITY(bool_vec, bool, 5);
+    bool true_value = true;
+    bool false_value = false;
+    Vec_push(bool_vec, &true_value);
+    Vec_push(bool_vec, &true_value);
+    Vec_push(bool_vec, &false_value);
+    Vec_push(bool_vec, &false_value);
+    Vec_push(bool_vec, &true_value);
+    String bool_vec_desc = Vec_join(bool_vec, " , ");
+    printf("\n>>> bool_vec_desc: %s\n", Str_as_str(bool_vec_desc));
+    Str_free(bool_vec_desc);
+
+    //
+    // Empty vec
+    //
+    SMART_VECTOR(empty_vec, usize);
+
+    //
+    // u16 vec
+    //
+    SMART_VECTOR_WITH_CAPACITY(u16_vec, u16, 10);
     //
     // `capacity` should NOT change and no `realloc` will be called before
     // pushing the 11th elements
@@ -471,10 +492,15 @@ void test_vector() {
         DEBUG_LOG(Main, test_vector, "short_arr_iter[%lu]: %d", sa_index,
                   temp_short_arr[sa_index]);
     }
+    String u16_vec_desc = Vec_join(u16_vec, " , ");
+    printf("\n>>> u16_vec_desc: %s\n", Str_as_str(u16_vec_desc));
+    Str_free(u16_vec_desc);
 
+    //
     // int vec
+    //
     int int_arr[] = {100, 200, 300};
-    SMART_VECTOR(int_vec) = Vec_new(sizeof(int));
+    SMART_VECTOR(int_vec, int);
     Vec_push(int_vec, &int_arr[0]);
     Vec_push(int_vec, &int_arr[1]);
     Vec_push(int_vec, &int_arr[2]);
@@ -485,6 +511,26 @@ void test_vector() {
         DEBUG_LOG(Main, test_vector, "int_arr_iter[%lu]: %d", index,
                   temp_int_arr[index]);
     }
+    String int_vec_desc = Vec_join(int_vec, " , ");
+    printf("\n>>> int_vec_desc: %s\n", Str_as_str(int_vec_desc));
+    Str_free(int_vec_desc);
+
+    //
+    // String vec
+    //
+    SMART_STRING(temp_str_1) = Str_from_str("Vector works:)");
+    SMART_STRING(temp_str_2) = Str_from_str("Generic vector works:)");
+    SMART_STRING(temp_str_3) =
+        Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
+
+    SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3);
+    Vec_push(string_vec, temp_str_1);
+    Vec_push(string_vec, temp_str_2);
+    Vec_push(string_vec, temp_str_3);
+
+    String string_vec_desc = Vec_join(string_vec, " , ");
+    printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
+    Str_free(string_vec_desc);
 
     // Person list
     typedef struct {
@@ -497,7 +543,7 @@ void test_vector() {
     Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
     Person nobody = {
         .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-    SMART_VECTOR(person_list) = Vec_new(sizeof(Person));
+    SMART_VECTOR(person_list, Person);
     Vec_push(person_list, &wison);
     Vec_push(person_list, &fion);
     Vec_push(person_list, &nobody);
@@ -518,8 +564,7 @@ void test_vector() {
     usize double_type_size = sizeof(double);
     usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
-    SMART_VECTOR(double_vec) =
-        Vec_with_capacity(double_arr_len, double_type_size);
+    SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len);
     for (usize di = 0; di < double_arr_len; di++) {
         Vec_push(double_vec, &double_arr[di]);
     }
@@ -534,9 +579,7 @@ void test_vector() {
 }
 
 void test_vector_element_destructor() {
-    SMART_VECTOR(vec) =
-        // Vec_new(VEC_DESTRUCTOR(auto_free_string), Str_struct_size());
-        Vec_with_capacity(2, Str_struct_size());
+    SMART_VECTOR_WITH_CAPACITY(vec, String, 2);
 
     String str1 = Str_from_str("String in vector");
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
@@ -609,7 +652,8 @@ String return_string_on_the_heap() {
 
 Vector return_vector_on_the_heap() {
     usize double_size = sizeof(double);
-    Vector temp_vec = Vec_with_capacity(5, double_size);
+    Vector temp_vec =
+        Vec_with_capacity(double_size, TYPE_NAME_TO_STRING(double), 5);
     double d = 888.88;
     Vec_push(temp_vec, &d);
     return temp_vec;
@@ -693,8 +737,8 @@ void test_bits() {
 //
 //
 int main(int argc, char **argv) {
-    test_link_list();
-    /* test_string(); */
+    /* test_link_list(); */
+    test_string();
     /* test_log_macro(); */
     test_vector();
     /* test_vector_element_destructor(); */

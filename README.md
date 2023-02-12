@@ -410,90 +410,26 @@ call.
 
     This `Vector` doesn't support normal generic `<T>` (no auto element type
     inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
-    creating a `Venctor`.
+    creating a `Vector`.
 
     When pushing an element, `Vector` executes a shallow copy which means doesn't
     copy the internal heap-allocated content!!!
 
-    </br>
-
-
-    ```c
-    /*
-     * Define smart `Vector` var that calls `Vec_free()` automatically when the
-     * variable is out of the scope
-     *
-     * ```c
-     * SMART_VECTOR(empty_vec) = Vec_new();
-     *
-     * // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr:
-     * 0x5472040, length: 0
-     * ```
-     */
-    #define SMART_VECTOR(x) __attribute__((cleanup(auto_free_vector))) Vector x
-    
-    /*
-     * Create empty vector
-     */
-    Vector Vec_new(usize element_type_size);
-    
-    /*
-     * Create an empty vector that ability to hold `capacity` elements
-     */
-    Vector Vec_with_capacity(usize capacity, usize element_type_size);
-    
-    /*
-     * Push element to the end of the vector:
-     *
-     * Vector executes a shallow copy which means doesn't copy the internal
-     * heap-allocated content!!!
-     */
-    void Vec_push(Vector self, void *element);
-    
-    /*
-     * Return the length
-     */
-    const usize Vec_len(const Vector self);
-    
-    /*
-     * Return the capacity
-     */
-    const usize Vec_capacity(const Vector self);
-    
-    /*
-     * Return the item iterator
-     */
-    const VectorIteractor Vec_iter(const Vector self);
-    
-    /*
-     * Return the given index item, return `NULL` is not exists.
-     */
-    const void *Vec_get(const Vector self, usize index);
-    
-    /*
-     * Join all elements and return a string
-     */
-    const char *Vec_join(const Vector self, char *delemiter);
-    
-    /*
-     * Free allocated memory
-     */
-    void Vec_free(Vector self);
-    ```
+    The `SMART_VECTOR` and `SMART_VECTOR_WITH_CAPACITY` macro ensures the
+    heap-allocated instance auto-free heap-allocated memory when it goes out of
+    its scope.
 
     </br>
 
     Examples:
-
-    The `SMART_VECTOR` macro ensures the `Vec` instance auto-free heap-allocated
-    memory when it goes out of its scope.
 
     </br>
 
     - Create empty vector:
 
         ```c
-        SMART_VECTOR(empty_vec) = Vector_new();
+        // `SMART_VECTOR(variable_name, element_type);`
+        SMART_VECTOR(empty_vec, usize);
         // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
         ```
 
@@ -502,46 +438,42 @@ call.
     - Create empty vector with pre-allocated space to avoid `realloc` cost:
 
         ```c
-        // Pre-allocate 10 `uint16_t` integer space
-        usize u16_type_size = sizeof(u16);
-        SMART_VECTOR(u16_vec) = Vector_with_capacity(10, u16_type_size);
+        // `SMART_VECTOR_WITH_CAPACITY(variable_name, element_type, capacity);`
+
+        //
+        // u16 vec
+        //
+        SMART_VECTOR_WITH_CAPACITY(u16_vec, u16, 10);
+        // (D) [ Vector ] > with_capacity - self pointer: 0x5474260, element_type_size: 2, capacity: 10, self->items: 0x54742d0
 
         //
         // `capacity` should NOT change and no `realloc` will be called before
         // pushing the 11th elements
         //
-        u16 short_arr[] = {
-            5000, 5001, 5002, 5003, 5004,
-            5005, 5006, 5007, 5008, 5009,
-            6000
-        };
+        u16 short_arr[] = {5000, 5001, 5002, 5003, 5004, 5005,
+                           5006, 5007, 5008, 5009, 6000};
+        Vec_push(u16_vec, &short_arr[0]);
+        Vec_push(u16_vec, &short_arr[1]);
+        Vec_push(u16_vec, &short_arr[2]);
+        Vec_push(u16_vec, &short_arr[3]);
+        Vec_push(u16_vec, &short_arr[4]);
+        Vec_push(u16_vec, &short_arr[5]);
+        Vec_push(u16_vec, &short_arr[6]);
+        Vec_push(u16_vec, &short_arr[7]);
+        Vec_push(u16_vec, &short_arr[8]);
+        Vec_push(u16_vec, &short_arr[9]);
 
-        Vector_push(u16_vec, &short_arr[0]);
-        Vector_push(u16_vec, &short_arr[1]);
-        Vector_push(u16_vec, &short_arr[2]);
-        Vector_push(u16_vec, &short_arr[3]);
-        Vector_push(u16_vec, &short_arr[4]);
-        Vector_push(u16_vec, &short_arr[5]);
-        Vector_push(u16_vec, &short_arr[6]);
-        Vector_push(u16_vec, &short_arr[7]);
-        Vector_push(u16_vec, &short_arr[8]);
-        Vector_push(u16_vec, &short_arr[9]);
+        // `capacity` should change to `20`
+        Vec_push(u16_vec, &short_arr[10]);
+        // (D) [ Vector ] > Vec_Push - Realloc needed, current capacity: 10, length+1: 11, after capacity: 20, self->item: 0x5474330
 
-        // This push should trigger `realloc` be called and `capacity`
-        // should change to `20` after this statement
-        Vector_push(u16_vec, &short_arr[10]);
-
-        // Get back iteractor to access all elements
-        VectorIteractor short_arr_iter = Vector_iter(u16_vec);
+        // Print element value
+        VectorIteractor short_arr_iter = Vec_iter(u16_vec);
         u16 *temp_short_arr = (u16 *)short_arr_iter.items;
-        for (usize index = 0; index < short_arr_iter.length; index++) {
-            DEBUG_LOG(Main,
-                    test_vector,
-                    "short_arr_iter[%lu]: %d",
-                    sa_index,
-                    temp_short_arr[index]);
+        for (usize sa_index = 0; sa_index < short_arr_iter.length; sa_index++) {
+            DEBUG_LOG(Main, test_vector, "short_arr_iter[%lu]: %d", sa_index,
+                      temp_short_arr[sa_index]);
         }
-
         // (D) [ Main ] > test_vector - short_arr_iter[0]: 5000
         // (D) [ Main ] > test_vector - short_arr_iter[1]: 5001
         // (D) [ Main ] > test_vector - short_arr_iter[2]: 5002
@@ -553,7 +485,16 @@ call.
         // (D) [ Main ] > test_vector - short_arr_iter[8]: 5008
         // (D) [ Main ] > test_vector - short_arr_iter[9]: 5009
         // (D) [ Main ] > test_vector - short_arr_iter[10]: 6000
-        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x54730e0, length: 11
+
+        // `Vec_join` get back a `String` instance
+        String u16_vec_desc = Vec_join(u16_vec, " , ");
+        printf("\n>>> u16_vec_desc: %s\n", Str_as_str(u16_vec_desc));
+        Str_free(u16_vec_desc);
+        // (D) [ String ] > from_empty - self ptr: 0x54743a0
+        // >>> u16_vec_desc: 5000 , 5001 , 5002 , 5003 , 5004 , 5005 , 5006 , 5007 , 5008 , 5009 , 6000
+
+        // Auto free when out of scope
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5474260, length: 11
         ```
 
         </br>
@@ -566,10 +507,9 @@ call.
         usize double_type_size = sizeof(double);
         usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
-        SMART_VECTOR(double_vec) =
-            Vector_with_capacity(double_arr_len, double_type_size);
+        SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len);
         for (usize di = 0; di < double_arr_len; di++) {
-            Vector_push(double_vec, &double_arr[di]);
+            Vec_push(double_vec, &double_arr[di]);
         }
 
         const double *d_value_1 = (const double *)Vec_get(double_vec, 0);
@@ -584,6 +524,38 @@ call.
         // (D) [ Main ] > test_vector - d_value_2: 22.220000
         // (D) [ Main ] > test_vector - d_value_3: 33.330000⏎
         // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5473210, length: 3
+        ```
+
+        </br>
+
+    - Use `String`:
+
+        ```c
+        //
+        // String vec
+        //
+        SMART_STRING(temp_str_1) = Str_from_str("Vector works:)");
+        SMART_STRING(temp_str_2) = Str_from_str("Generic vector works:)");
+        SMART_STRING(temp_str_3) =
+            Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
+
+        SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3);
+        Vec_push(string_vec, temp_str_1);
+        Vec_push(string_vec, temp_str_2);
+        Vec_push(string_vec, temp_str_3);
+
+        String string_vec_desc = Vec_join(string_vec, " , ");
+        printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
+        Str_free(string_vec_desc);
+
+        // (D) [ String ] > from_str - self ptr: 0x5475050, malloc ptr: 0x54750a0, from_str: Vector works:)
+        // (D) [ String ] > from_str - self ptr: 0x54750f0, malloc ptr: 0x5475140, from_str: Generic vector works:)
+        // (D) [ String ] > from_str - self ptr: 0x54751a0, malloc ptr: 0x54751f0, from_str: My Generic vector works, yeah!!!:)>>>>:(
+        // (D) [ Vector ] > with_capacity - self pointer: 0x5475260, element_type_size: 16, capacity: 3, self->items: 0x54752d0
+        // (D) [ String ] > from_empty - self ptr: 0x5475340
+        // >>> string_vec: Vector works:) , Generic vector works:) , My Generic vector works, yeah!!!:)>>>>:(
+
+        // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5475260, length: 3
         ```
 
         </br>
