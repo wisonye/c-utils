@@ -6,9 +6,9 @@ This is my personal `C` utilities which contains the following modules:
 [2. `Log`](#2-log-handy-logging-implementation)</br>
 [2.1 `LOG_VAR` macro](#21-log_var-macro)</br>
 [2.2 `printf` liked formatted logger](#22-printf-liked-formatted-logger)</br>
-[3. `HexBuffer`](#3-hexbuffer)</br>
-[3.1 `char *` to `HexBuffer`](#31-char--to-HexBuffer)</br>
-[3.2 `HexBuffer` to `char *`](#32-HexBuffer-to-char--)</br>
+[3. `HexBuffer`](3-hexbuffer)</br>
+[3.1 `char *` to `HexBuffer`](#31-char--to-hexbuffer)</br>
+[3.2 `HexBuffer` to `char *`](#32-hexbuffer-to-char-)</br>
 
 </br>
 
@@ -301,11 +301,9 @@ ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
 
 </br>
 
-## 3. `HexBuffer`: Handle convertion between `char *` and `u8[]`
+## 3. `HexBuffer`
 
 Handle convertion between `char *` and `u8[]`
-
-Examples:
 
 </br>
 
