@@ -10,6 +10,9 @@ This is my personal `C` utilities which contains the following modules:
 [3.1 `char *` to `HexBuffer`](#31-char--to-hexbuffer)</br>
 [3.2 `HexBuffer` to `char *`](#32-hexbuffer-to-char-)</br>
 
+[4. `Memory`](#4-memory)
+[4.1 `PRINT_MEMORY_BLOCK` macro](#4-1-print_memory_block-macro)
+[4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro](#4-2-print_memory_block_for_smart_type-macro)
 </br>
 
 ## 1. `String`
@@ -430,70 +433,79 @@ Handle convertion between `char *` and `u8[]`
     </br>
 
 
-- `Memory`: Handy memory utils.
+## 4. `Memory`:
 
-    - `PRINT_MEMORY_BLOCK` macro, only available when `ENABLE_DEBUG_LOG` is defined!!!
+Handy memory utils.
 
-        used to print the memory block data in HEX format from a given variable.
+#### 4.1 `PRINT_MEMORY_BLOCK` macro
 
-        ```c
-        struct Person {
-            char birthday[9];
-            u8 age;
-        };
+It's only available when `ENABLE_DEBUG_LOG` is defined!!!
 
-        struct Person me = {
-            .birthday = "19880531",
-            .age = 0xAA,
-        };
-        PRINT_MEMORY_BLOCK(struct Person, me)
+It's used to print the memory block data in HEX format from a given variable.
 
-        int data = 10;
-        PRINT_MEMORY_BLOCK(int, data);
+Example:
 
-        // (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
-        // (D) [ Memory ] > print_memory_block - --------------------
-        // (D) [ Memory ] > print_memory_block - 313938383035333100AA
-        // (D) [ Memory ] > print_memory_block - --------------------
-        //
-        // (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
-        // (D) [ Memory ] > print_memory_block - --------
-        // (D) [ Memory ] > print_memory_block - 0A000000
-        // (D) [ Memory ] > print_memory_block - --------
-        ```
+```c
+struct Person {
+    char birthday[9];
+    u8 age;
+};
 
-        </br>
+struct Person me = {
+    .birthday = "19880531",
+    .age = 0xAA,
+};
+PRINT_MEMORY_BLOCK(struct Person, me)
 
-    - `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro, only available when
-    `ENABLE_DEBUG_LOG` is defined!!!
+int data = 10;
+PRINT_MEMORY_BLOCK(int, data);
 
-        It works like the same with the `PRINT_MEMORY_BLOCK` macro but focuses
-        on the`SMART_XXXX` variable case, as those variables are `opaque pointer`
-        types without the original `struct` type available.
+// (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
+// (D) [ Memory ] > print_memory_block - --------------------
+// (D) [ Memory ] > print_memory_block - 313938383035333100AA
+// (D) [ Memory ] > print_memory_block - --------------------
+//
+// (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
+// (D) [ Memory ] > print_memory_block - --------
+// (D) [ Memory ] > print_memory_block - 0A000000
+// (D) [ Memory ] > print_memory_block - --------
+```
 
-        ```c
-        SMART_STRING(str1) = Str_from_str("String in vector");
-        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+</br>
 
-        // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
-        // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
-        // (D) [ Memory ] > print_memory_block - --------------------------------
-        // (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
-        // (D) [ Memory ] > print_memory_block - --------------------------------
-        ```
+#### 4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro
 
-        As you can see above, proven by the `lldb` memory block printing in
-        `Big Endian` order:
+It's only available when `ENABLE_DEBUG_LOG` is defined!!!
 
-        ```bash
-        (lldb) v str1
-        # (String) str1 = 0x000000082346a000
+It works like the same with the `PRINT_MEMORY_BLOCK` macro but focuses
+on the`SMART_XXXX` variable case, as those variables are `opaque pointer`
+types without the original `struct` type available.
 
-        (lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
-        # 0x82346a000: 0x000000082346B0000000000000000010
-        ```
+Example:
 
-        </br>
+```c
+SMART_STRING(str1) = Str_from_str("String in vector");
+PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+
+// (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
+// (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
+// (D) [ Memory ] > print_memory_block - --------------------------------
+// (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
+// (D) [ Memory ] > print_memory_block - --------------------------------
+```
+
+As you can see above, proven by the `lldb` memory block printing in
+`Big Endian` order:
+
+```bash
+(lldb) v str1
+# (String) str1 = 0x000000082346a000
+
+(lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
+# 0x82346a000: 0x000000082346B0000000000000000010
+```
+
+</br>
 
 
 - `Timer`: High resolution timer utils
