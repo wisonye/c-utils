@@ -3,15 +3,15 @@
 This is my personal `C` utilities which contains the following modules:
 
 [1. `String`](#1-string)</br>
-[1.1 Create empty string](#1-1-create-empty-string)
-[1.2 Create from `char *` or `char []`](#1-2-Create-from-char--or-char)
-[1.3 Clone from other `String`](#1-3-clone-from-other-string)
-[1.4 Move from other `String`](#1-4-move-from-other-string)
-[1.5 Push to the end, get back length and get back `char *`](#1-5-push-to-the-end-get-back-length-and-get-back-char--)
-[1.6 Insert at beginning](#1-6-insert-at-beginning)
-[1.7 Find substring](#1-7-find-substring)
-[1.8 Reset to empty](#1-8-reset-to-empty)
-[1.9 Create `String` on the stack and free it manually](#1-9-create-string-on-the-stack-and-free-it-manually)
+[1.1 Create empty string](#11-create-empty-string)</br>
+[1.2 Create from `char *` or `char []`](#12-create-from-char--or-char-)</br>
+[1.3 Clone from other `String`](#13-clone-from-other-string)</br>
+[1.4 Move from other `String`](#14-move-from-other-string)</br>
+[1.5 Push to the end, get back length and get back `char *`](#15-push-to-the-end-get-back-length-and-get-back-char-)</br>
+[1.6 Insert at beginning](#16-insert-at-beginning)</br>
+[1.7 Find substring](#17-find-substring)</br>
+[1.8 Reset to empty](#18-reset-to-empty)</br>
+[1.9 Create `String` on the stack and free it manually](#19-create-string-on-the-stack-and-free-it-manually)</br>
 [2. `Log`](#2-log)</br>
 [2.1 `LOG_VAR` macro](#21-log_var-macro)</br>
 [2.2 `printf` liked formatted logger macro](#22-printf-liked-formatted-logger-macro)</br>
