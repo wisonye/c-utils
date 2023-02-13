@@ -3,10 +3,10 @@
 This is my personal `C` utilities which contains the following modules:
 
 [1. `String`](#1-string)</br>
-[2. `Log`](#2-log-handy-logging-implementation)</br>
+[2. `Log`](#2-log)</br>
 [2.1 `LOG_VAR` macro](#21-log_var-macro)</br>
 [2.2 `printf` liked formatted logger](#22-printf-liked-formatted-logger)</br>
-[3. `HexBuffer`](3-hexbuffer)</br>
+[3. `HexBuffer`](#3-hexbuffer)</br>
 [3.1 `char *` to `HexBuffer`](#31-char--to-hexbuffer)</br>
 [3.2 `HexBuffer` to `char *`](#32-hexbuffer-to-char-)</br>
 
@@ -42,12 +42,9 @@ Examples:
 - Create from `char *` or `char []`
 
     ```c
-    SMART_STRING(str) = Str_from_str("Hey:)");
-
     char arr[] = "Unit Test:)";
-    SMART_STRING(str_2) = Str_from_arr(arr);
+    SMART_STRING(str) = Str_from_arr(arr);
 
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000330, as_str: Hey:)
     // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000002f0, as_str: Unit Test:)
     ```
 
@@ -91,7 +88,7 @@ Examples:
 
     </br>
 
-- Push at the end, get back length and get back `char *`
+- Push to the end, get back length and get back `char *`
 
     ```c
     SMART_STRING(original_str) = Str_from_str("I'm original:)");
@@ -248,7 +245,9 @@ Examples:
 
     </br>
 
-## 2. `Log`: Handy logging implementation.
+## 2. `Log`
+
+Handy logging implementation.
 
 #### 2.1 `LOG_VAR` macro
 
