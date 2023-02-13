@@ -9,10 +9,9 @@ This is my personal `C` utilities which contains the following modules:
 [3. `HexBuffer`](#3-hexbuffer)</br>
 [3.1 `char *` to `HexBuffer`](#31-char--to-hexbuffer)</br>
 [3.2 `HexBuffer` to `char *`](#32-hexbuffer-to-char-)</br>
-
-[4. `Memory`](#4-memory)
-[4.1 `PRINT_MEMORY_BLOCK` macro](#4-1-print_memory_block-macro)
-[4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro](#4-2-print_memory_block_for_smart_type-macro)
+[4. `Memory`](#4-memory)</br>
+[4.1 `PRINT_MEMORY_BLOCK` macro](#41-print_memory_block-macro)</br>
+[4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro](#42-print_memory_block_for_smart_type-macro)</br>
 </br>
 
 ## 1. `String`
