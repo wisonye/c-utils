@@ -13,7 +13,7 @@ This is my personal `C` utilities which contains the following modules:
 [4.1 `PRINT_MEMORY_BLOCK` macro](#41-print_memory_block-macro)</br>
 [4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro](#42-print_memory_block_for_smart_type-macro)</br>
 [5. `Timer`](#5-timer)</br>
-[6. `Smart ptr`](#6-smart-ptr)</br>
+[6. `Smart pointer`](#6-smart-pointer)</br>
 
 </br>
 
@@ -622,7 +622,7 @@ High resolution timer utils
 
     </br>
 
-## 6. `Smart ptr`
+## 6. `Smart pointer`
 
 `MAKE_UNIQUE_PTR` simulates the `std::make_unique` in `C++`:
 
