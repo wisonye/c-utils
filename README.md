@@ -12,7 +12,8 @@ This is my personal `C` utilities which contains the following modules:
 [4. `Memory`](#4-memory)</br>
 [4.1 `PRINT_MEMORY_BLOCK` macro](#41-print_memory_block-macro)</br>
 [4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro](#42-print_memory_block_for_smart_type-macro)</br>
-[## 5. `Timer`](#5-timer)
+[5. `Timer`](#5-timer)</br>
+[6. `Smart ptr`](#6-smart-ptr)</br>
 
 </br>
 
@@ -621,11 +622,23 @@ High resolution timer utils
 
     </br>
 
-- `Smart ptr`:
+## 6. `Smart ptr`
 
-    `make_unique_ptr` simulates the `std::make_unique` in `C++`:
+`MAKE_UNIQUE_PTR` simulates the `std::make_unique` in `C++`:
+
+
+
+</br>
+
+- Interface
+
+    ```c
+    MAKE_UNIQUE_PTR(VAR_DEFINE, DESTRUCTOR)
+    ```
 
     </br>
+
+- Example
 
     ```c
     String return_string_on_the_heap() {
@@ -645,13 +658,12 @@ High resolution timer utils
         //
         // `return_str` will be destroyed by calling `auto_free_string` automatic
         //
-        make_unique_ptr(String return_str = return_string_on_the_heap(),
-                        auto_free_string);
+        MAKE_UNIQUE_PTR(String return_str = return_string_on_the_heap(), auto_free_string);
 
         //
         // `return_vector` will be destroyed by calling `auto_free_vector` automatic
         //
-        make_unique_ptr(Vector return_vec = return_vector_on_the_heap(),
+        MAKE_UNIQUE_PTR(Vector return_vec = return_vector_on_the_heap(),
                         auto_free_vector);
 
         DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,

@@ -10,7 +10,7 @@
  *
  * `destructor` - Destructor function that accepts a `** Type` parameter
  */
-#define make_unique_ptr(var_define, destructor) \
+#define MAKE_UNIQUE_PTR(VAR_DEFINE, DESTRUCTOR) \
     __attribute__((cleanup(destructor))) var_define
 
 #endif
