@@ -253,54 +253,94 @@ Handy logging implementation.
 
 #### 2.1 `LOG_VAR` macro
 
-Use to print the single variable's value, only for debugging purposes.
-
 It's only available when `ENABLE_DEBUG_LOG` is defined!!!
 
-```c
-char *string_value = "Wison Ye";
-char char_value = 'c';
-u8 u8_value = 255;
-
-LOG_VAR(string_value);
-LOG_VAR(char_value);
-LOG_VAR(u8_value);
-
-LOG_VAR(sizeof(int));
-LOG_VAR(sizeof(long));
-
-// >>> string_value: Wison Ye
-// >>> char_value: c
-// >>> u8_value: 255
-// >>> sizeof(int): 4
-// >>> sizeof(long): 8
-```
+Use to print the single variable's value, only for debugging purposes.
 
 </br>
+
+- Interface
+
+    ```c
+    LOG_VAR(VAR_NAME)
+    ```
+    
+    </br>
+
+- Example
+
+    ```c
+    char *string_value = "Nice";
+    char char_value = 'c';
+    u8 u8_value = 255;
+
+    LOG_VAR(string_value);
+    LOG_VAR(char_value);
+    LOG_VAR(u8_value);
+
+    LOG_VAR(sizeof(int));
+    LOG_VAR(sizeof(long));
+
+    // >>> string_value: Nice
+    // >>> char_value: c
+    // >>> u8_value: 255
+    // >>> sizeof(int): 4
+    // >>> sizeof(long): 8
+    ```
+
+    </br>
 
 #### 2.2 `printf` liked formatted logger
 
-```c
-#include "utils/log.h"
-#include "utils/string.h"
+- Interface
 
-String my_str = Str_from_str("My name is Wison Ye");
-DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
-DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    ```c
+    /**
+     * Debug log
+     */
+    DEBUG_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)
 
-// (D) [ Main ] > main - add(2, 3): 5
-// (D) [ Main ] > main - 2 + 2 :4
-// (D) [ Main ] > main - my_str value is: My name is Wison Ye
-// (I) [ Main ] > main - my_str value is: My name is Wison Ye
-// (W) [ Main ] > main - my_str value is: My name is Wison Ye
-// (E) [ Main ] > main - my_str value is: My name is Wison Ye⏎
-```
+    /**
+     * Info log
+     */
+    INFO_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)
 
-</br>
+    /**
+     * Warn log
+     */
+    WARN_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)
+
+    /**
+     * Error log
+     */
+    ERROR_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)
+    ```
+
+    </br>
+
+- Example
+
+    ```c
+    #include "utils/log.h"
+    #include "utils/string.h"
+
+    String my_str = Str_from_str("This macro is so cool:)");
+    DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
+    DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
+    DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+
+    // (D) [ Main ] > main - add(2, 3): 5
+    // (D) [ Main ] > main - 2 + 2 :4
+    // (D) [ Main ] > main - my_str value is: This macro is so cool:)
+    // (I) [ Main ] > main - my_str value is: This macro is so cool:)
+    // (W) [ Main ] > main - my_str value is: This macro is so cool:)
+    // (E) [ Main ] > main - my_str value is: This macro is so cool:)
+    ```
+
+    </br>
 
 ## 3. `HexBuffer`
 
@@ -442,35 +482,45 @@ It's only available when `ENABLE_DEBUG_LOG` is defined!!!
 
 It's used to print the memory block data in HEX format from a given variable.
 
-Example:
-
-```c
-struct Person {
-    char birthday[9];
-    u8 age;
-};
-
-struct Person me = {
-    .birthday = "19880531",
-    .age = 0xAA,
-};
-PRINT_MEMORY_BLOCK(struct Person, me)
-
-int data = 10;
-PRINT_MEMORY_BLOCK(int, data);
-
-// (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
-// (D) [ Memory ] > print_memory_block - --------------------
-// (D) [ Memory ] > print_memory_block - 313938383035333100AA
-// (D) [ Memory ] > print_memory_block - --------------------
-//
-// (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
-// (D) [ Memory ] > print_memory_block - --------
-// (D) [ Memory ] > print_memory_block - 0A000000
-// (D) [ Memory ] > print_memory_block - --------
-```
-
 </br>
+
+- Interface
+
+    ```c
+    PRINT_MEMORY_BLOCK(TYPE_NAME, VAR_NAME)
+    ```
+
+    </br>
+
+- Example:
+
+    ```c
+    struct Person {
+        char birthday[9];
+        u8 age;
+    };
+
+    struct Person me = {
+        .birthday = "19880531",
+        .age = 0xAA,
+    };
+    PRINT_MEMORY_BLOCK(struct Person, me)
+
+    int data = 10;
+    PRINT_MEMORY_BLOCK(int, data);
+
+    // (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
+    // (D) [ Memory ] > print_memory_block - --------------------
+    // (D) [ Memory ] > print_memory_block - 313938383035333100AA
+    // (D) [ Memory ] > print_memory_block - --------------------
+    //
+    // (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
+    // (D) [ Memory ] > print_memory_block - --------
+    // (D) [ Memory ] > print_memory_block - 0A000000
+    // (D) [ Memory ] > print_memory_block - --------
+    ```
+
+    </br>
 
 #### 4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro
 
@@ -480,31 +530,42 @@ It works like the same with the `PRINT_MEMORY_BLOCK` macro but focuses
 on the`SMART_XXXX` variable case, as those variables are `opaque pointer`
 types without the original `struct` type available.
 
-Example:
-
-```c
-SMART_STRING(str1) = Str_from_str("String in vector");
-PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
-
-// (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
-// (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
-// (D) [ Memory ] > print_memory_block - --------------------------------
-// (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
-// (D) [ Memory ] > print_memory_block - --------------------------------
-```
-
-As you can see above, proven by the `lldb` memory block printing in
-`Big Endian` order:
-
-```bash
-(lldb) v str1
-# (String) str1 = 0x000000082346a000
-
-(lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
-# 0x82346a000: 0x000000082346B0000000000000000010
-```
-
 </br>
+
+
+- Interface
+
+    ````c
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(TYPE_NAME, VAR_NAME, TYPE_SIZE)
+    ````
+
+    </br>
+
+- Example:
+
+    ```c
+    SMART_STRING(str1) = Str_from_str("String in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+
+    // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
+    // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
+    // (D) [ Memory ] > print_memory_block - --------------------------------
+    // (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
+    // (D) [ Memory ] > print_memory_block - --------------------------------
+    ```
+
+    As you can see above, proven by the `lldb` memory block printing in
+    `Big Endian` order:
+
+    ```bash
+    (lldb) v str1
+    # (String) str1 = 0x000000082346a000
+
+    (lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
+    # 0x82346a000: 0x000000082346B0000000000000000010
+    ```
+
+    </br>
 
 
 - `Timer`: High resolution timer utils
@@ -732,7 +793,7 @@ As you can see above, proven by the `lldb` memory block printing in
 
         </br>
 
-    - Interfaces
+    - Interface
 
         ```c
         //----------------------------------------------------------------------------
@@ -1197,7 +1258,6 @@ cmake .. -DBUILD_GMOCK=OFF
 # -- Found Threads: TRUE
 # -- Configuring done
 # -- Generating done
-# -- Build files have been written to: /usr/home/wison/googletest/build
 ```
 
 </br>
