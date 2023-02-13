@@ -15,8 +15,8 @@ This is my personal `C` utilities which contains the following modules:
 [5. `Timer`](#5-timer)</br>
 [6. `Smart pointer`](#6-smart-pointer)</br>
 [7. `Bits`](#7-bits)</br>
-[7.1 `PRINT_BITS` macro](#7-1-print_bits-macro)</br>
-[7.2 `IS_BIT_1` macro](#7-2-is_bit_1-macro)</br>
+[7.1 `PRINT_BITS` macro](#71-print_bits-macro)</br>
+[7.2 `IS_BIT_1` macro](#72-is_bit_1-macro)</br>
 
 </br>
 
@@ -666,8 +666,7 @@ High resolution timer utils
         //
         // `return_vector` will be destroyed by calling `auto_free_vector` automatic
         //
-        MAKE_UNIQUE_PTR(Vector return_vec = return_vector_on_the_heap(),
-                        auto_free_vector);
+        MAKE_UNIQUE_PTR(Vector return_vec = return_vector_on_the_heap(), auto_free_vector);
 
         DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
                   Str_as_str(return_str));
@@ -744,29 +743,21 @@ Check whether the given bit is `1` or not
     v = 0xCD;
     PRINT_BITS(v);
     which_bit = 1;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 2;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 3;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 4;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 5;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 6;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 7;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 8;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v, v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
 
     // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0xCD bits: 11001101
     // >>> bit 1 in '0xCD' is 1?: Yes
