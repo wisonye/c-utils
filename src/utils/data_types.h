@@ -85,7 +85,7 @@ typedef char *_str;
 //
 // Type name from type
 //
-#define TYPE_NAME_TO_STRING(T) #T
+#define TYPE_NAME_TO_STRING(T) (char *)(#T)
 
 //
 // Type size from variable
