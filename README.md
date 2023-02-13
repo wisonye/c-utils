@@ -3,13 +3,182 @@
 This is my personal `C` utilities which contains the following modules:
 
 [1. `String`](#1-string)</br>
-[2. Let's build a `C++ Dynamic library` for this tutorial](#2-lets-build-a-c-dynamic-library-for-this-tutorial)</br>
-[2.1 What will export via the `C++ Dynamic Library`](#21-what-will-export-via-the-c-dynamic-library)</br>
-[2.2 Install `C++` and `cmake` building tools](#22-install-c-and-cmake-building-tools)</br>
-[2.3 Use `cmake` to compile a dynamic library](#23-use-cmake-to-compile-a-dynamic-library)</br>
-[2.4 How to inspect the library's dynamic symbol table](#24-how-to-inspect-the-librarys-dynamic-symbol-table)</br>
+[2. `Log`: Handy logging implementation.](#2-Log:-Handy-logging-implementation.)</br>
+[2.1 `LOG_VAR` macro](#21-log_var-macro)</br>
+[2.2 `printf` liked formatted logger](#22-printf-liked-formatted-logger)</br>
+[3. `HexBuffer`: Handle convertion between `char *` and `u8[]`](#3-HexBuffer:-Handle-convertion-between-char-*-and-u8[])
 
 </br>
+
+## 1. `String`
+
+Wrap and hide all `null-terminated` C-style string in `struct`,
+hide the `null-terminated` detail and pointer, just deal with normal function
+call.
+
+The `SMART_STRING` and `SMART_STRING_WITH_CAPACITY` macro ensures the
+heap-allocated instance auto-free heap-allocated memory when it goes out of
+its scope.
+
+Examples:
+
+</br>
+
+- Create empty string
+
+    ```c
+    // `SMART_STRING(variable_name);`
+    SMART_STRING(empty_str) = Str_from_empty();
+    SMART_STRING(empty_str_2) = Str_from_str(NULL);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d0, as_str: (null)
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b0, as_str: (null)
+    ```
+
+    </br>
+
+- Create from `char *` or `char []`
+
+    ```c
+    SMART_STRING(str) = Str_from_str("Hey:)");
+
+    char arr[] = "Unit Test:)";
+    SMART_STRING(str_2) = Str_from_arr(arr);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000330, as_str: Hey:)
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000002f0, as_str: Unit Test:)
+    ```
+
+    </br>
+
+- Clone from other `String`
+
+    Clone from the given `String` instance but don't touch the heap-allocated
+    memory it owned
+
+    ```c
+    SMART_STRING(original_str) = Str_from_str("I'm original:)");
+    SMART_STRING(clone_from_other_str) = Str_clone_from(original_str);
+
+    // `clone_from_other_str` is a deep clone, so `original_str` doesn't changes
+    assert(Str_length(original_str) == 12);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d2, as_str: I'm original:)
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b1, as_str: I'm original:)
+    ```
+
+    </br>
+
+- Move from other `String`
+
+    Move from the given `String` instance and move ownership of the
+    heap-allocated memory to the newly created `String` instance. The original
+    `String` becomes an empty string, as it points to nothing!!!
+
+    ```c
+    SMART_STRING(original_str) = Str_from_str("I'm original:)");
+    SMART_STRING(move_from_other_str) = Str_move_from(original_str);
+
+    // After that, `original_str` becomes an empty string
+    assert(Str_length(original_str) == 0);
+    assert(Str_as_str(original_str) == NULL);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d8, as_str: (null)
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b9, as_str: I'm original:)
+    ```
+
+    </br>
+
+- Push at the end, get back length and get back `char *`
+
+    ```c
+    SMART_STRING(original_str) = Str_from_str("I'm original:)");
+    SMART_STRING(empty_str) = Str_from_empty();
+
+    // Push from `char *`
+    Str_push_str(empty_str, "123_");
+
+    // Push from other `String`
+    Str_push_other(empty_str, original_str);
+
+    // Get back length
+    assert(Str_length(empty_str) == strlen("123_I'm original:)"));
+
+    // Get back `char *`
+    assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
+    ```
+
+    </br>
+
+- Insert at beginning
+
+    ```c
+    SMART_STRING(original_str) = Str_from_str("I'm original:)");
+    SMART_STRING(empty_str) = Str_from_empty();
+
+    // Insert other `String` to the beginning
+    Str_push_other(empty_str, original_str);
+
+    // Insert `char *` to the beginning
+    Str_insert_str_to_begin(empty_str, "123_");
+
+    // Get back length
+    assert(Str_length(empty_str) == strlen("123_I'm original:)"));
+
+    // Get back `char *`
+    assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
+    ```
+
+    </br>
+
+- Find substring
+
+    ```c
+    SMART_STRING(original_str) = Str_from_str("I'm original:)");
+    SMART_STRING(empty_str) = Str_move_from(original_str);
+
+    //
+    // Find the given `char *` index, return `-1` if not found
+    //
+    assert(Str_index_of(empty_str, "I'm") == 0);
+    assert(Str_index_of(empty_str, "nal") == 9);
+    assert(Str_index_of(empty_str, "RIG") == 5);
+    assert(Str_index_of(empty_str, "ABC") == -1);
+
+    //
+    // Find the given `char *`(case-sensitive) index, return `-1` if not found
+    //
+    assert(Str_index_of_case_sensitive(empty_str, "RIG") == -1);
+
+    //
+    // Check whether contain the given `char *` or not
+    //
+    assert(Str_contains(empty_str, "rig") == true);
+    assert(Str_contains(empty_str, "RIG") == true);
+    assert(Str_contains(empty_str, "ABC") == false);
+    ```
+
+    </br>
+
+- Reset to empty
+
+    ```c
+    SMART_STRING(str) = Str_from_str("Hello");
+    Str_reset_to_empty(str);
+
+    assert(Str_length(str) == 0);
+    assert(Str_as_str(str) == NULL);
+
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: (null)⏎
+    ```
+
+    </br>
 
 - Create `String` on the stack and free it manually
 
@@ -76,6 +245,416 @@ This is my personal `C` utilities which contains the following modules:
     ```
 
     </br>
+
+## 2. `Log`: Handy logging implementation.
+
+#### 2.1 `LOG_VAR` macro
+
+Use to print the single variable's value, only for debugging purposes.
+
+It's only available when `ENABLE_DEBUG_LOG` is defined!!!
+
+```c
+char *string_value = "Wison Ye";
+char char_value = 'c';
+u8 u8_value = 255;
+
+LOG_VAR(string_value);
+LOG_VAR(char_value);
+LOG_VAR(u8_value);
+
+LOG_VAR(sizeof(int));
+LOG_VAR(sizeof(long));
+
+// >>> string_value: Wison Ye
+// >>> char_value: c
+// >>> u8_value: 255
+// >>> sizeof(int): 4
+// >>> sizeof(long): 8
+```
+
+</br>
+
+#### 2.2 `printf` liked formatted logger
+
+```c
+#include "utils/log.h"
+#include "utils/string.h"
+
+String my_str = Str_from_str("My name is Wison Ye");
+DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
+DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
+DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+
+// (D) [ Main ] > main - add(2, 3): 5
+// (D) [ Main ] > main - 2 + 2 :4
+// (D) [ Main ] > main - my_str value is: My name is Wison Ye
+// (I) [ Main ] > main - my_str value is: My name is Wison Ye
+// (W) [ Main ] > main - my_str value is: My name is Wison Ye
+// (E) [ Main ] > main - my_str value is: My name is Wison Ye⏎
+```
+
+</br>
+
+## 3. `HexBuffer`: Handle convertion between `char *` and `u8[]`
+
+    ```c
+    /*
+     * Opaque pointer to `struct _HexBuffer`
+     */
+    typedef struct _HexBuffer *HexBuffer;
+
+    /*
+     * Iteractor
+     */
+    typedef struct {
+        usize length;
+        u8 *arr;
+    } HexBufferIteractor;
+
+    /*
+     * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
+     * characters, all another characters will be ignored.
+     *
+     * Return `NULL` if:
+     *
+     * - `hex_str` is NULL or empty string
+     * - `hex_str` (after ignored all invalid characters) has an odd length
+     */
+    HexBuffer Hex_from_string(const char *hex_str);
+
+    /*
+     * Return the hex buffer length
+     */
+    usize Hex_length(HexBuffer self);
+
+    /*
+     * Return `out_buffer` size (same with strlen()) if `HexBuffer` is an valid
+     * `HexBuffer`.
+     *
+     * Return 0 when something wrong
+     * Return -1 when `out_buffer_size` is not big enough to hold the hex string.
+     */
+    int Hex_to_string(const HexBuffer self, char *out_buffer,
+                      usize out_buffer_size);
+
+    /*
+     * Return the u8 array iterator
+     */
+    const HexBufferIteractor Hex_iter(const HexBuffer self);
+
+    /*
+     * Free
+     */
+    void Hex_free(HexBuffer self);
+    ```
+
+    </br>
+
+    Example:
+
+    - `char *` to `HexBuffer`
+
+        ```c
+        char hex_str_1[] = "AABBCCDD";
+        HexBuffer buffer_1 = Hex_from_string(hex_str_1);
+        HexBufferIteractor hex_iter = Hex_iter(buffer_1);
+        for (usize index = 0; index < hex_iter.length; index++) {
+            printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
+        }
+
+        // (D) [ HexBuffer ] > Hex_from_string - valid_hex_str len: 8, value: AABBCCDD
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: AA, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[0]: AA
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: BB, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[1]: BB
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: CC, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[2]: CC
+        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: DD, strlen: 2
+        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[3]: DD
+        // >>> hex_iter[0]: 0xAA
+        // >>> hex_iter[1]: 0xBB
+        // >>> hex_iter[2]: 0xCC
+        // >>> hex_iter[3]: 0xDD
+        ```
+
+        </br>
+
+    - `HexBuffer` to `char *`
+
+        ```c
+        // `+1` is for the `null-terminated` character
+        usize out_buffer_size = Hex_length(buffer_1) * 2 + 1;
+
+        // Create return `char *` buffer and init to all `0`
+        char hex_string[out_buffer_size];
+        memset(hex_string, 0, out_buffer_size);
+        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
+
+        usize return_hex_len = Hex_to_string(buffer_1, hex_string, out_buffer_size);
+        DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
+        if (return_hex_len > 0) {
+            DEBUG_LOG(Main, test_hex_buffer, "hex_string len: %lu, value: %s",
+                      strlen(hex_string), hex_string);
+        }
+        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
+
+        // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
+        // (D) [ Memory ] > print_memory_block - ------------------
+        // (D) [ Memory ] > print_memory_block - 000000000000000000
+        // (D) [ Memory ] > print_memory_block - ------------------
+        // 
+        // (D) [ HexBuffer ] > Hex_to_string - copied_buffer_size: 8, out_buffer_size: 9
+        // (D) [ HexBuffer ] > Hex_to_string - self->_len: 4, copied_buffer_size: 8, self->_buffer: 0xAABBCCDD
+        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: AA
+        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: BB
+        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: CC
+        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: DD
+        // (D) [ Main ] > test_hex_buffer - return_hex_len: 8
+        // (D) [ Main ] > test_hex_buffer - hex_string len: 8, value: AABBCCDD
+        // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
+        // (D) [ Memory ] > print_memory_block - ------------------
+        // (D) [ Memory ] > print_memory_block - 414142424343444400
+        // (D) [ Memory ] > print_memory_block - ------------------
+        ```
+
+        </br>
+
+
+- `Memory`: Handy memory utils.
+
+    - `PRINT_MEMORY_BLOCK` macro, only available when `ENABLE_DEBUG_LOG` is defined!!!
+
+        used to print the memory block data in HEX format from a given variable.
+
+        ```c
+        struct Person {
+            char birthday[9];
+            u8 age;
+        };
+
+        struct Person me = {
+            .birthday = "19880531",
+            .age = 0xAA,
+        };
+        PRINT_MEMORY_BLOCK(struct Person, me)
+
+        int data = 10;
+        PRINT_MEMORY_BLOCK(int, data);
+
+        // (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
+        // (D) [ Memory ] > print_memory_block - --------------------
+        // (D) [ Memory ] > print_memory_block - 313938383035333100AA
+        // (D) [ Memory ] > print_memory_block - --------------------
+        //
+        // (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
+        // (D) [ Memory ] > print_memory_block - --------
+        // (D) [ Memory ] > print_memory_block - 0A000000
+        // (D) [ Memory ] > print_memory_block - --------
+        ```
+
+        </br>
+
+    - `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro, only available when
+    `ENABLE_DEBUG_LOG` is defined!!!
+
+        It works like the same with the `PRINT_MEMORY_BLOCK` macro but focuses
+        on the`SMART_XXXX` variable case, as those variables are `opaque pointer`
+        types without the original `struct` type available.
+
+        ```c
+        SMART_STRING(str1) = Str_from_str("String in vector");
+        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+
+        // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
+        // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
+        // (D) [ Memory ] > print_memory_block - --------------------------------
+        // (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
+        // (D) [ Memory ] > print_memory_block - --------------------------------
+        ```
+
+        As you can see above, proven by the `lldb` memory block printing in
+        `Big Endian` order:
+
+        ```bash
+        (lldb) v str1
+        # (String) str1 = 0x000000082346a000
+
+        (lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
+        # 0x82346a000: 0x000000082346B0000000000000000010
+        ```
+
+        </br>
+
+
+- `Timer`: High resolution timer utils
+
+    ```c
+    //
+    // Time unit
+    //
+    typedef enum TimeUnit {
+        TU_NANOSECONDS = 0x01,
+        TU_MICROSECONDS = 0x02,
+        TU_MILLISECONDS = 0x03,
+        TU_SECONDS = 0x04,
+    } TimeUnit;
+
+    /*
+     * Get back current time in the given time unit
+     */
+    long double Timer_get_current_time(TimeUnit time_unit);
+    ```
+
+    </br>
+
+    Example:
+
+    ```c
+    long double start_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double end_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double elapsed_time = end_time - start_time;
+
+    DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);
+    ```
+
+    </br>
+
+    ```bash
+    time ./build_memory_leak_checking/c-utils
+
+    # (D) [ Timer ] > Timer_get_current_time - FreeBSD Initialization
+    # (D) [ Main ] > test_timer - elapsed_time: 238.000000
+    # 
+    # ________________________________________________________
+    # Executed in    3.35 millis    fish           external
+    #    usr time    0.98 millis  981.00 micros    0.00 millis
+    #    sys time    5.93 millis    0.00 micros    5.93 millis
+    ```
+
+    </br>
+
+- `Smart ptr`:
+
+    `make_unique_ptr` simulates the `std::make_unique` in `C++`:
+
+    </br>
+
+    ```c
+    String return_string_on_the_heap() {
+        String str_on_the_heap = Str_from_str("String allocated on the heap:)");
+        return str_on_the_heap;
+    }
+
+    Vector return_vector_on_the_heap() {
+        usize double_size = sizeof(double);
+        Vector temp_vec = Vector_with_capacity(5, double_size);
+        double d = 888.88;
+        Vector_push(temp_vec, &d, double_size);
+        return temp_vec;
+    }
+
+    void test_smart_ptr() {
+        //
+        // `return_str` will be destroyed by calling `auto_free_string` automatic
+        //
+        make_unique_ptr(String return_str = return_string_on_the_heap(),
+                        auto_free_string);
+
+        //
+        // `return_vector` will be destroyed by calling `auto_free_vector` automatic
+        //
+        make_unique_ptr(Vector return_vec = return_vector_on_the_heap(),
+                        auto_free_vector);
+
+        DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
+                  Str_as_str(return_str));
+        DEBUG_LOG(Main, test_smart_ptr,
+                  "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
+                  Vector_len(return_vec),
+                  *((double *)Vector_get(return_vec, 0, sizeof(double))));
+    }
+
+    // (D) [ String ] > from_str - self ptr: 0x5472040, malloc ptr: 0x5472090, from_str: String allocated on the heap:)
+    // (D) [ Vector ] > with_capacity - self pointer: 0x5474130, capacity: 5
+    // (D) [ Main ] > test_smart_ptr - return_str: 0x5472040, value: String allocated on the heap:)
+    // (D) [ Main ] > test_smart_ptr - return_vec: 0x5474130, len: 1, first elemnt: 888.880000
+    // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5474130, length: 1
+    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5472040, as_str: String allocated on the heap:)==42550==
+    ```
+
+    </br>
+
+- `Bits`: handy macros to handle bits, only available when `ENABLE_DEBUG_LOG` is defined!!!
+
+    - `PRINT_BITS`
+
+        ```c
+        unsigned char status = 0x3D;
+        PRINT_BITS(status);
+
+        unsigned short int status_16 = 0x376D;
+        PRINT_BITS(status_16);
+
+        int status_32 = 0x376DAA0B;
+        PRINT_BITS(status_32);
+
+        long long status_64 = 0x376DAA0B5F8E9ABC;
+        PRINT_BITS(status_64);
+
+        // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0x3D bits: 00111101
+        // (D) [ Bits ] > PRINT_BITS "u16" - >>> 0x376D bits: 0011011101101101
+        // (D) [ Bits ] > PRINT_BITS "u32" - >>> 0x376DAA0B bits: 00110111011011011010101000001011
+        // (D) [ Bits ] > PRINT_BITS "u64" - >>> 0x376DAA0B5F8E9ABC bits: 0011011101101101101010100000101101011111100011101001101010111100
+        ```
+
+        </br>
+
+    - `IS_BIT_1`: Check whether the given bit is `1` or not
+
+        ```c
+        v = 0xCD;
+        PRINT_BITS(v);
+        which_bit = 1;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 2;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 3;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 4;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 5;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 6;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 7;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+        which_bit = 8;
+        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+
+        // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0xCD bits: 11001101
+        // >>> bit 1 in '0xCD' is 1?: Yes
+        // >>> bit 2 in '0xCD' is 1?: No
+        // >>> bit 3 in '0xCD' is 1?: Yes
+        // >>> bit 4 in '0xCD' is 1?: Yes
+        // >>> bit 5 in '0xCD' is 1?: No
+        // >>> bit 6 in '0xCD' is 1?: No
+        // >>> bit 7 in '0xCD' is 1?: Yes
+        // >>> bit 8 in '0xCD' is 1?: Yes
+        ```
+
+        </br>
 
 - `Collection/SingleLinkList`: Heap allocated single link list.
 
@@ -540,414 +1119,6 @@ This is my personal `C` utilities which contains the following modules:
         // >>> person_vec: (first_name: Mr C, last_name: cool, age: 88) , (first_name: Mr CPP, last_name: not bad, age: 99) , (first_name: Nobody, last_name: Nothing, age: 100)
 
         // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x54755c0, length: 3
-        ```
-
-        </br>
-
-- `Log`: Handy logging implementation.
-
-    - `LOG_VAR` macro, only available when `ENABLE_DEBUG_LOG` is defined!!!
-
-        Use to print the single variable's value, only for debugging purpose.
-
-        ```c
-        char *string_value = "Wison Ye";
-        char char_value = 'c';
-        u8 u8_value = 255;
-
-        LOG_VAR(string_value);
-        LOG_VAR(char_value);
-        LOG_VAR(u8_value);
-
-        LOG_VAR(sizeof(int));
-        LOG_VAR(sizeof(long));
-
-        // >>> string_value: Wison Ye
-        // >>> char_value: c
-        // >>> u8_value: 255
-        // >>> sizeof(int): 4
-        // >>> sizeof(long): 8
-        ```
-
-        </br>
-
-    - `printf` liked formatted logger
-
-        ```c
-        #include "utils/log.h"
-        #include "utils/string.h"
-
-        String my_str = Str_from_str("My name is Wison Ye");
-        DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
-        DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-        DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-        INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-        WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-        ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-
-        // (D) [ Main ] > main - add(2, 3): 5
-        // (D) [ Main ] > main - 2 + 2 :4
-        // (D) [ Main ] > main - my_str value is: My name is Wison Ye
-        // (I) [ Main ] > main - my_str value is: My name is Wison Ye
-        // (W) [ Main ] > main - my_str value is: My name is Wison Ye
-        // (E) [ Main ] > main - my_str value is: My name is Wison Ye⏎
-        ```
-
-        </br>
-
-- `HexBuffer`: Handle convertion between `char *` and `u8[]`
-
-    ```c
-    /*
-     * Opaque pointer to `struct _HexBuffer`
-     */
-    typedef struct _HexBuffer *HexBuffer;
-
-    /*
-     * Iteractor
-     */
-    typedef struct {
-        usize length;
-        u8 *arr;
-    } HexBufferIteractor;
-
-    /*
-     * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
-     * characters, all another characters will be ignored.
-     *
-     * Return `NULL` if:
-     *
-     * - `hex_str` is NULL or empty string
-     * - `hex_str` (after ignored all invalid characters) has an odd length
-     */
-    HexBuffer Hex_from_string(const char *hex_str);
-
-    /*
-     * Return the hex buffer length
-     */
-    usize Hex_length(HexBuffer self);
-
-    /*
-     * Return `out_buffer` size (same with strlen()) if `HexBuffer` is an valid
-     * `HexBuffer`.
-     *
-     * Return 0 when something wrong
-     * Return -1 when `out_buffer_size` is not big enough to hold the hex string.
-     */
-    int Hex_to_string(const HexBuffer self, char *out_buffer,
-                      usize out_buffer_size);
-
-    /*
-     * Return the u8 array iterator
-     */
-    const HexBufferIteractor Hex_iter(const HexBuffer self);
-
-    /*
-     * Free
-     */
-    void Hex_free(HexBuffer self);
-    ```
-
-    </br>
-
-    Example:
-
-    - `char *` to `HexBuffer`
-
-        ```c
-        char hex_str_1[] = "AABBCCDD";
-        HexBuffer buffer_1 = Hex_from_string(hex_str_1);
-        HexBufferIteractor hex_iter = Hex_iter(buffer_1);
-        for (usize index = 0; index < hex_iter.length; index++) {
-            printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
-        }
-
-        // (D) [ HexBuffer ] > Hex_from_string - valid_hex_str len: 8, value: AABBCCDD
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: AA, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[0]: AA
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: BB, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[1]: BB
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: CC, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[2]: CC
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: DD, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[3]: DD
-        // >>> hex_iter[0]: 0xAA
-        // >>> hex_iter[1]: 0xBB
-        // >>> hex_iter[2]: 0xCC
-        // >>> hex_iter[3]: 0xDD
-        ```
-
-        </br>
-
-    - `HexBuffer` to `char *`
-
-        ```c
-        // `+1` is for the `null-terminated` character
-        usize out_buffer_size = Hex_length(buffer_1) * 2 + 1;
-
-        // Create return `char *` buffer and init to all `0`
-        char hex_string[out_buffer_size];
-        memset(hex_string, 0, out_buffer_size);
-        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
-
-        usize return_hex_len = Hex_to_string(buffer_1, hex_string, out_buffer_size);
-        DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
-        if (return_hex_len > 0) {
-            DEBUG_LOG(Main, test_hex_buffer, "hex_string len: %lu, value: %s",
-                      strlen(hex_string), hex_string);
-        }
-        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
-
-        // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
-        // (D) [ Memory ] > print_memory_block - ------------------
-        // (D) [ Memory ] > print_memory_block - 000000000000000000
-        // (D) [ Memory ] > print_memory_block - ------------------
-        // 
-        // (D) [ HexBuffer ] > Hex_to_string - copied_buffer_size: 8, out_buffer_size: 9
-        // (D) [ HexBuffer ] > Hex_to_string - self->_len: 4, copied_buffer_size: 8, self->_buffer: 0xAABBCCDD
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: AA
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: BB
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: CC
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: DD
-        // (D) [ Main ] > test_hex_buffer - return_hex_len: 8
-        // (D) [ Main ] > test_hex_buffer - hex_string len: 8, value: AABBCCDD
-        // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
-        // (D) [ Memory ] > print_memory_block - ------------------
-        // (D) [ Memory ] > print_memory_block - 414142424343444400
-        // (D) [ Memory ] > print_memory_block - ------------------
-        ```
-
-        </br>
-
-
-- `Memory`: Handy memory utils.
-
-    - `PRINT_MEMORY_BLOCK` macro, only available when `ENABLE_DEBUG_LOG` is defined!!!
-
-        used to print the memory block data in HEX format from a given variable.
-
-        ```c
-        struct Person {
-            char birthday[9];
-            u8 age;
-        };
-
-        struct Person me = {
-            .birthday = "19880531",
-            .age = 0xAA,
-        };
-        PRINT_MEMORY_BLOCK(struct Person, me)
-
-        int data = 10;
-        PRINT_MEMORY_BLOCK(int, data);
-
-        // (D) [ Memory ] > print_memory_block - [ struct Person me, size: 10 ]
-        // (D) [ Memory ] > print_memory_block - --------------------
-        // (D) [ Memory ] > print_memory_block - 313938383035333100AA
-        // (D) [ Memory ] > print_memory_block - --------------------
-        //
-        // (D) [ Memory ] > print_memory_block - [ int data, size: 4 ]
-        // (D) [ Memory ] > print_memory_block - --------
-        // (D) [ Memory ] > print_memory_block - 0A000000
-        // (D) [ Memory ] > print_memory_block - --------
-        ```
-
-        </br>
-
-    - `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro, only available when
-    `ENABLE_DEBUG_LOG` is defined!!!
-
-        It works like the same with the `PRINT_MEMORY_BLOCK` macro but focuses
-        on the`SMART_XXXX` variable case, as those variables are `opaque pointer`
-        types without the original `struct` type available.
-
-        ```c
-        SMART_STRING(str1) = Str_from_str("String in vector");
-        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
-
-        // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
-        // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
-        // (D) [ Memory ] > print_memory_block - --------------------------------
-        // (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
-        // (D) [ Memory ] > print_memory_block - --------------------------------
-        ```
-
-        As you can see above, proven by the `lldb` memory block printing in
-        `Big Endian` order:
-
-        ```bash
-        (lldb) v str1
-        # (String) str1 = 0x000000082346a000
-
-        (lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
-        # 0x82346a000: 0x000000082346B0000000000000000010
-        ```
-
-        </br>
-
-
-- `Timer`: High resolution timer utils
-
-    ```c
-    //
-    // Time unit
-    //
-    typedef enum TimeUnit {
-        TU_NANOSECONDS = 0x01,
-        TU_MICROSECONDS = 0x02,
-        TU_MILLISECONDS = 0x03,
-        TU_SECONDS = 0x04,
-    } TimeUnit;
-
-    /*
-     * Get back current time in the given time unit
-     */
-    long double Timer_get_current_time(TimeUnit time_unit);
-    ```
-
-    </br>
-
-    Example:
-
-    ```c
-    long double start_time = Timer_get_current_time(TU_NANOSECONDS);
-    long double end_time = Timer_get_current_time(TU_NANOSECONDS);
-    long double elapsed_time = end_time - start_time;
-
-    DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);
-    ```
-
-    </br>
-
-    ```bash
-    time ./build_memory_leak_checking/c-utils
-
-    # (D) [ Timer ] > Timer_get_current_time - FreeBSD Initialization
-    # (D) [ Main ] > test_timer - elapsed_time: 238.000000
-    # 
-    # ________________________________________________________
-    # Executed in    3.35 millis    fish           external
-    #    usr time    0.98 millis  981.00 micros    0.00 millis
-    #    sys time    5.93 millis    0.00 micros    5.93 millis
-    ```
-
-    </br>
-
-- `Smart ptr`:
-
-    `make_unique_ptr` simulates the `std::make_unique` in `C++`:
-
-    </br>
-
-    ```c
-    String return_string_on_the_heap() {
-        String str_on_the_heap = Str_from_str("String allocated on the heap:)");
-        return str_on_the_heap;
-    }
-
-    Vector return_vector_on_the_heap() {
-        usize double_size = sizeof(double);
-        Vector temp_vec = Vector_with_capacity(5, double_size);
-        double d = 888.88;
-        Vector_push(temp_vec, &d, double_size);
-        return temp_vec;
-    }
-
-    void test_smart_ptr() {
-        //
-        // `return_str` will be destroyed by calling `auto_free_string` automatic
-        //
-        make_unique_ptr(String return_str = return_string_on_the_heap(),
-                        auto_free_string);
-
-        //
-        // `return_vector` will be destroyed by calling `auto_free_vector` automatic
-        //
-        make_unique_ptr(Vector return_vec = return_vector_on_the_heap(),
-                        auto_free_vector);
-
-        DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
-                  Str_as_str(return_str));
-        DEBUG_LOG(Main, test_smart_ptr,
-                  "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
-                  Vector_len(return_vec),
-                  *((double *)Vector_get(return_vec, 0, sizeof(double))));
-    }
-
-    // (D) [ String ] > from_str - self ptr: 0x5472040, malloc ptr: 0x5472090, from_str: String allocated on the heap:)
-    // (D) [ Vector ] > with_capacity - self pointer: 0x5474130, capacity: 5
-    // (D) [ Main ] > test_smart_ptr - return_str: 0x5472040, value: String allocated on the heap:)
-    // (D) [ Main ] > test_smart_ptr - return_vec: 0x5474130, len: 1, first elemnt: 888.880000
-    // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5474130, length: 1
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x5472040, as_str: String allocated on the heap:)==42550==
-    ```
-
-    </br>
-
-- `Bits`: handy macros to handle bits, only available when `ENABLE_DEBUG_LOG` is defined!!!
-
-    - `PRINT_BITS`
-
-        ```c
-        unsigned char status = 0x3D;
-        PRINT_BITS(status);
-
-        unsigned short int status_16 = 0x376D;
-        PRINT_BITS(status_16);
-
-        int status_32 = 0x376DAA0B;
-        PRINT_BITS(status_32);
-
-        long long status_64 = 0x376DAA0B5F8E9ABC;
-        PRINT_BITS(status_64);
-
-        // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0x3D bits: 00111101
-        // (D) [ Bits ] > PRINT_BITS "u16" - >>> 0x376D bits: 0011011101101101
-        // (D) [ Bits ] > PRINT_BITS "u32" - >>> 0x376DAA0B bits: 00110111011011011010101000001011
-        // (D) [ Bits ] > PRINT_BITS "u64" - >>> 0x376DAA0B5F8E9ABC bits: 0011011101101101101010100000101101011111100011101001101010111100
-        ```
-
-        </br>
-
-    - `IS_BIT_1`: Check whether the given bit is `1` or not
-
-        ```c
-        v = 0xCD;
-        PRINT_BITS(v);
-        which_bit = 1;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 2;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 3;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 4;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 5;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 6;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 7;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-        which_bit = 8;
-        printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
-               v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
-
-        // (D) [ Bits ] > PRINT_BITS "u08" - >>> 0xCD bits: 11001101
-        // >>> bit 1 in '0xCD' is 1?: Yes
-        // >>> bit 2 in '0xCD' is 1?: No
-        // >>> bit 3 in '0xCD' is 1?: Yes
-        // >>> bit 4 in '0xCD' is 1?: Yes
-        // >>> bit 5 in '0xCD' is 1?: No
-        // >>> bit 6 in '0xCD' is 1?: No
-        // >>> bit 7 in '0xCD' is 1?: Yes
-        // >>> bit 8 in '0xCD' is 1?: Yes
         ```
 
         </br>
@@ -2480,174 +2651,4 @@ make c_demo_result && ./c_demo_result
 #         ok: 404
 # }
 ```
-
-## 1. `String`
-
-Wrap and hide all `null-terminated` C-style string in `struct`,
-hide the `null-terminated` detail and pointer, just deal with normal function
-call.
-
-The `SMART_STRING` and `SMART_STRING_WITH_CAPACITY` macro ensures the
-heap-allocated instance auto-free heap-allocated memory when it goes out of
-its scope.
-
-Examples:
-
-</br>
-
-- Create empty string
-
-    ```c
-    // `SMART_STRING(variable_name);`
-    SMART_STRING(empty_str) = Str_from_empty();
-    SMART_STRING(empty_str_2) = Str_from_str(NULL);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d0, as_str: (null)
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b0, as_str: (null)
-    ```
-
-    </br>
-
-- Create from `char *` or `char []`
-
-    ```c
-    SMART_STRING(str) = Str_from_str("Hey:)");
-
-    char arr[] = "Unit Test:)";
-    SMART_STRING(str_2) = Str_from_arr(arr);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000330, as_str: Hey:)
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000002f0, as_str: Unit Test:)
-    ```
-
-    </br>
-
-- Clone from other `String`
-
-    Clone from the given `String` instance but don't touch the heap-allocated
-    memory it owned
-
-    ```c
-    SMART_STRING(original_str) = Str_from_str("I'm original:)");
-    SMART_STRING(clone_from_other_str) = Str_clone_from(original_str);
-
-    // `clone_from_other_str` is a deep clone, so `original_str` doesn't changes
-    assert(Str_length(original_str) == 12);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d2, as_str: I'm original:)
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b1, as_str: I'm original:)
-    ```
-
-    </br>
-
-- Move from other `String`
-
-    Move from the given `String` instance and move ownership of the
-    heap-allocated memory to the newly created `String` instance. The original
-    `String` becomes an empty string, as it points to nothing!!!
-
-    ```c
-    SMART_STRING(original_str) = Str_from_str("I'm original:)");
-    SMART_STRING(move_from_other_str) = Str_move_from(original_str);
-
-    // After that, `original_str` becomes an empty string
-    assert(Str_length(original_str) == 0);
-    assert(Str_as_str(original_str) == NULL);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d8, as_str: (null)
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b9, as_str: I'm original:)
-    ```
-
-    </br>
-
-- Push at the end, get back length and get back `char *`
-
-    ```c
-    SMART_STRING(original_str) = Str_from_str("I'm original:)");
-    SMART_STRING(empty_str) = Str_from_empty();
-
-    // Push from `char *`
-    Str_push_str(empty_str, "123_");
-
-    // Push from other `String`
-    Str_push_other(empty_str, original_str);
-
-    // Get back length
-    assert(Str_length(empty_str) == strlen("123_I'm original:)"));
-
-    // Get back `char *`
-    assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
-    ```
-
-    </br>
-
-- Insert at beginning
-
-    ```c
-    SMART_STRING(original_str) = Str_from_str("I'm original:)");
-    SMART_STRING(empty_str) = Str_from_empty();
-
-    // Insert other `String` to the beginning
-    Str_push_other(empty_str, original_str);
-
-    // Insert `char *` to the beginning
-    Str_insert_str_to_begin(empty_str, "123_");
-
-    // Get back length
-    assert(Str_length(empty_str) == strlen("123_I'm original:)"));
-
-    // Get back `char *`
-    assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
-    ```
-
-    </br>
-
-- Find substring
-
-    ```c
-    SMART_STRING(original_str) = Str_from_str("I'm original:)");
-    SMART_STRING(empty_str) = Str_move_from(original_str);
-
-    //
-    // Find the given `char *` index, return `-1` if not found
-    //
-    assert(Str_index_of(empty_str, "I'm") == 0);
-    assert(Str_index_of(empty_str, "nal") == 9);
-    assert(Str_index_of(empty_str, "RIG") == 5);
-    assert(Str_index_of(empty_str, "ABC") == -1);
-
-    //
-    // Find the given `char *`(case-sensitive) index, return `-1` if not found
-    //
-    assert(Str_index_of_case_sensitive(empty_str, "RIG") == -1);
-
-    //
-    // Check whether contain the given `char *` or not
-    //
-    assert(Str_contains(empty_str, "rig") == true);
-    assert(Str_contains(empty_str, "RIG") == true);
-    assert(Str_contains(empty_str, "ABC") == false);
-    ```
-
-    </br>
-
-- Reset to empty
-
-    ```c
-    SMART_STRING(str) = Str_from_str("Hello");
-    Str_reset_to_empty(str);
-
-    assert(Str_length(str) == 0);
-    assert(Str_as_str(str) == NULL);
-
-    // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: (null)⏎
-    ```
-
-    </br>
 
