@@ -3,10 +3,12 @@
 This is my personal `C` utilities which contains the following modules:
 
 [1. `String`](#1-string)</br>
-[2. `Log`: Handy logging implementation.](#2-Log:-Handy-logging-implementation.)</br>
+[2. `Log`](#2-log-handy-logging-implementation)</br>
 [2.1 `LOG_VAR` macro](#21-log_var-macro)</br>
 [2.2 `printf` liked formatted logger](#22-printf-liked-formatted-logger)</br>
-[3. `HexBuffer`: Handle convertion between `char *` and `u8[]`](#3-HexBuffer:-Handle-convertion-between-char-*-and-u8[])
+[3. `HexBuffer`](#3-hexbuffer)</br>
+[3.1 `char *` to `HexBuffer`](#31-char--to-HexBuffer)</br>
+[3.2 `HexBuffer` to `char *`](#32-HexBuffer-to-char--)</br>
 
 </br>
 
@@ -301,20 +303,17 @@ ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
 
 ## 3. `HexBuffer`: Handle convertion between `char *` and `u8[]`
 
+Handle convertion between `char *` and `u8[]`
+
+Examples:
+
+</br>
+
+#### 3.1 `char *` to `HexBuffer`
+
+- Interface
+
     ```c
-    /*
-     * Opaque pointer to `struct _HexBuffer`
-     */
-    typedef struct _HexBuffer *HexBuffer;
-
-    /*
-     * Iteractor
-     */
-    typedef struct {
-        usize length;
-        u8 *arr;
-    } HexBufferIteractor;
-
     /*
      * Create `HexBuffer` from the given `char *`. Only accept `0~9` `a~f` `A~F`
      * characters, all another characters will be ignored.
@@ -326,6 +325,48 @@ ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
      */
     HexBuffer Hex_from_string(const char *hex_str);
 
+    /*
+     * Return the u8 array iterator
+     */
+    const HexBufferIteractor Hex_iter(const HexBuffer self);
+    ```
+
+    </br>
+
+- Example
+
+    ```c
+    char hex_str_1[] = "AABBCCDD";
+
+    HexBuffer buffer_1 = Hex_from_string(hex_str_1);
+
+    HexBufferIteractor hex_iter = Hex_iter(buffer_1);
+    for (usize index = 0; index < hex_iter.length; index++) {
+        printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
+    }
+
+    // (D) [ HexBuffer ] > Hex_from_string - valid_hex_str len: 8, value: AABBCCDD
+    // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: AA, strlen: 2
+    // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[0]: AA
+    // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: BB, strlen: 2
+    // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[1]: BB
+    // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: CC, strlen: 2
+    // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[2]: CC
+    // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: DD, strlen: 2
+    // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[3]: DD
+    // >>> hex_iter[0]: 0xAA
+    // >>> hex_iter[1]: 0xBB
+    // >>> hex_iter[2]: 0xCC
+    // >>> hex_iter[3]: 0xDD
+    ```
+
+    </br>
+
+#### 3.2 `HexBuffer` to `char *`
+
+- Interface
+
+    ```c
     /*
      * Return the hex buffer length
      */
@@ -340,88 +381,56 @@ ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
      */
     int Hex_to_string(const HexBuffer self, char *out_buffer,
                       usize out_buffer_size);
-
-    /*
-     * Return the u8 array iterator
-     */
-    const HexBufferIteractor Hex_iter(const HexBuffer self);
-
-    /*
-     * Free
-     */
-    void Hex_free(HexBuffer self);
     ```
 
     </br>
 
-    Example:
+- Example
 
-    - `char *` to `HexBuffer`
+    ```c
+    // `+1` is for the `null-terminated` character
+    usize out_buffer_size = Hex_length(buffer_1) * 2 + 1;
 
-        ```c
-        char hex_str_1[] = "AABBCCDD";
-        HexBuffer buffer_1 = Hex_from_string(hex_str_1);
-        HexBufferIteractor hex_iter = Hex_iter(buffer_1);
-        for (usize index = 0; index < hex_iter.length; index++) {
-            printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
-        }
+    // Create return `char *` buffer and init to all `0`
+    char hex_string[out_buffer_size];
+    memset(hex_string, 0, out_buffer_size);
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
 
-        // (D) [ HexBuffer ] > Hex_from_string - valid_hex_str len: 8, value: AABBCCDD
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: AA, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[0]: AA
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: BB, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[1]: BB
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: CC, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[2]: CC
-        // (D) [ HexBuffer ] > Hex_from_string - temp_hex_str: DD, strlen: 2
-        // (D) [ HexBuffer ] > Hex_from_string - buffer->_buffer[3]: DD
-        // >>> hex_iter[0]: 0xAA
-        // >>> hex_iter[1]: 0xBB
-        // >>> hex_iter[2]: 0xCC
-        // >>> hex_iter[3]: 0xDD
-        ```
+    /*
+     * Return `out_buffer` size (same with strlen()) if `HexBuffer` is an valid
+     * `HexBuffer`.
+     *
+     * Return 0 when something wrong
+     * Return -1 when `out_buffer_size` is not big enough to hold the hex string.
+     */
+    usize return_hex_len = Hex_to_string(buffer_1, hex_string, out_buffer_size);
+    DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
+    if (return_hex_len > 0) {
+        DEBUG_LOG(Main, test_hex_buffer, "hex_string len: %lu, value: %s",
+                    strlen(hex_string), hex_string);
+    }
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
 
-        </br>
+    // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
+    // (D) [ Memory ] > print_memory_block - ------------------
+    // (D) [ Memory ] > print_memory_block - 000000000000000000
+    // (D) [ Memory ] > print_memory_block - ------------------
+    // 
+    // (D) [ HexBuffer ] > Hex_to_string - copied_buffer_size: 8, out_buffer_size: 9
+    // (D) [ HexBuffer ] > Hex_to_string - self->_len: 4, copied_buffer_size: 8, self->_buffer: 0xAABBCCDD
+    // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: AA
+    // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: BB
+    // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: CC
+    // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: DD
+    // (D) [ Main ] > test_hex_buffer - return_hex_len: 8
+    // (D) [ Main ] > test_hex_buffer - hex_string len: 8, value: AABBCCDD
+    // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
+    // (D) [ Memory ] > print_memory_block - ------------------
+    // (D) [ Memory ] > print_memory_block - 414142424343444400
+    // (D) [ Memory ] > print_memory_block - ------------------
+    ```
 
-    - `HexBuffer` to `char *`
-
-        ```c
-        // `+1` is for the `null-terminated` character
-        usize out_buffer_size = Hex_length(buffer_1) * 2 + 1;
-
-        // Create return `char *` buffer and init to all `0`
-        char hex_string[out_buffer_size];
-        memset(hex_string, 0, out_buffer_size);
-        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
-
-        usize return_hex_len = Hex_to_string(buffer_1, hex_string, out_buffer_size);
-        DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
-        if (return_hex_len > 0) {
-            DEBUG_LOG(Main, test_hex_buffer, "hex_string len: %lu, value: %s",
-                      strlen(hex_string), hex_string);
-        }
-        PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char [], hex_string, out_buffer_size);
-
-        // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
-        // (D) [ Memory ] > print_memory_block - ------------------
-        // (D) [ Memory ] > print_memory_block - 000000000000000000
-        // (D) [ Memory ] > print_memory_block - ------------------
-        // 
-        // (D) [ HexBuffer ] > Hex_to_string - copied_buffer_size: 8, out_buffer_size: 9
-        // (D) [ HexBuffer ] > Hex_to_string - self->_len: 4, copied_buffer_size: 8, self->_buffer: 0xAABBCCDD
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: AA
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: BB
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: CC
-        // (D) [ HexBuffer ] > Hex_to_string - copied_size: 2, hex_value: DD
-        // (D) [ Main ] > test_hex_buffer - return_hex_len: 8
-        // (D) [ Main ] > test_hex_buffer - hex_string len: 8, value: AABBCCDD
-        // (D) [ Memory ] > print_memory_block - [ char [] hex_string, size: 9 ]
-        // (D) [ Memory ] > print_memory_block - ------------------
-        // (D) [ Memory ] > print_memory_block - 414142424343444400
-        // (D) [ Memory ] > print_memory_block - ------------------
-        ```
-
-        </br>
+    </br>
 
 
 - `Memory`: Handy memory utils.
