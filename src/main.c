@@ -678,13 +678,13 @@ void test_smart_ptr() {
     //
     // `return_str` will be destroyed by calling `auto_free_string` automatic
     //
-    make_unique_ptr(String return_str = return_string_on_the_heap(),
+    MAKE_UNIQUE_PTR(String return_str = return_string_on_the_heap(),
                     auto_free_string);
 
     //
     // `return_vector` will be destroyed by calling `auto_free_vector` automatic
     //
-    make_unique_ptr(Vector return_vec = return_vector_on_the_heap(),
+    MAKE_UNIQUE_PTR(Vector return_vec = return_vector_on_the_heap(),
                     auto_free_vector);
 
     DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
@@ -752,6 +752,7 @@ void test_bits() {
 //
 //
 int main(int argc, char **argv) {
+
     /* test_link_list(); */
     test_string();
     /* test_log_macro(); */

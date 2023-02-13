@@ -11,6 +11,6 @@
  * `destructor` - Destructor function that accepts a `** Type` parameter
  */
 #define MAKE_UNIQUE_PTR(VAR_DEFINE, DESTRUCTOR) \
-    __attribute__((cleanup(destructor))) var_define
+    __attribute__((cleanup(DESTRUCTOR))) VAR_DEFINE
 
 #endif
