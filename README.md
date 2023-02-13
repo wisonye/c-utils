@@ -12,6 +12,8 @@ This is my personal `C` utilities which contains the following modules:
 [4. `Memory`](#4-memory)</br>
 [4.1 `PRINT_MEMORY_BLOCK` macro](#41-print_memory_block-macro)</br>
 [4.2 `PRINT_MEMORY_BLOCK_FOR_SMART_TYPE` macro](#42-print_memory_block_for_smart_type-macro)</br>
+[## 5. `Timer`](#5-timer)
+
 </br>
 
 ## 1. `String`
@@ -568,12 +570,16 @@ types without the original `struct` type available.
     </br>
 
 
-- `Timer`: High resolution timer utils
+## 5. `Timer`
+
+High resolution timer utils
+
+- Interface
 
     ```c
-    //
-    // Time unit
-    //
+    /*
+     * Time unit
+     */
     typedef enum TimeUnit {
         TU_NANOSECONDS = 0x01,
         TU_MICROSECONDS = 0x02,
@@ -589,7 +595,7 @@ types without the original `struct` type available.
 
     </br>
 
-    Example:
+- Example
 
     ```c
     long double start_time = Timer_get_current_time(TU_NANOSECONDS);

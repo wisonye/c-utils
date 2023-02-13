@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 
-//
-// Time unit
-//
+/*
+ * Time unit
+ */
 typedef enum TimeUnit {
     TU_NANOSECONDS = 0x01,
     TU_MICROSECONDS = 0x02,
