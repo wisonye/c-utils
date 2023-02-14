@@ -265,6 +265,19 @@ const String Vec_join(const Vector self, char *delemiter,
             snprintf(str_buffer, 21, "%lli",
                      *((long long int *)self->_items + index));
             Str_push_str(result, str_buffer);
+        } else if (strcmp("double", self->_element_type) == 0) {
+            char str_buffer[25] = {0};
+            snprintf(str_buffer, 25, "%f", *((double *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("float", self->_element_type) == 0) {
+            char str_buffer[25] = {0};
+            snprintf(str_buffer, 25, "%f", *((float *)self->_items + index));
+            Str_push_str(result, str_buffer);
+        } else if (strcmp("long double", self->_element_type) == 0) {
+            char str_buffer[25] = {0};
+            snprintf(str_buffer, 25, "%Lf",
+                     *((long double *)self->_items + index));
+            Str_push_str(result, str_buffer);
         } else if (strcmp("struct Str", self->_element_type) == 0) {
             // String
             String temp_str =
