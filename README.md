@@ -1524,6 +1524,28 @@ Compile and run all unit test:
 
 </br>
 
+- How to still finish all tests after any of them is fail
+
+    By default, `GoogleTest` run all tests even any test is fail.
+
+    In `run_unit_test.sh`, added a env var `GTEST_FAIL_FAST=true` which allows
+    skip all the rest tests if any test is fail. Feel free to remove it if
+    you don't like that.
+
+    </br>
+
+- How to run the given `TestSuite` only
+
+    You can use `GTEST_FILTER` env var to control which test (or test suite)
+    your want to run only. Here is the example:
+
+    ```bash
+    GTEST_FILTER="String.*" ./run_unit_test.sh
+    GTEST_FILTER="DataTypes.*" ./run_unit_test.sh
+    ```
+
+    </br>
+
 #### 3. How to preview preprocess step source code
 
 It's beneficial if you can print out the source code content after the
