@@ -29,6 +29,18 @@ TEST(String, StrInitWithCapacity) {
     ASSERT_EQ(Str_length(&str), 5);
     ASSERT_EQ(Str_capacity(&str), 10);
     ASSERT_EQ(strcmp(Str_as_str(&str), "12345"), 0);
+
+    Str_push_str(&str, "ABCD");
+    ASSERT_EQ(Str_length(&str), strlen("12345ABCD"));
+    ASSERT_EQ(Str_capacity(&str), 10);
+    ASSERT_EQ(strcmp(Str_as_str(&str), "12345ABCD"), 0);
+
+    // The next push should case realloc!!!
+    Str_push_str(&str, "qwerty");
+    ASSERT_EQ(Str_length(&str), strlen("12345ABCDqwerty"));
+    ASSERT_EQ(Str_capacity(&str), Str_length(&str) + 1);
+    ASSERT_EQ(strcmp(Str_as_str(&str), "12345ABCDqwerty"), 0);
+
     Str_free_buffer_only(&str);
 }
 
@@ -37,6 +49,29 @@ TEST(String, EmptyString) {
     ASSERT_EQ(Str_length(empty_str), 0);
     ASSERT_EQ(Str_capacity(empty_str), 0);
     ASSERT_EQ(Str_as_str(empty_str), nullptr);
+}
+
+TEST(String, EmptyStringWithCapacity) {
+    SMART_STRING(empty_str) = Str_from_empty_with_capacity(10);
+    ASSERT_EQ(Str_length(empty_str), 0);
+    ASSERT_EQ(Str_capacity(empty_str), 10);
+    ASSERT_NE(Str_as_str(empty_str), nullptr);
+
+    Str_push_str(empty_str, "12345");
+    ASSERT_EQ(Str_length(empty_str), 5);
+    ASSERT_EQ(Str_capacity(empty_str), 10);
+    ASSERT_EQ(strcmp(Str_as_str(empty_str), "12345"), 0);
+
+    Str_push_str(empty_str, "ABCD");
+    ASSERT_EQ(Str_length(empty_str), strlen("12345ABCD"));
+    ASSERT_EQ(Str_capacity(empty_str), 10);
+    ASSERT_EQ(strcmp(Str_as_str(empty_str), "12345ABCD"), 0);
+
+    // The next push should case realloc!!!
+    Str_push_str(empty_str, "qwerty");
+    ASSERT_EQ(Str_length(empty_str), strlen("12345ABCDqwerty"));
+    ASSERT_EQ(Str_capacity(empty_str), Str_length(empty_str) + 1);
+    ASSERT_EQ(strcmp(Str_as_str(empty_str), "12345ABCDqwerty"), 0);
 }
 
 TEST(String, StringFromArray) {

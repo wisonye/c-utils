@@ -46,7 +46,7 @@ void Str_init_with_capacity(String self, usize capacity) {
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, init, "self ptr: %p, capacity: %lu, malloc ptr: %p", self,
+    DEBUG_LOG(String, init_with_capacity, "self ptr: %p, capacity: %lu, malloc ptr: %p", self,
               self->_capacity, self->_buffer);
 #endif
 }
@@ -66,6 +66,26 @@ String Str_from_empty() {
 #if ENABLE_DEBUG_LOG
     DEBUG_LOG(String, from_empty, "self ptr: %p, capacity: %lu", string,
               string->_capacity);
+#endif
+
+    return string;
+}
+
+/*
+ * Create from empty that ability to hold `capacity` characters
+ */
+String Str_from_empty_with_capacity(usize capacity) {
+    String string = malloc(sizeof(struct Str));
+
+    *string = (struct Str){
+        ._capacity = capacity,
+        ._len = 0,
+        ._buffer = malloc(capacity),
+    };
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, from_empty_with_capacity, "self ptr: %p, capacity: %lu, malloc ptr: %p",
+              string, string->_capacity, string->_buffer);
 #endif
 
     return string;

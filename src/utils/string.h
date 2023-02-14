@@ -63,7 +63,7 @@ String Str_from_empty();
 /*
  * Create from empty that ability to hold `capacity` characters
  */
-String Str_from_empty_with_capacity();
+String Str_from_empty_with_capacity(usize capacity);
 
 /*
  * Create from `char[]`
