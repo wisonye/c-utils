@@ -1541,6 +1541,8 @@ Compile and run all unit test:
 
     ```bash
     GTEST_FILTER="String.*" ./run_unit_test.sh
+    GTEST_FILTER="String.MoveSemantic" ./run_unit_test.sh
+
     GTEST_FILTER="DataTypes.*" ./run_unit_test.sh
     ```
 

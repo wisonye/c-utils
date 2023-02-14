@@ -4,6 +4,22 @@ extern "C" {
 #include "string.h"
 }
 
+TEST(String, StrInit) {
+    struct Str str;
+    Str_init(&str);
+    ASSERT_EQ(Str_length(&str), 0);
+    ASSERT_EQ(Str_capacity(&str), 0);
+    ASSERT_EQ(Str_as_str(&str), nullptr);
+}
+
+TEST(String, StrInitWithCapacity) {
+    struct Str str;
+    Str_init_with_capacity(&str, 10);
+    ASSERT_EQ(Str_length(&str), 0);
+    ASSERT_EQ(Str_capacity(&str), 10);
+    ASSERT_EQ(Str_as_str(&str), nullptr);
+}
+
 TEST(String, EmptyString) {
     SMART_STRING(empty_str) = Str_from_str(nullptr);
     ASSERT_EQ(Str_length(empty_str), 0);

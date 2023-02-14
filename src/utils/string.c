@@ -38,7 +38,18 @@ void Str_init(String self) {
 /*
  * Init empty `struct Str` that ability to hold `capacity` characters
  */
-void Str_init_with_capacity(String self) {}
+void Str_init_with_capacity(String self, usize capacity) {
+    *self = (struct Str){
+        ._capacity = capacity,
+        ._len = 0,
+        ._buffer = NULL,
+    };
+
+#if ENABLE_DEBUG_LOG
+    DEBUG_LOG(String, init, "self ptr: %p, capacity: %lu", self,
+              self->_capacity);
+#endif
+}
 
 /*
  * Create from empty

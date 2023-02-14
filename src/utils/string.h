@@ -53,7 +53,7 @@ void Str_init(String self);
 /*
  * Init empty `struct Str` that ability to hold `capacity` characters
  */
-void Str_init_with_capacity(String self);
+void Str_init_with_capacity(String self, usize capacity);
 
 /*
  * Create from empty
