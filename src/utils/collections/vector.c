@@ -155,12 +155,36 @@ const String Vec_join(const Vector self, char *delemiter,
                       String (*custom_struct_desc)(void *ptr)) {
     if (self == NULL || self->_length <= 0) return Str_from_empty();
 
-    /* usize capacity = self->_length * self->_element_type_size; */
-    /* if (delemiter != NULL) { */
-    /*     capacity += strlen(delemiter); */
-    /* } */
+    //
+    // Calaculte the pre-allocated memory to hold all element + delemiter
+    // in a `String`.
+    //
+    usize capacity = 0;
+    if (strcmp("_Bool", self->_element_type) == 0) {
+        // `True` or `False` (5 chars)
+        capacity = self->_length * 5 + 1;
+    } else {
+        // For all `non _Bool` data type, actually it's impossible to
+        // calaculte the actual size without another for loop. So `capaiacty`
+        // below just a `better than nothing` solution:)
+        capacity = self->_length * self->_element_type_size + 1;
+    }
 
-    String result = Str_from_empty();
+    if (delemiter != NULL) {
+        capacity += strlen(delemiter) * (self->_length - 1);
+    }
+
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(Vector, Vec_join,
+              "element_type: %s, element_size: %lu, delimiter size: %lu, "
+              "length: %lu, "
+              "capacity: %lu",
+              self->_element_type, self->_element_type_size,
+              delemiter == NULL ? 0 : strlen(delemiter), self->_length,
+              capacity);
+#endif
+
+    String result = Str_from_empty_with_capacity(capacity);
 
     for (usize index = 0; index < self->_length; index++) {
         // printf("\n>>> JOIN, element_type: %s", self->_element_type);
