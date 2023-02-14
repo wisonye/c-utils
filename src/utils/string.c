@@ -195,6 +195,7 @@ String Str_move_from(String other) {
     // becomes the owner of that chunk of memory.
     //
     other->_len = 0;
+    other->_capacity = 0;
     other->_buffer = NULL;
 
     return string;
