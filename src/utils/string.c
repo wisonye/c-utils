@@ -42,12 +42,12 @@ void Str_init_with_capacity(String self, usize capacity) {
     *self = (struct Str){
         ._capacity = capacity,
         ._len = 0,
-        ._buffer = NULL,
+        ._buffer = malloc(capacity),
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, init, "self ptr: %p, capacity: %lu", self,
-              self->_capacity);
+    DEBUG_LOG(String, init, "self ptr: %p, capacity: %lu, malloc ptr: %p", self,
+              self->_capacity, self->_buffer);
 #endif
 }
 
@@ -237,17 +237,18 @@ void Str_push_str(String self, const char *str_to_push) {
     }
 
     usize new_len_with_null_terminated_char = self->_len + str_to_push_len + 1;
+    bool need_realloc = false;
 
-    /* #ifdef ENABLE_DEBUG_LOG */
-    /*     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
-     * self->_capacity); */
-    /* #endif */
+#ifdef ENABLE_DEBUG_LOG
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer, self->_capacity);
+#endif
 
     //
     // ensure the `_buffer` has enough space to hold all characters;
     // capacity >= self->_len + 1
     //
     if (new_len_with_null_terminated_char > self->_capacity) {
+        need_realloc = true;
         usize old_capacity = self->_capacity;
         self->_buffer =
             realloc(self->_buffer, new_len_with_null_terminated_char);
@@ -261,11 +262,10 @@ void Str_push_str(String self, const char *str_to_push) {
 #endif
     }
 
-    /* #ifdef ENABLE_DEBUG_LOG */
-    /*     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer, */
-    /*                                       new_len_with_null_terminated_char);
-     */
-    /* #endif */
+#ifdef ENABLE_DEBUG_LOG
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
+                                      new_len_with_null_terminated_char);
+#endif
 
     char *copy_ptr = self->_buffer;
 
@@ -277,37 +277,19 @@ void Str_push_str(String self, const char *str_to_push) {
         copy_ptr += self->_len;
     }
 
-    memmove(copy_ptr, str_to_push, str_to_push_len);
+    memcpy(copy_ptr, str_to_push, str_to_push_len);
     self->_buffer[new_len_with_null_terminated_char - 1] = '\0';
 
-    /* #ifdef ENABLE_DEBUG_LOG */
-    /*     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer, */
-    /*                                       new_len_with_null_terminated_char);
-     */
-    /* #endif */
+#ifdef ENABLE_DEBUG_LOG
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
+                                      new_len_with_null_terminated_char);
+#endif
 
-    // Update
+    // Update new length and capacity (when needed)
     self->_len = new_len_with_null_terminated_char - 1;
-    self->_capacity = new_len_with_null_terminated_char;
-
-    /* char *new_buffer = malloc(new_buffer_len); */
-    /* char *copy_ptr = new_buffer; */
-
-    /* // Copy original value (NOT include the `\0`) */
-    /* if (self->_len > 0) { */
-    /*     memcpy(copy_ptr, self->_buffer, self->_len); */
-    /*     copy_ptr += self->_len; */
-    /* } */
-
-    /* memcpy(copy_ptr, str_to_push, str_to_push_len); */
-    /* new_buffer[new_buffer_len - 1] = '\0'; */
-
-    /* // Update */
-    /* self->_len = new_buffer_len - 1;  // Not count the '\0' */
-    /* if (self->_buffer != NULL) { */
-    /*     free(self->_buffer); */
-    /* } */
-    /* self->_buffer = new_buffer; */
+    if (need_realloc) {
+        self->_capacity = new_len_with_null_terminated_char;
+    }
 }
 
 // /*

@@ -10,6 +10,12 @@ TEST(String, StrInit) {
     ASSERT_EQ(Str_length(&str), 0);
     ASSERT_EQ(Str_capacity(&str), 0);
     ASSERT_EQ(Str_as_str(&str), nullptr);
+
+    Str_push_str(&str, "12345");
+    ASSERT_EQ(Str_length(&str), 5);
+    ASSERT_EQ(Str_capacity(&str), Str_length(&str) + 1);
+    ASSERT_EQ(strcmp(Str_as_str(&str), "12345"), 0);
+    Str_free_buffer_only(&str);
 }
 
 TEST(String, StrInitWithCapacity) {
@@ -17,7 +23,13 @@ TEST(String, StrInitWithCapacity) {
     Str_init_with_capacity(&str, 10);
     ASSERT_EQ(Str_length(&str), 0);
     ASSERT_EQ(Str_capacity(&str), 10);
-    ASSERT_EQ(Str_as_str(&str), nullptr);
+    ASSERT_NE(Str_as_str(&str), nullptr);
+
+    Str_push_str(&str, "12345");
+    ASSERT_EQ(Str_length(&str), 5);
+    ASSERT_EQ(Str_capacity(&str), 10);
+    ASSERT_EQ(strcmp(Str_as_str(&str), "12345"), 0);
+    Str_free_buffer_only(&str);
 }
 
 TEST(String, EmptyString) {
