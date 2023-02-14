@@ -1537,7 +1537,9 @@ Compile and run all unit test:
 - How to run the given `TestSuite` only
 
     You can use `GTEST_FILTER` env var to control which test (or test suite)
-    your want to run only. Here is the example:
+    your want to run only. Doc is [here](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests).
+
+    Example:
 
     ```bash
     GTEST_FILTER="String.*" ./run_unit_test.sh
