@@ -9,6 +9,7 @@
 // Heap allocated string
 //
 struct Str {
+    usize _capacity;
     usize _len;
     char *_buffer;
 };
@@ -50,9 +51,19 @@ void auto_free_string(String *ptr);
 void Str_init(String self);
 
 /*
+ * Init empty `struct Str` that ability to hold `capacity` characters
+ */
+void Str_init_with_capacity(String self);
+
+/*
  * Create from empty
  */
 String Str_from_empty();
+
+/*
+ * Create from empty that ability to hold `capacity` characters
+ */
+String Str_from_empty_with_capacity();
 
 /*
  * Create from `char[]`
@@ -111,6 +122,11 @@ void Str_insert_at_index(String self, const char *str_to_insert,
  * Get back string length
  */
 const usize Str_length(const String self);
+
+/*
+ * Get back capacity
+ */
+const usize Str_capacity(const String self);
 
 /*
  * Get back `char *`
