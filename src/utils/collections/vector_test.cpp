@@ -12,7 +12,7 @@ TEST(Vector, EmptyVector) {
     ASSERT_EQ(Vec_capacity(empty_vec), 0);
     VectorIteractor iter = Vec_iter(empty_vec);
     ASSERT_EQ(iter.length, 0);
-    ASSERT_EQ(iter.items, NULL);
+    ASSERT_EQ(iter.items, nullptr);
 }
 
 TEST(Vector, EmptyVectorWithCapiticy) {
@@ -21,7 +21,7 @@ TEST(Vector, EmptyVectorWithCapiticy) {
     ASSERT_EQ(Vec_capacity(vec), 10);
     VectorIteractor iter_2 = Vec_iter(vec);
     ASSERT_EQ(iter_2.length, 0);
-    ASSERT_NE(iter_2.items, NULL);
+    ASSERT_NE(iter_2.items, nullptr);
 
     //
     // `capacity` should NOT change and no `realloc` will be called before
@@ -80,7 +80,7 @@ TEST(Vector, PushElement_Integer) {
     VectorIteractor iter = Vec_iter(vec);
     ASSERT_EQ(iter.length, Vec_len(vec));
     int *temp_arr = (int *)iter.items;
-    ASSERT_NE(temp_arr, NULL);
+    ASSERT_NE(temp_arr, nullptr);
     ASSERT_EQ(temp_arr[0], 100);
     ASSERT_EQ(temp_arr[1], 200);
     ASSERT_EQ(temp_arr[2], 300);
@@ -108,7 +108,7 @@ TEST(Vector, PushElement_Integer) {
     VectorIteractor iter_2 = Vec_iter(vec_2);
     ASSERT_EQ(iter_2.length, Vec_len(vec_2));
     int *temp_arr_2 = (int *)iter_2.items;
-    ASSERT_NE(temp_arr_2, NULL);
+    ASSERT_NE(temp_arr_2, nullptr);
     ASSERT_EQ(temp_arr_2[0], 666);
     ASSERT_EQ(temp_arr_2[1], 777);
     ASSERT_EQ(temp_arr_2[2], 888);
@@ -140,7 +140,7 @@ TEST(Vector, PushElement_custom_struct) {
     VectorIteractor iter = Vec_iter(vec);
     ASSERT_EQ(iter.length, Vec_len(vec));
     Person *temp_arr = (Person *)iter.items;
-    ASSERT_NE(temp_arr, NULL);
+    ASSERT_NE(temp_arr, nullptr);
     ASSERT_EQ(strcmp(temp_arr[0].first_name, "Wison"), 0);
     ASSERT_EQ(strcmp(temp_arr[0].last_name, "Ye"), 0);
     ASSERT_EQ(temp_arr[0].age, 88);
@@ -179,7 +179,7 @@ TEST(Vector, immutable_get) {
     ASSERT_EQ(*d_value_2, double_arr[1]);
     ASSERT_EQ(*d_value_3, double_arr[2]);
     const double *d_value_4 = (const double *)Vec_get(double_vec, 3);
-    ASSERT_EQ(d_value_4, NULL);
+    ASSERT_EQ(d_value_4, nullptr);
 
     SMART_VECTOR_WITH_CAPACITY(person_vec, Person, person_arr_len);
     for (usize pi = 0; pi < double_arr_len; pi++) {
@@ -203,5 +203,5 @@ TEST(Vector, immutable_get) {
     ASSERT_EQ(person_3->age, person_arr[2].age);
 
     const Person *person_4 = (const Person *)Vec_get(person_vec, 3);
-    ASSERT_EQ(person_4, NULL);
+    ASSERT_EQ(person_4, nullptr);
 }
