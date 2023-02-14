@@ -31,12 +31,20 @@ TEST(DataTypes, TYPE_NAME) {
     ASSERT_EQ(strcmp("unsigned char", TYPE_NAME(u8_value)), 0);
     ASSERT_EQ(strcmp("unsigned short int", TYPE_NAME(u16_value)), 0);
     ASSERT_EQ(strcmp("unsigned int", TYPE_NAME(u32_value)), 0);
+#if defined(__APPLE__)
+    ASSERT_EQ(strcmp("unsigned long long int", TYPE_NAME(u64_value)), 0);
+#elif defined(__FreeBSD__)
     ASSERT_EQ(strcmp("unsigned long int", TYPE_NAME(u64_value)), 0);
+#endif
     ASSERT_EQ(strcmp("unsigned long int", TYPE_NAME(usize_value)), 0);
     ASSERT_EQ(strcmp("signed char", TYPE_NAME(i8_value)), 0);
     ASSERT_EQ(strcmp("short int", TYPE_NAME(i16_value)), 0);
     ASSERT_EQ(strcmp("int", TYPE_NAME(i32_value)), 0);
+#if defined(__APPLE__)
+    ASSERT_EQ(strcmp("long long int", TYPE_NAME(i64_value)), 0);
+#elif defined(__FreeBSD__)
     ASSERT_EQ(strcmp("long int", TYPE_NAME(i64_value)), 0);
+#endif
     ASSERT_EQ(strcmp("int", TYPE_NAME(int_value)), 0);
     ASSERT_EQ(strcmp("long int", TYPE_NAME(long_value)), 0);
     ASSERT_EQ(strcmp("long long int", TYPE_NAME(long_long_value)), 0);
