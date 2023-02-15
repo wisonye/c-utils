@@ -164,9 +164,9 @@ const String Vec_join(const Vector self, char *delemiter,
         // `True` or `False` (5 chars)
         capacity = self->_length * 5 + 1;
     } else {
-        // For all `non _Bool` data type, actually it's impossible to
-        // calaculte the actual size without another for loop. So `capaiacty`
-        // below just a `better than nothing` solution:)
+        // For all `non _Bool` and `non-custom-struct`data type, actually it's
+        // impossible to calaculte the actual size without another for loop.
+        // So `capaiacty` below just a `better than nothing` solution:)
         capacity = self->_length * self->_element_type_size + 1;
     }
 
