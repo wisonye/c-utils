@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -751,12 +752,49 @@ void test_bits() {
 //
 //
 //
+void test_file() {
+    char *filename = "/home/wison/temp/test.js";
+    FILE *fd = fopen(filename, "r");
+    if (fd == NULL) {
+        fprintf(stderr, "\n>>> Open file (%s) failed with error: %s", filename,
+                strerror(errno));
+        return;
+    } else {
+        printf("\n>>> Open file (%s) successfully.", filename);
+
+        //
+        // All files are opened with a default allocated buffer (fully buffered)
+        // if they are known to not refer to an interactive device. By default,
+        // it uses `BUFSIZE` (1024 bytes), you can use `setbuf` to disable the
+        // buffer or change the default buffer size.
+        //
+        // https://cplusplus.com/reference/cstdio/setbuf/
+        //
+        printf("\n>>> File content:\n");
+        char read_buffer[255] = {0};
+        while (fgets(read_buffer, 255, fd) != NULL) {
+            printf("%s", read_buffer);
+        }
+    }
+
+    if (fclose(fd) != 0) {
+        fprintf(stderr, "\n>>> Close file failed with error: %s",
+                strerror(errno));
+    } else {
+        printf("\n>>> Close file (%s) successfully.", filename);
+    }
+}
+
+//
+//
+//
 int main(int argc, char **argv) {
+    test_file();
 
     /* test_link_list(); */
-    test_string();
+    /* test_string(); */
     /* test_log_macro(); */
-    test_vector();
+    /* test_vector(); */
     /* test_vector_element_destructor(); */
     /* LOG_VAR(sizeof(int)); */
     /* LOG_VAR(sizeof(long)); */
