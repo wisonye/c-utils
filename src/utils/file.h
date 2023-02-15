@@ -82,6 +82,11 @@ const char *File_get_filename(File self);
 bool File_is_open_successfully(File self);
 
 /*
+ * Get back error
+ */
+const char *File_get_error(File self);
+
+/*
  * Print out file like `bat`
  */
 void File_print_out_file_like_bat(File self);

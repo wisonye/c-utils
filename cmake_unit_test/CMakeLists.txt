@@ -18,11 +18,12 @@ add_executable("${PROJECT_NAME}-unit-test"
     "../src/utils/hex_buffer_test.cpp"
     "../src/utils/data_types_test.cpp"
     "../src/utils/file.c"
+    "../src/utils/file_test.cpp"
     "../src/main.cpp")
 
 target_link_libraries("${PROJECT_NAME}-unit-test" GTest::gtest GTest::gtest_main)
 
-target_compile_definitions("${PROJECT_NAME}-unit-test" PRIVATE ENABLE_DEBUG_LOG)
+# target_compile_definitions("${PROJECT_NAME}-unit-test" PRIVATE ENABLE_DEBUG_LOG)
 
 # -----------------------------------------------------------------------------
 # Add a test to the project to be run by `ctest(1).`

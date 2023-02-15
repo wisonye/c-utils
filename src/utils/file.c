@@ -224,7 +224,6 @@ void File_free(File self) {
  * Auto free file call
  */
 void auto_free_file(File *ptr) {
-    printf("\n>>>>\n");
 #ifdef ENABLE_DEBUG_LOG
     DEBUG_LOG(File, auto_free_file,
               "out of scope with File ptr: %p, filename: %s", *ptr,
