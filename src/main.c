@@ -9,6 +9,7 @@
 #include "utils/collections/single_link_list.h"
 #include "utils/collections/vector.h"
 #include "utils/data_types.h"
+#include "utils/file.h"
 #include "utils/hex_buffer.h"
 #include "utils/log.h"
 #include "utils/memory.h"
@@ -759,87 +760,16 @@ void test_file() {
     filename = "/Users/wison/my-shell/backup/README_openbsd.md";
 
 #elif defined(__FreeBSD__)
-    filename = "/home/wison/my-shell/backup/README_openbsd.md";
+    // filename = "/home/wison/my-shell/backup/README_openbsd.md";
+    filename = "/home/wison/temp/test.js";
 #endif
-    FILE *fd = fopen(filename, "r");
-    if (fd == NULL) {
-        fprintf(stderr, "\n>>> Open file (%s) failed with error: %s", filename,
-                strerror(errno));
-        return;
+
+    SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
+    if (File_is_open_successfully(my_file)) {
+        File_print_out_file_like_bat(my_file);
     } else {
-        printf("\n>>> Open file (%s) successfully.", filename);
-
-        //
-        // All files are opened with a default allocated buffer (fully buffered)
-        // if they are known to not refer to an interactive device. By default,
-        // it uses `BUFSIZE` (1024 bytes), you can use `setbuf` to disable the
-        // buffer or change the default buffer size.
-        //
-        // https://cplusplus.com/reference/cstdio/setbuf/
-        //
-        printf("\n>>> File content:\n");
-
-        usize line_buffer_size = 255;
-        char line_buffer[line_buffer_size];
-        memset(line_buffer, 0, line_buffer_size);
-
-        //
-        // Read each line and add line number at the beginning
-        //
-        // Line number ` XXXXX | `: hold 9 spaces
-        //
-        // ` XXXXX │ LINE_CONTENT_HERE`
-        //
-        // So, that's why max buffer size should be `255 - 7`
-        //
-        u32 current_line_no = 1;
-        u32 line_no_buffer_str_len = 9;
-        u32 line_no_buffer_size = line_no_buffer_str_len + 1;
-        while (fgets(line_buffer, 255 - line_no_buffer_str_len, fd) != NULL) {
-            //
-            // `line_buffer` always end with `\n\0`!!!
-            //
-            // line_buffer[line_str_len - 1] == '\n'
-            // line_buffer[line_str_len] == '\0'
-            //
-
-            usize line_str_len = strlen(line_buffer);
-
-            struct Str apply_line_no_str;
-            Str_init_with_capacity(&apply_line_no_str,
-                                   line_no_buffer_str_len + line_str_len + 1);
-
-            //
-            // Formatted line number
-            //
-            char line_no_buffer[line_no_buffer_size];
-            memset(line_no_buffer, 0, line_no_buffer_size);
-            snprintf(line_no_buffer, line_no_buffer_size, " %5u | ",
-                     current_line_no);
-            /* printf("\n>>> %s, len: %lu", line_no_buffer, */
-            /*        strlen(line_no_buffer)); */
-
-            Str_push_str(&apply_line_no_str, line_no_buffer);
-
-            //
-            // Orignal line content
-            //
-            Str_push_str(&apply_line_no_str, line_buffer);
-
-            current_line_no++;
-
-            // Print out
-            printf("%s", Str_as_str(&apply_line_no_str));
-
-            Str_free_buffer_only(&apply_line_no_str);
-        }
-    }
-
-    if (fclose(fd) != 0) {
-        fprintf(stderr, "\n>>> Close file failed with error: %s",
-                strerror(errno));
-    } else {
-        printf("\n>>> Close file (%s) successfully.", filename);
+        fprintf(stderr, "Failed to open file '%s': %s\n", filename,
+                File_get_error(my_file));
     }
 }
 
