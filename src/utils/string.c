@@ -8,7 +8,9 @@
 #include <stdio.h>
 
 #include "log.h"
+#if ENABLE_PRINT_STRING_MEMORY
 #include "memory.h"
+#endif
 #endif
 
 //
@@ -46,7 +48,8 @@ void Str_init_with_capacity(String self, usize capacity) {
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, init_with_capacity, "self ptr: %p, capacity: %lu, malloc ptr: %p", self,
+    DEBUG_LOG(String, init_with_capacity,
+              "self ptr: %p, capacity: %lu, malloc ptr: %p", self,
               self->_capacity, self->_buffer);
 #endif
 }
@@ -84,8 +87,9 @@ String Str_from_empty_with_capacity(usize capacity) {
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, from_empty_with_capacity, "self ptr: %p, capacity: %lu, malloc ptr: %p",
-              string, string->_capacity, string->_buffer);
+    DEBUG_LOG(String, from_empty_with_capacity,
+              "self ptr: %p, capacity: %lu, malloc ptr: %p", string,
+              string->_capacity, string->_buffer);
 #endif
 
     return string;
@@ -259,7 +263,7 @@ void Str_push_str(String self, const char *str_to_push) {
     usize new_len_with_null_terminated_char = self->_len + str_to_push_len + 1;
     bool need_realloc = false;
 
-#ifdef ENABLE_DEBUG_LOG
+#ifdef ENABLE_PRINT_STRING_MEMORY
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer, self->_capacity);
 #endif
 
@@ -282,7 +286,7 @@ void Str_push_str(String self, const char *str_to_push) {
 #endif
     }
 
-#ifdef ENABLE_DEBUG_LOG
+#ifdef ENABLE_PRINT_STRING_MEMORY
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
                                       new_len_with_null_terminated_char);
 #endif
@@ -300,7 +304,7 @@ void Str_push_str(String self, const char *str_to_push) {
     memcpy(copy_ptr, str_to_push, str_to_push_len);
     self->_buffer[new_len_with_null_terminated_char - 1] = '\0';
 
-#ifdef ENABLE_DEBUG_LOG
+#ifdef ENABLE_PRINT_STRING_MEMORY
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
                                       new_len_with_null_terminated_char);
 #endif
