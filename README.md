@@ -1,6 +1,6 @@
 # `c-utils`
 
-This is my personal `C` utilities which contains the following modules:
+This is my personal `C` utilities which contain the following modules:
 
 [1. `String`](#1-string)</br>
 [1.1 Create empty string](#11-create-empty-string)</br>
