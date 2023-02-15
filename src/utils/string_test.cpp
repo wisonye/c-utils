@@ -165,17 +165,19 @@ TEST(String, Push) {
 
 TEST(String, InsertAtBegin) {
     SMART_STRING(empty_str) = Str_from_empty();
-    SMART_STRING(init_empty_str) = Str_from_empty();
+    SMART_STRING(init_empty_str) = Str_from_empty_with_capacity(14);
     SMART_STRING(other_str) = Str_from_str("12345");
+
+    ASSERT_EQ(Str_capacity(empty_str), 0);
+    ASSERT_EQ(Str_capacity(init_empty_str), 14);
+    ASSERT_EQ(Str_capacity(other_str), Str_length(other_str) + 1);
 
     Str_push_str(init_empty_str, "6789");
     Str_insert_other_to_begin(init_empty_str, other_str);
     Str_insert_str_to_begin(init_empty_str, "0000");
-    /* printf("\n>>> SMART_STRING(InsertAtBegin - init_empty_str len: %lu,
-     * value: %s",
-     */
-    /*        Str_length(init_empty_str), Str_as_str(init_empty_str)); */
+
     ASSERT_EQ(Str_length(init_empty_str), strlen("0000123456789"));
+    ASSERT_EQ(Str_capacity(init_empty_str), Str_length(init_empty_str) + 1);
 }
 
 TEST(String, MoveSemantic) {
