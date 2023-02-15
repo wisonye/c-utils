@@ -10,10 +10,11 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/hex_buffer.c"
     "../src/utils/memory.c"
     "../src/utils/timer.c"
+    "../src/utils/file.c"
     "../src/main.c")
 
 # target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG ENABLE_PRINT_STRING_MEMORY)
-# target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
+target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
 
 message(">>> CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 message(">>> CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
