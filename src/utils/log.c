@@ -168,10 +168,10 @@ void __log__(LogLevel log_level, const char *module_name,
             log_level_str = "(I)";
     }
 
-    char buffer[LOG_BUFFER_SIZE];
+    char buffer[LOG_BUFFER_SIZE] = {0};
     va_list args;
     va_start(args, format_str);
-    vsprintf(buffer, format_str, args);
+    vsnprintf(buffer, LOG_BUFFER_SIZE, format_str, args);
     va_end(args);
     printf("\n%s [ %s ] > %s - %s", log_level_str, module_name, function_name,
            buffer);
