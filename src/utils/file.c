@@ -42,10 +42,11 @@ File File_open(const char *filename, FileMode mode) {
     *open_file = (struct _File){
         .inner = NULL,
         .mode = mode,
-        .error = NULL,
-        .filename = Str_from_str(filename),
-        .data = NULL,
         .open_successfully = false,
+        .filename = Str_from_str(filename),
+        .error = NULL,
+        .data = NULL,
+        .size = 0,
     };
 
     char temp_mode[3] = {0};
@@ -71,6 +72,13 @@ File File_open(const char *filename, FileMode mode) {
     } else {
         open_file->inner = file_handle;
         open_file->open_successfully = true;
+
+        //
+        // Get the file size and rewind back to the beginning postion
+        //
+        fseek(file_handle, 0L, SEEK_END);
+        open_file->size = ftell(file_handle);
+        rewind(file_handle);
     }
 
     return open_file;
@@ -89,11 +97,11 @@ usize File_load_into_buffer(File self) {
     // Get the file size and rewind back to the beginning postion
     //
     fseek(self->inner, 0L, SEEK_END);
-    usize file_size = ftell(self->inner);
+    self->size = ftell(self->inner);
     rewind(self->inner);
 
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(File, load_into_buffer, "file_size: %lu", file_size);
+    DEBUG_LOG(File, load_into_buffer, "file_size: %lu", self->size);
 #endif
 
     //
@@ -113,7 +121,7 @@ usize File_load_into_buffer(File self) {
     // Create `struct Str *` buffer with enough capacity to hold the entire
     // file content
     //
-    usize file_str_size = file_size + 1;
+    usize file_str_size = self->size + 1;
     struct Str *str_buffer = malloc(sizeof(struct Str));
     Str_init_with_capacity(str_buffer, file_str_size);
     memset(str_buffer->_buffer, 0, file_str_size);
@@ -126,9 +134,9 @@ usize File_load_into_buffer(File self) {
     // `read_bytes` means the number of object has been read which should
     // be `1`!!!
     //
-    usize read_bytes = fread(str_buffer->_buffer, file_size, 1, self->inner);
-    str_buffer->_buffer[file_size] = '\0';
-    str_buffer->_len = file_size;
+    usize read_bytes = fread(str_buffer->_buffer, self->size, 1, self->inner);
+    str_buffer->_buffer[self->size] = '\0';
+    str_buffer->_len = self->size;
 
     //
     // Move `str_buffer` into `self->data`
@@ -147,7 +155,7 @@ usize File_load_into_buffer(File self) {
     Str_free(str_buffer);
 
     // `number of object has been read` * object size
-    return read_bytes * file_size;
+    return read_bytes * self->size;
 }
 
 /*
@@ -190,6 +198,11 @@ const char *File_get_data(File self) {
     return (self != NULL && self->data != NULL) ? Str_as_str(self->data)
                                                 : (char *)NULL;
 }
+
+/*
+ * Get back file size
+ */
+usize File_get_size(File self) { return (self != NULL) ? self->size : 0; }
 
 /*
  * Print out file like `bat`
@@ -270,13 +283,14 @@ void File_print_debug_info(File self) {
     char file_mode[4] = {0};
     file_mode_to_string(&self->mode, file_mode);
 
-    DEBUG_LOG(File, print_debug_info,
-              "\n[ File, ptr: %p "
-              "]\n----------------------------------------\ninner: %s\nmode: "
-              "%s\nfilename: %s\nerror: "
-              "%s\ndata: %s\n----------------------------------------",
-              self, file_handler, file_mode, Str_as_str(self->filename),
-              Str_as_str(self->error), Str_as_str(self->data));
+    DEBUG_LOG(
+        File, print_debug_info,
+        "\n[ File, ptr: %p "
+        "]\n----------------------------------------\ninner: %s\nmode: "
+        "%s\nfilename: %s\nerror: "
+        "%s\nsize: %lu\ndata: %s\n----------------------------------------",
+        self, file_handler, file_mode, Str_as_str(self->filename),
+        Str_as_str(self->error), self->size, Str_as_str(self->data));
 }
 #endif
 

@@ -32,6 +32,9 @@ struct _File {
 
     // File data as cache
     String data;
+
+    // File size
+    usize size;
 };
 
 typedef struct _File *File;
@@ -92,6 +95,11 @@ const char *File_get_error(File self);
  * Get back internal buffer data
  */
 const char *File_get_data(File self);
+
+/*
+ * Get back file size
+ */
+usize File_get_size(File self);
 
 /*
  * Print out file like `bat`
