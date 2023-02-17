@@ -762,15 +762,24 @@ void test_file() {
 #elif defined(__FreeBSD__)
     // filename = "/home/wison/my-shell/backup/README_openbsd.md";
     filename = "/home/wison/temp/test.js";
+    // filename = "/home/wison/temp/test.logaaa";
 #endif
 
     SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
     if (File_is_open_successfully(my_file)) {
-        File_print_out_file_like_bat(my_file);
+        usize read_bytes = File_load_into_buffer(my_file);
+        const char *file_content = File_get_data(my_file);
+        usize file_size = File_get_size(my_file);
+        LOG_VAR(read_bytes);
+        LOG_VAR(file_size);
+        LOG_VAR(file_content);
+
     } else {
         fprintf(stderr, "Failed to open file '%s': %s\n", filename,
                 File_get_error(my_file));
     }
+
+    File_print_debug_info(my_file);
 }
 
 //
