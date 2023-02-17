@@ -44,7 +44,7 @@ void Str_init_with_capacity(String self, usize capacity) {
     *self = (struct Str){
         ._capacity = capacity,
         ._len = 0,
-        ._buffer = malloc(capacity),
+        ._buffer = calloc(capacity, 1),
     };
 
 #if ENABLE_DEBUG_LOG
@@ -83,7 +83,7 @@ String Str_from_empty_with_capacity(usize capacity) {
     *string = (struct Str){
         ._capacity = capacity,
         ._len = 0,
-        ._buffer = malloc(capacity),
+        ._buffer = calloc(capacity, 1),
     };
 
 #if ENABLE_DEBUG_LOG
