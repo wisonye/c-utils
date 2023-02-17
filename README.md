@@ -27,6 +27,9 @@ This is my personal `C` utilities which contain the following modules:
 [7.1 `PRINT_BITS` macro](#71-print_bits-macro)</br>
 [7.2 `IS_BIT_1` macro](#72-is_bit_1-macro)</br>
 
+[9. `File`](#9-file)</br>
+[9.1 Open existing file and read all data into internal buffer](#9-1-open-existing-file-and-read-all-data-into-internal-buffer)</br>
+[9.2 Open non-existing file](#9-2-open-non-existing-file)</br>
 </br>
 
 ## 1. `String`
@@ -36,8 +39,7 @@ hide the `null-terminated` detail and pointer, just deal with normal function
 call.
 
 The `SMART_STRING` and `SMART_STRING_WITH_CAPACITY` macro ensures the
-heap-allocated instance auto-free heap-allocated memory when it goes out of
-its scope.
+heap-allocated instance auto-free when it goes out of its scope.
 
 Examples:
 
@@ -781,7 +783,92 @@ Check whether the given bit is `1` or not
 
     </br>
 
-## 8. `Collection/SingleLinkList`
+## 9. `File`
+
+Wrap the `C-style file` APIs.
+
+The `SMART_FILE` macro ensures the heap-allocated instance auto-free when it
+goes out of its scope.
+
+Examples:
+
+</br>
+
+#### 9.1 Open existing file and read all data into internal buffer
+
+```c
+// `SMART_FILE(variable_name);`
+char *filename = "/home/wison/temp/test.log";
+SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
+if (File_is_open_successfully(my_file)) {
+    usize read_bytes = File_load_into_buffer(my_file);
+    const char *file_content = File_get_data(my_file);
+    usize file_size = File_get_size(my_file);
+    LOG_VAR(read_bytes);
+    LOG_VAR(file_size);
+    LOG_VAR(file_content);
+}
+
+#ifdef ENABLE_DEBUG_LOG
+File_print_debug_info(my_file);
+#endif
+
+
+// (D) [ File ] > open - self ptr: 0x5472040, filename: /home/wison/temp/test.log, open mode: r
+// (D) [ File ] > load_into_buffer - file_size: 6
+// (D) [ File ] > load_into_buffer - after read from file, self->data, len: 6, value: 12345
+//
+// >>> read_bytes: 6
+// >>> file_size: 6
+// >>> file_content: 12345
+//
+// (D) [ File ] > print_debug_info -
+// [ File, ptr: 0x5472040 ]
+// ----------------------------------------
+// inner: 0x4a4e2b0
+// mode: r
+// filename: /home/wison/temp/test.log
+// error: (null)
+// size: 6
+// data: 12345
+//
+// ----------------------------------------
+// (D) [ File ] > auto_free_file - out of scope with File ptr: 0x5472040, filename: /home/wison/temp/test.log
+// (D) [ File ] > free - Close file - '/home/wison/temp/test.log', result: 0
+```
+
+</br>
+
+#### 9.2 Open non-existing file
+
+```c
+// `SMART_FILE(variable_name);`
+char *filename = "/home/wison/temp/non-exists.log";
+SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
+
+#ifdef ENABLE_DEBUG_LOG
+File_print_debug_info(my_file);
+#endif
+
+
+// (D) [ File ] > open - self ptr: 0x5472040, filename: /home/wison/temp/non-exists.log, open mode: r
+// (D) [ File ] > open - Open file failed - '/home/wison/temp/non-exists.log': No such file or directory
+// (D) [ File ] > print_debug_info -
+// [ File, ptr: 0x5472040 ]
+// ----------------------------------------
+// inner: 0x0
+// mode: r
+// filename: /home/wison/temp/non-exists.log
+// error: No such file or directory
+// size: 0
+// data: (null)
+// ----------------------------------------
+// (D) [ File ] > auto_free_file - out of scope with File ptr: 0x5472040, filename: /home/wison/temp/non-exists.log
+```
+
+</br>
+
+## 9. `Collection/SingleLinkList`
 
 This `LinkList` doesn't support normal generic `<T>` (no auto element type
 inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
