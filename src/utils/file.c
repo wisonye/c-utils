@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "string.h"
+
 #ifdef ENABLE_DEBUG_LOG
 #include "log.h"
 #endif
@@ -56,6 +58,9 @@ File File_open(const char *filename, FileMode mode) {
 
     FILE *file_handle = fopen(filename, temp_mode);
     if (file_handle == NULL) {
+        // char error_buffer[100] = {0};
+        // strerror_r(errno, error_buffer, sizeof(error_buffer));
+        // open_file->error = Str_from_str(error_buffer);
         open_file->error = Str_from_str(strerror(errno));
 
 #ifdef ENABLE_DEBUG_LOG
@@ -72,9 +77,78 @@ File File_open(const char *filename, FileMode mode) {
 }
 
 /*
- * Load the entire file into `self->data`
+ * Load the entire file into `self->data` if the file has been opened already.
+ * It returns total bytes loaded from file, otherwise, return -1 when error
+ * happens.
  */
-void File_load(File self, const char *filename);
+usize File_load_into_buffer(File self) {
+    if (self == NULL || !self->open_successfully || self->inner == NULL)
+        return -1;
+
+    //
+    // Get the file size and rewind back to the beginning postion
+    //
+    fseek(self->inner, 0L, SEEK_END);
+    usize file_size = ftell(self->inner);
+    rewind(self->inner);
+
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(File, load_into_buffer, "file_size: %lu", file_size);
+#endif
+
+    //
+    // Free the orignal `self->data` if exists
+    //
+    if (self->data != NULL) {
+#ifdef ENABLE_DEBUG_LOG
+        DEBUG_LOG(File, load_into_buffer,
+                  "free original self->data, len: %lu, value: %s",
+                  Str_length(self->data), Str_as_str(self->data));
+#endif
+        Str_free(self->data);
+        self->data = NULL;
+    }
+
+    //
+    // Create `struct Str *` buffer with enough capacity to hold the entire
+    // file content
+    //
+    usize file_str_size = file_size + 1;
+    struct Str *str_buffer = malloc(sizeof(struct Str));
+    Str_init_with_capacity(str_buffer, file_str_size);
+    memset(str_buffer->_buffer, 0, file_str_size);
+
+    //
+    // Here, we write to `str_buffer->_buffer` in an unusual way for performance
+    // purpose, that's why we need to set the correct `str_buffer->_len` value
+    // manually!!!
+    //
+    // `read_bytes` means the number of object has been read which should
+    // be `1`!!!
+    //
+    usize read_bytes = fread(str_buffer->_buffer, file_size, 1, self->inner);
+    str_buffer->_buffer[file_size] = '\0';
+    str_buffer->_len = file_size;
+
+    //
+    // Move `str_buffer` into `self->data`
+    //
+    self->data = Str_move_from(str_buffer);
+
+#ifdef ENABLE_DEBUG_LOG
+    DEBUG_LOG(File, load_into_buffer,
+              "after read from file, self->data, len: %lu, value: %s",
+              Str_length(self->data), Str_as_str(self->data));
+#endif
+
+    //
+    // Free the `str_buffer`
+    //
+    Str_free(str_buffer);
+
+    // `number of object has been read` * object size
+    return read_bytes * file_size;
+}
 
 /*
  * Write the modified `self->data` back to `self->filename`
@@ -107,6 +181,14 @@ bool File_is_open_successfully(File self) {
 const char *File_get_error(File self) {
     return (self != NULL && self->error != NULL) ? Str_as_str(self->error)
                                                  : (char *)NULL;
+}
+
+/*
+ * Get back internal buffer data
+ */
+const char *File_get_data(File self) {
+    return (self != NULL && self->data != NULL) ? Str_as_str(self->data)
+                                                : (char *)NULL;
 }
 
 /*
@@ -174,6 +256,29 @@ void File_print_out_file_like_bat(File self) {
         Str_free_buffer_only(&line_str_added_line_no);
     }
 }
+
+#ifdef ENABLE_DEBUG_LOG
+/*
+ * Print out self for debugging purpose
+ */
+void File_print_debug_info(File self) {
+    SMART_STRING(debug_info) = Str_from_empty_with_capacity(100);
+
+    char file_handler[20] = {0};
+    snprintf(file_handler, sizeof(file_handler), "%p", self->inner);
+
+    char file_mode[4] = {0};
+    file_mode_to_string(&self->mode, file_mode);
+
+    DEBUG_LOG(File, print_debug_info,
+              "\n[ File, ptr: %p "
+              "]\n----------------------------------------\ninner: %s\nmode: "
+              "%s\nfilename: %s\nerror: "
+              "%s\ndata: %s\n----------------------------------------",
+              self, file_handler, file_mode, Str_as_str(self->filename),
+              Str_as_str(self->error), Str_as_str(self->data));
+}
+#endif
 
 /*
  * Free

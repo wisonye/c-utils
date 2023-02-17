@@ -57,9 +57,11 @@ void auto_free_file(File *ptr);
 File File_open(const char *filename, FileMode mode);
 
 /*
- * Load the entire file into `self->data`
+ * Load the entire file into `self->data` if the file has been opened already.
+ * It returns total bytes loaded from file, otherwise, return -1 when error
+ * happens.
  */
-void File_load(File self, const char *filename);
+usize File_load_into_buffer(File self);
 
 /*
  * Write the modified `self->data` back to `self->filename`
@@ -87,9 +89,21 @@ bool File_is_open_successfully(File self);
 const char *File_get_error(File self);
 
 /*
+ * Get back internal buffer data
+ */
+const char *File_get_data(File self);
+
+/*
  * Print out file like `bat`
  */
 void File_print_out_file_like_bat(File self);
+
+#ifdef ENABLE_DEBUG_LOG
+/*
+ * Print out self for debugging purpose
+ */
+void File_print_debug_info(File self);
+#endif
 
 /*
  * Free
