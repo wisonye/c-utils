@@ -28,8 +28,8 @@ This is my personal `C` utilities which contain the following modules:
 [7.2 `IS_BIT_1` macro](#72-is_bit_1-macro)</br>
 
 [9. `File`](#9-file)</br>
-[9.1 Open existing file and read all data into internal buffer](#9-1-open-existing-file-and-read-all-data-into-internal-buffer)</br>
-[9.2 Open non-existing file](#9-2-open-non-existing-file)</br>
+[9.1 Open existing file and read all data into internal buffer](#91-open-existing-file-and-read-all-data-into-internal-buffer)</br>
+[9.2 Open non-existing file](#92-open-non-existing-file)</br>
 </br>
 
 ## 1. `String`
