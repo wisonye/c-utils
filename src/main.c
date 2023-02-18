@@ -779,7 +779,9 @@ void test_file() {
                 File_get_error(my_file));
     }
 
+#ifdef ENABLE_DEBUG_LOG
     File_print_debug_info(my_file);
+#endif
 }
 
 //
@@ -804,14 +806,13 @@ int main(int argc, char **argv) {
 
     // unimplemented_function();
 
-    // String my_str = Str_from_str("My name is Wison Ye");
-    // DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
-    // DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-    // DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    // INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    // WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    // ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(&my_str));
-    // Str_free(&my_str);
+    SMART_STRING(my_str) = Str_from_str("My name is Wison Ye");
+    DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
+    DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
+    DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
 
     // String my_name_str = Str_from_str("Wison Ye");
     // String clone_from_empty_str = Str_clone(&my_name_str);
