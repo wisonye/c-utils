@@ -37,11 +37,11 @@ This is my personal `C` utilities which contain the following modules:
 [9.5 Stack-allocated](#95-stack-allocated)</br>
 [9.6 Heap-allocated](#96-heap-allocated)</br>
 
-[10. `Collection/Vector`: Heap allocated dynamic array](#10-collectionvector:-heap-allocated-dynamic-array)
-[10.1 Create empty vector](#101-create-empty-vector)
-[10.2 Create empty vector with pre-allocated space to avoid `realloc` cost](#102-create-empty-vector-with-pre-allocated-space-to-avoid-realloc-cost)
-[10.3 Get element via `index`](#103-get-element-via-index)
-[10.4 Use `String`](#104-use-string)
+[10. `Collection/Vector`: Heap allocated dynamic array](#10-collectionvector:-heap-allocated-dynamic-array)</br>
+[10.1 Create empty vector](#101-create-empty-vector)</br>
+[10.2 Create empty vector with pre-allocated space to avoid `realloc` cost](#102-create-empty-vector-with-pre-allocated-space-to-avoid-realloc-cost)</br>
+[10.3 Get element via `index`](#103-get-element-via-index)</br>
+[10.4 Use `String`](#104-use-string)</br>
 [10.5 Custom struct case](#105-Custom-struct-case)
 
 </br>
