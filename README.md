@@ -26,10 +26,17 @@ This is my personal `C` utilities which contain the following modules:
 [7. `Bits`](#7-bits)</br>
 [7.1 `PRINT_BITS` macro](#71-print_bits-macro)</br>
 [7.2 `IS_BIT_1` macro](#72-is_bit_1-macro)</br>
+[8. `File`](#8-file)</br>
+[8.1 Open existing file and read all data into internal buffer](#81-open-existing-file-and-read-all-data-into-internal-buffer)</br>
+[8.2 Open non-existing file](#82-open-non-existing-file)</br>
+[9. `Collection/SingleLinkList`](#9-collection/singlelinklist)</br>
+[9.1 Concept](#91-concept)
+[9.2 use cases](#92-use-cases)
+[9.3 Props and cons](#93-props-and-cons)
+[9.4 Complexity](#94-complexity)
+[9.5 Stack-allocated](#95-stack-allocated)
+[9.6 Heap-allocated](#96-heap-allocated)
 
-[9. `File`](#9-file)</br>
-[9.1 Open existing file and read all data into internal buffer](#91-open-existing-file-and-read-all-data-into-internal-buffer)</br>
-[9.2 Open non-existing file](#92-open-non-existing-file)</br>
 </br>
 
 ## 1. `String`
@@ -783,7 +790,7 @@ Check whether the given bit is `1` or not
 
     </br>
 
-## 9. `File`
+## 8. `File`
 
 Wrap the `C-style file` APIs.
 
@@ -794,7 +801,7 @@ Examples:
 
 </br>
 
-#### 9.1 Open existing file and read all data into internal buffer
+#### 8.1 Open existing file and read all data into internal buffer
 
 ```c
 // `SMART_FILE(variable_name);`
@@ -839,7 +846,7 @@ File_print_debug_info(my_file);
 
 </br>
 
-#### 9.2 Open non-existing file
+#### 8.2 Open non-existing file
 
 ```c
 // `SMART_FILE(variable_name);`
@@ -879,7 +886,7 @@ doesn't copy the internal heap-allocated content!!!
 
 </br>
 
-#### 8.1 Concept
+#### 9.1 Concept
 
 A `LinkedList` is a sequential list of nodes that hold data which point to other nodes also containing data.
 
@@ -896,7 +903,7 @@ A `LinkedList` is a sequential list of nodes that hold data which point to other
 
 </br>
 
-#### 8.2 use cases
+#### 9.2 use cases
 
 - Used in many `List`, `Queue` and `Stack` implementation.
 - Great for creating circular lists.
@@ -905,7 +912,7 @@ A `LinkedList` is a sequential list of nodes that hold data which point to other
 
 </br>
 
-#### 8.3 Props and cons
+#### 9.3 Props and cons
 
 | |Props | Cons
 |-----: | ---- | -------
@@ -914,7 +921,7 @@ A `LinkedList` is a sequential list of nodes that hold data which point to other
 
 </br>
 
-#### 8.4 Complexity
+#### 9.4 Complexity
 
 | |SingleLinkedList | DoubleLinkedList
 |-----: | ---- | -------
@@ -927,192 +934,64 @@ A `LinkedList` is a sequential list of nodes that hold data which point to other
 
 </br>
 
-    - Interface
 
-        ```c
-        //----------------------------------------------------------------------------
-        // LinkListNdoe opaque pointer to `struct LLNode`
-        //----------------------------------------------------------------------------
-        typedef struct LLNode *LinkListNode;
+Examples:
 
-        //----------------------------------------------------------------------------
-        // LinkList
-        //----------------------------------------------------------------------------
-        struct LL {
-            size_t _len;
-            LinkListNode _head;
-            LinkListNode _tail;
-        };
+#### 9.5 Stack-allocated
 
-        //----------------------------------------------------------------------------
-        // LinkList opaque pointer to `struct LL`
-        //----------------------------------------------------------------------------
-        typedef struct LL *LinkList;
+If you need stack-allocated instance, you have to init and free explicitly.
 
-        /*
-        * Define smart `LinkList` var that calls `LL_free()` automatically when the
-        * variable is out of the scope
-        *
-        * ```c
-        * SMART_LINKLIST(temp_list) = LL_from_empty();
-        *
-        * // (D) [ SingleLinkList ] > free - self ptr: 0x5472040, total free node
-        * amount: 0, total free node data amount: 0
-        * ```
-        */
-        #define SMART_LINKLIST(x) __attribute__((cleanup(auto_free_linklist))) LinkList x
+```c
+usize init_value = 8888;
 
-        /*
-        * Init empty list
-        */
-        void LL_init_empty(LinkList self);
+struct LL list;
+LL_init_empty(&list);
+LL_append_value(&list, sizeof(usize), &init_value, NULL);
 
-        /*
-        * Create empty list
-        */
-        LinkList LL_from_empty();
+LL_free(&list, false, NULL);
+```
 
-        /*
-        * Create list and insert first node that copies from value
-        */
-        LinkList LL_from_value(size_t item_size, void *value,
-                            CloneFromFunc clone_from_func);
+</br>
 
-        /*
-        * Return the link length
-        */
-        size_t LL_length(const LinkList self);
+#### 9.6 Heap-allocated
 
-        /*
-        * Return the header (first node) pointer
-        */
-        const LinkListNode LL_get_head(const LinkList self);
-
-        /*
-        * Return the header (first node) data pointer
-        */
-        const void *LL_get_head_data(const LinkList self);
-
-        /*
-        * Return the tail (last node) pointer
-        */
-        const LinkListNode LL_get_tail(const LinkList self);
-
-        /*
-        * Return the tail (last node) data pointer
-        */
-        const void *LL_get_tail_data(const LinkList self);
-
-        /*
-        * Append to the tail
-        *
-        * LinkList executes a shallow copy which means doesn't copy the internal
-        * heap-allocated content!!!
-        */
-        void LL_append_value(LinkList self, size_t item_size, void *value,
-                            CloneFromFunc clone_from_func);
-
-        /*
-        * Iterator
-        */
-        typedef struct {
-            size_t length;
-            void *data_arr[];
-        } LLIterator;
-
-        /*
-        * Define smart `LinkList` var that calls `LL_free()` automatically when the
-        * variable is out of the scope
-        */
-        #define SMART_LINKLIST_ITERATOR(x) __attribute__((cleanup(auto_free_linklist_iter))) LLIterator *x
-
-        /*
-        * Return a `Iterator` pointer from the `LinkLiist`:
-        *
-        * `Iterator.length`: Shows how many data pointer in `Iterator.data_arr`.
-        *
-        * `Iterator.data_arr`: Stores all list node data pointer, you need to convert
-        *                      the correct data type before using it. If
-        * `Iterator.length` is zeor, DO NOT access this array!!!
-        *
-        * The returned `Iterator` pointer has to be freed by calling `LL_free_iter()`.
-        */
-        LLIterator *LL_iter(const LinkList self);
-
-        /*
-        * Free the given `LLIterator`
-        */
-        void LL_free_iter(LLIterator *iter);
-
-        /*
-        * `need_to_free_myself`: If `self` is stack-allocated, set to false!!!
-        *
-        * `free_func`:
-        *
-        * When freeing a `LLNode` instance, the best way to avoid memory issue
-        * is to call the original `DataType.free(node->data)`, just in case `data` is
-        * a complicated struct instance
-        */
-        void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func);
-        ```
-
-        </br>
-
-#### 8.5 Stack-allocated
-
-- Example
-
-    - If you need stack-allocated instance, you have to init and free explicitly.
-
-        ```c
-        usize init_value = 8888;
-
-        struct LL list;
-        LL_init_empty(&list);
-        LL_append_value(&list, sizeof(usize), &init_value, NULL);
-
-        LL_free(&list, false, NULL);
-        ```
-
-        </br>
-
-    - If you need heap-allocated instance, you should use `SMART_LINKLIST` macro
-    to create `LinkList` (opaque pointer to `struct LL`), as it will be freed
-    automatic!!!
+If you need heap-allocated instance, you should use `SMART_LINKLIST` macro
+to create `LinkList` (opaque pointer to `struct LL`), as it will be freed
+automatic!!!
 
 
-        ```c
-        SMART_LINKLIST(short_int_list) = LL_from_empty();
+```c
+SMART_LINKLIST(short_int_list) = LL_from_empty();
 
-        // Append a few nodes
-        usize values[] = {111, 222, 333, 444, 555};
-        LL_append_value(short_int_list, sizeof(uint16), &values[0], NULL);
-        LL_append_value(short_int_list, sizeof(uint16), &values[1], NULL);
-        LL_append_value(short_int_list, sizeof(uint16), &values[2], NULL);
-        LL_append_value(short_int_list, sizeof(uint16), &values[3], NULL);
-        LL_append_value(short_int_list, sizeof(uint16), &values[4], NULL);
+// Append a few nodes
+usize values[] = {111, 222, 333, 444, 555};
+LL_append_value(short_int_list, sizeof(uint16), &values[0], NULL);
+LL_append_value(short_int_list, sizeof(uint16), &values[1], NULL);
+LL_append_value(short_int_list, sizeof(uint16), &values[2], NULL);
+LL_append_value(short_int_list, sizeof(uint16), &values[3], NULL);
+LL_append_value(short_int_list, sizeof(uint16), &values[4], NULL);
 
-        // Get back the iter and check all data
-        SMART_LINKLIST_ITERATOR(iter) = LL_iter(short_int_list);
-        for (usize iter_index = 0; iter_index < iter->length; iter_index++) {
-            usize temp_value = *((uint16_t *)iter->data_arr[iter_index]);
-            printf("\n>>>> temp_value: %lu", temp_value);
-        }
+// Get back the iter and check all data
+SMART_LINKLIST_ITERATOR(iter) = LL_iter(short_int_list);
+for (usize iter_index = 0; iter_index < iter->length; iter_index++) {
+    usize temp_value = *((uint16_t *)iter->data_arr[iter_index]);
+    printf("\n>>>> temp_value: %lu", temp_value);
+}
 
 
-        // (D) [ SingleLinkList ] > from_empty - self ptr: 0x54732e0
-        // (D) [ SingleLinkList ] > LL_iter - self ptr: 0x54732e0, iter ptr: 0x5473660
-        // >>>> temp_value: 111
-        // >>>> temp_value: 222
-        // >>>> temp_value: 333
-        // >>>> temp_value: 444
-        // >>>> temp_value: 555
-        // (D) [ SingleLinkList ] > auto_free_linklist_iter - out of scope with LinkListIterator ptr: 0x5473660
-        // (D) [ SingleLinkList ] > auto_free_linklist - out of scope with LinkList ptr: 0x54732e0
-        // (D) [ SingleLinkList ] > free - self ptr: 0x54732e0, total free node amount: 5, total free node data amount: 5
-        ```
+// (D) [ SingleLinkList ] > from_empty - self ptr: 0x54732e0
+// (D) [ SingleLinkList ] > LL_iter - self ptr: 0x54732e0, iter ptr: 0x5473660
+// >>>> temp_value: 111
+// >>>> temp_value: 222
+// >>>> temp_value: 333
+// >>>> temp_value: 444
+// >>>> temp_value: 555
+// (D) [ SingleLinkList ] > auto_free_linklist_iter - out of scope with LinkListIterator ptr: 0x5473660
+// (D) [ SingleLinkList ] > auto_free_linklist - out of scope with LinkList ptr: 0x54732e0
+// (D) [ SingleLinkList ] > free - self ptr: 0x54732e0, total free node amount: 5, total free node data amount: 5
+```
 
-        </br>
+</br>
 
 
 
