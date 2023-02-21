@@ -47,8 +47,8 @@ This is my personal `C` utilities which contain the following modules:
 [PS-2. Make sure you compile and install `GoogleTest`](#ps-2-make-sure-you-compile-and-install-googletest)</br>
 [PS-3. `cmake` setup and run](#ps-3-cmake-setup-and-run)</br>
 [PS-3.1 Use `C` compiler and `valgrind` for checking memory leaking](#ps-31-use-c-compiler-and-valgrind-for-checking-memory-leaking)</br>
-[PS-3.2 Use `C` compiler but use Google `AddressSanitizer` instead of `valgrind` for checking memory leaking](#ps-32-use-c-compiler-but-use-google-addresssanitizer-instead-of-valgrind-for-checking-memory-leaking)</br>
-[PS-3.3 Use `C` compiler to compile and Google `AddressSanitizer` for `FreeBSD`](#ps-33-use-c-compiler-to-compile-and-google-addresssanitizer-for-freebsd)</br>
+[PS-3.2 Use `C` compiler and Google `AddressSanitizer` for checking memory leaking](#ps-32-use-c-compiler-and-google-addresssanitizer-for-checking-memory-leaking)</br>
+[PS-3.3 Use `C` compiler and Google `AddressSanitizer` for checking memory leaking on `FreeBSD`](#ps-33-use-c-compiler-to-compile-and-google-addresssanitizer-for-freebsd)</br>
 [PS-3.4 Use `CPP` compiler to run unit test](#ps-34-use-cpp-compiler-to-run-unit-test)</br>
 [PS-4. How to preview preprocess step source code](#ps-4-how-to-preview-preprocess-step-source-code)</br>
 [PS-5. How to print all supported macros on current computer and OS](#ps-5-how-to-print-all-supported-macros-on-current-computer-and-os)</br>
@@ -1400,7 +1400,7 @@ Compile and run:
 
 </br>
 
-#### PS-3.2 Use `C` compiler but use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) instead of `valgrind` for checking memory leaking:
+#### PS-3.2 Use `C` compiler and use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) for checking memory leaking:
 
 It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
 
@@ -1465,7 +1465,7 @@ Compile and run:
 
 </br>
 
-#### PS-3.3 Use `C` compiler to compile and Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) for `FreeBSD`
+#### PS-3.3 Use `C` compiler and use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) for checking memory leaking on `FreeBSD`
 
 Same settings with `PS-3.2` but use `LLVM-Clang` explicity and remove `ASAN_OPTIONS=detect_leaks=1` as `LLVM-clang FreeBSD` doesnt' support that!
 
