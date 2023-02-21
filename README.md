@@ -52,6 +52,26 @@ This is my personal `C` utilities which contain the following modules:
 [PS-3.4 Use `CPP` compiler to run unit test](#ps-34-use-cpp-compiler-to-run-unit-test)</br>
 [PS-4. How to preview preprocess step source code](#ps-4-how-to-preview-preprocess-step-source-code)</br>
 [PS-5. How to print all supported macros on current computer and OS](#ps-5-how-to-print-all-supported-macros-on-current-computer-and-os)</br>
+[Appendix: From `Rust` to `C`](appendix: from `rust` to `c`)
+[A-1. Primitive Data Types](#a-1-primitive-data-types)
+[A-2. `printf` related](#a-2-printf-related)
+[A-3. `string` related](#a-3-string-related)
+[A-4 Life time](#a-4-life-time)
+[A-5 The relationship between `Pointer` and `Array`](#a-5-the-relationship-between-pointer-and-array)
+[A-6. The tricky things in `C Pointer`](#a-6-the-tricky-things-in-c-pointer)
+[A-6.1 `const TYPE *var` and `TYPE const *var`](#a-61-const-type-var-and-type-const-var)
+[A-6.2 `*const TYPE var`](#a-62-const-type-var)
+[A-6.3 `const TYPE *const var` and `TYPE const *const var`](#a-63-const-type-const-var-and-type-const-const-var)
+[A-7. Macro](#a-7-macro)
+[A-7.1 How to only run the preprocessor stage](#a-71-how-to-only-run-the-preprocessor-stage)
+[A-7.2 Comment and empty line in macro](#a-72-comment-and-empty-line-in-macro)
+[A-7.3 String in macro](#a-73-string-in-macro)
+[A-7.4 Expression in macro](#a-74-expression-in-macro)
+[A-7.5 How to write a macro that includes `#ifdef`](#a-75-how-to-write-a-macro-that-includes-#ifdef)
+[A-7.6 Auto type infer in macro](#a-7-6-auto-type-infer-in-macro)
+[A-7.7 Useful macro: Get back the data type from a variable](#a-77-useful-macro-get-back-the-data-type-from-a-variable)
+[A-7.8 Useful macro: Is it the same type between 2 variables/values](#a-78-useful-macro-is-it-the-same-type-between-2-variablesvalues)
+[A-7.9 Generic implementation by using macro](#a-79-generic-implementation-by-using-macro)
 
 </br>
 
@@ -1621,9 +1641,9 @@ Support OS:
 </br>
 
 
-### 4. `C` -> `Rust` transition
+## Appendix: From `Rust` to `C`
 
-#### 4.1. Primitive Data Types
+### A-1. Primitive Data Types
 
 Here is the [`C Date Types`](https://en.wikipedia.org/wiki/C_data_types)
 
@@ -1649,7 +1669,7 @@ Here is the [`C Date Types`](https://en.wikipedia.org/wiki/C_data_types)
 
 
 
-#### 4.2. `printf` related
+### A-2. `printf` related
 
 - How to print fixed width HEX
 
@@ -1715,7 +1735,7 @@ Here is the [`C Date Types`](https://en.wikipedia.org/wiki/C_data_types)
         </br>
 
 
-### 4.3. `string` related
+### A-3. `string` related
 
 `string` actually just a sequance of characters.
 
@@ -1789,7 +1809,7 @@ printf("\nstrlen(my_name_2): %lu", strlen(my_name_2));
 
     </br>
 
-### 4.4 Life time
+### A-4 Life time
 
 In `C`, actually it has the lifetime concept and it works the same way with
 `Rust`:
@@ -1923,7 +1943,7 @@ So, let's take a look at a few real-world examples:
     </br>
 
 
-#### 3.4 The relationship between `Pointer` and `Array`
+### A-5 The relationship between `Pointer` and `Array`
 
 Actually, `pointer` is just like an `array` in the other form, the `C` design
 assumes that you use a `pointer` like an `array`. That's why the following
@@ -2050,82 +2070,80 @@ u16 temp_arr[] = {1, 2, 3, 4, 5};
 </br>
 
 
-### 4. The tricky things in `C Pointer`
+### A-6. The tricky things in `C Pointer`: constants pointer differences
 
-#### 4.1 constants pointer differences
+#### A-6.1 `const TYPE *var` and `TYPE const *var`
 
-- `const TYPE *var` and `TYPE const *var`
+For the pointer to constants, you can change the pointer var (address)
+value itself, but you can't change the value it points to!!!
 
-    For the pointer to constants, you can change the pointer var (address)
-    value itself, but you can't change the value it points to!!!
+```c
+char a = 'a';
+char b = 'b';
 
-    ```c
-    char a = 'a';
-    char b = 'b';
+const char *a_ptr = &a;
+// char const *a_ptr = &a;
 
-    const char *a_ptr = &a;
-    // char const *a_ptr = &a;
+// You can change the pointer (address) value itself
+a_ptr = &b;
 
-    // You can change the pointer (address) value itself
-    a_ptr = &b;
+// But you CANNOT change the value it points to
+// error: read-only variable is not assignable
+a_ptr = 'c';
+```
 
-    // But you CANNOT change the value it points to
-    // error: read-only variable is not assignable
-    a_ptr = 'c';
-    ```
+</br>
 
-    </br>
+#### A-6.2 `*const TYPE var`
 
-- `*const TYPE var`
+For the constants pointer, you can change the value it points to, but you
+can't change the pointer (address) value itself!!!
 
-    For the constants pointer, you can change the value it points to, but you
-    can't change the pointer (address) value itself!!!
+```c
+char a = 'a';
+char b = 'b';
 
-    ```c
-    char a = 'a';
-    char b = 'b';
+char *const a_ptr = &a;
+// char const *a_ptr = &a;
 
-    char *const a_ptr = &a;
-    // char const *a_ptr = &a;
+// You can change the value it points to
+*a_ptr = 'c';
 
-    // You can change the value it points to
-    *a_ptr = 'c';
+// But you CANNOT change the pointer value itself
+// error: cannot assign to variable 'a_ptr' with const-qualified type 'char *const'
+a_ptr = &b;
+```
 
-    // But you CANNOT change the pointer value itself
-    // error: cannot assign to variable 'a_ptr' with const-qualified type 'char *const'
-    a_ptr = &b;
-    ```
+</br>
 
-    </br>
+#### A-6.3 `const TYPE *const var` and `TYPE const *const var`
 
-- `const TYPE *const var` and `TYPE const *const var`
+For the constants pointer to constants, you can't change both!!!
 
-    For the constants pointer to constants, you can't change both!!!
+```c
+char a = 'a';
+char b = 'b';
 
-    ```c
-    char a = 'a';
-    char b = 'b';
+const char *const a_ptr = &a;
+// char const *const a_ptr = &a;
 
-    const char *const a_ptr = &a;
-    // char const *const a_ptr = &a;
+// You can't change both
 
-    // You can't change both
+// error: read-only variable is not assignable
+*a_ptr = 'c';
 
-    // error: read-only variable is not assignable
-    *a_ptr = 'c';
+// error: cannot assign to variable 'a_ptr' with const-qualified type 'const char *const'
+a_ptr = &b;
+```
 
-    // error: cannot assign to variable 'a_ptr' with const-qualified type 'const char *const'
-    a_ptr = &b;
-    ```
+</br>
 
-    </br>
-
-### 5. Macro
+### A-7. Macro
 
 The macro in `C` is a super powerful weapon that helps you to generate the most
 flexible source code.
 
-#### 5.1 How to only run the preprocessor stage
+#### A-7.1 How to only run the preprocessor stage
 
 You can run `CC` with the `-E` flag to generate the source code that only apply
 the preprocessor stage before compiling it.
@@ -2137,7 +2155,7 @@ clang -E src/utils/vec.c | bat
 
 </br>
 
-#### 5.2 Comment and empty line in macro
+#### A-7.2 Comment and empty line in macro
 
 You only can use `/* */` comment in macro body, `//` won't work!!!
 
@@ -2155,7 +2173,7 @@ If you want an empty line, just add a `\` (multi line character) there.
 </br>
 
 
-#### 5.3 String in macro
+#### A-7.3 String in macro
 
 When using a macro argument starts with `#` (in the macro body), it treats as
 a string. That's why the `#FORMAT_TYPE` (in the following sample) will become
@@ -2183,7 +2201,7 @@ int main() {
 
 </br>
 
-#### 5.4 Expression in macro
+#### A-7.4 Expression in macro
 
 If you want the macro parameter support passing in an expression, then you should
 wrap the parameter with `()` (in the macro body).
@@ -2219,7 +2237,7 @@ int main() {
 
 </br>
 
-#### 5.5 How to write a macro that includes `#ifdef`?
+#### A-7.5 How to write a macro that includes `#ifdef`
 
 The answer is `NO, you can't do that!!!` and you have to define 2 macros with
 the same name and wrap them into a `#ifdef #else #endif` block like below:
@@ -2244,7 +2262,7 @@ the same name and wrap them into a `#ifdef #else #endif` block like below:
 
 </br>
 
-#### 5.6 Auto type infer in macro
+#### A-7.6 Auto type infer in macro
 
 [Official doc](https://gcc.gnu.org/onlinedocs/gcc/Typeof.html)
 
@@ -2284,7 +2302,7 @@ int main() {
 
 </br>
 
-#### 5.7 Useful macro: Get back the data type from a variable
+#### A-7.7 Useful macro: Get back the data type from a variable
 
 That's the `_Generic` selection at compile time, doc is [here](https://en.cppreference.com/w/c/language/generic)
 
@@ -2481,7 +2499,7 @@ int main() {
 </br>
 
 
-#### 5.7.1 Useful macro: Is it the same type between 2 variables/values
+#### A-7.8 Useful macro: Is it the same type between 2 variables/values
 
 ```c
 
@@ -2525,7 +2543,7 @@ int main() {
 </br>
 
 
-#### 5.8 Generic implementation by using macro
+#### A-7.9 Generic implementation by using macro
 
 Let's see what `C` deals with generic:)
 
