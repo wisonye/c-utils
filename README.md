@@ -36,13 +36,22 @@ This is my personal `C` utilities which contain the following modules:
 [9.4 Complexity](#94-complexity)</br>
 [9.5 Stack-allocated](#95-stack-allocated)</br>
 [9.6 Heap-allocated](#96-heap-allocated)</br>
-
-[10. `Collection/Vector`: Heap allocated dynamic array](#10-collectionvector:-heap-allocated-dynamic-array)</br>
+[10. `Collection/Vector`: Heap allocated dynamic array](#10-collectionvector-heap-allocated-dynamic-array)</br>
 [10.1 Create empty vector](#101-create-empty-vector)</br>
 [10.2 Create empty vector with pre-allocated space to avoid `realloc` cost](#102-create-empty-vector-with-pre-allocated-space-to-avoid-realloc-cost)</br>
 [10.3 Get element via `index`](#103-get-element-via-index)</br>
 [10.4 Use `String`](#104-use-string)</br>
-[10.5 Custom struct case](#105-Custom-struct-case)
+[10.5 Custom struct case](#105-Custom-struct-case)</br>
+[Project Setup](#project-setup)</br>
+[PS-1. `CMake` configurations](#ps-1-cmake-configurations)</br>
+[PS-2. Make sure you compile and install `GoogleTest`](#ps-2-make-sure-you-compile-and-install-googletest)</br>
+[PS-3. `cmake` setup and run](#ps-3-cmake-setup-and-run)</br>
+[PS-3.1 Use `C` compiler and `valgrind` for checking memory leaking](#ps-31-use-c-compiler-and-valgrind-for-checking memory leaking)</br>
+[PS-3.2 Use `C` compiler but use Google `AddressSanitizer` instead of `valgrind` for checking memory leaking](#ps-32-use-c-compiler-but-use-google-addresssanitizer-instead-of-valgrind-for-checking-memory-leaking)</br>
+[PS-3.3 Use `C` compiler to compile and Google `AddressSanitizer` for `FreeBSD`](#ps-33-use-c-compiler-to-compile-and-google-addresssanitizer-for-freebsd)</br>
+[PS-3.4 Use `CPP` compiler to run unit test](#ps-34-use-cpp-compiler-to-run-unit-test)</br>
+[PS-4. How to preview preprocess step source code](#ps-4-how-to-preview-preprocess-step-source-code)</br>
+[PS-5. How to print all supported macros on current computer and OS](#ps-5-how-to-print-all-supported-macros-on-current-computer-and-os)</br>
 
 </br>
 
@@ -1222,9 +1231,9 @@ Str_free(person_vec_desc);
 
 </br>
 
+# Project Setup
 
-
-### 0. `CMake` configurations
+### PS-1. `CMake` configurations
 
 This project has 2 `cmake` setups for different purposes:
 
@@ -1246,8 +1255,7 @@ This project has 2 `cmake` setups for different purposes:
     </br>
 
 
-
-### 1. Make sure you compile and install `GoogleTest`
+### PS-2. Make sure you compile and install `GoogleTest`
 
 ```bash
 cd ~/temp
@@ -1336,9 +1344,14 @@ doas make install
 
 </br>
 
-### 2. `cmake` setup and run
+### PS-3. `cmake` setup and run
 
-#### 2.1 Use `C` compiler to compile `main.c`
+#### PS-3.1 Use `C` compiler and `valgrind` for checking memory leaking
+
+It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
+
+</br>
+
 
 ```bash
 # Make sure you're in the project root folder
@@ -1347,8 +1360,9 @@ doas make install
 
 </br>
 
-It Generates everything needs into `build_c` folder and the
-`build/compile_commands.json` for `clangd_extensions` neovim plugin
+It Generates everything needs into `build_memory_leak_checking ` folder. The
+`build_memory_leak_checking /compile_commands.json` is for `clangd_extensions`
+neovim plugin.
 
 </br>
 
@@ -1386,7 +1400,11 @@ Compile and run:
 
 </br>
 
-#### 2.1.1 Use `C` compiler to compile `main.c` but use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) instead of `valgrind` for checking memory leaking:
+#### PS-3.2 Use `C` compiler but use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) instead of `valgrind` for checking memory leaking:
+
+It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
+
+</br>
 
 ```bash
 # Make sure you're in the project root folder
@@ -1395,8 +1413,9 @@ Compile and run:
 
 </br>
 
-It Generates everything needs into `build_c` folder and the
-`build/compile_commands.json` for `clangd_extensions` neovim plugin
+It Generates everything needs into `cmake_memory_leak_checking ` folder. The
+`cmake_memory_leak_checking /compile_commands.json` is for `clangd_extensions`
+neovim plugin.
 
 </br>
 
@@ -1446,16 +1465,36 @@ Compile and run:
 
 </br>
 
+#### PS-3.3 Use `C` compiler to compile and Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) for `FreeBSD`
 
-#### 2.2 Use `CPP` compiler to compile `main.cpp`
+Same settings with `PS-3.2` but use `LLVM-Clang` explicity and remove `ASAN_OPTIONS=detect_leaks=1` as `LLVM-clang FreeBSD` doesnt' support that!
+
+```bash
+# Make sure you're in the project root folder
+./configure_address_sanitizer_freebsd.sh
+```
+
+```bash
+# Make sure you're in the project root folder
+./run_address_sanitizer_freebsd.sh
+```
+
+</br>
+
+
+#### PS-3.4 Use `CPP` compiler to run unit test
+
+It uses `cmake_unit_test /CMakeLists.txt` and compiles `src/main.cpp`.
+
+</br>
 
 ```bash
 # Make sure you're in the project root folder
 ./configure_unit_test.sh
 ```
 
-It Generates everything needs into `build_unit_test` folder and the
-`build/compile_commands.json` for `clangd_extensions` neovim plugin
+It Generates everything needs into `build_unit_test` folder. The
+`build/compile_commands.json` is for `clangd_extensions` neovim plugin.
 
 </br>
 
@@ -1522,7 +1561,7 @@ Compile and run all unit test:
 
     </br>
 
-#### 3. How to preview preprocess step source code
+#### PS-4. How to preview preprocess step source code
 
 It's beneficial if you can print out the source code content after the
 preprocessor step (but before throwing it into the compiler)
@@ -1536,7 +1575,7 @@ clang -E -D ENABLE_DEBUG_LOG src/main.c | bat
 </br>
 
 
-#### 4. How to print all supported macros on current computer and OS
+#### PS-5. How to print all supported macros on current computer and OS
 
 ```bash
 clang -dM -E - < /dev/null
@@ -1577,6 +1616,9 @@ Support OS:
 |FreeBSD | __FreeBSD__ | |
 |NetBSD | __NetBSD__ | |
 |OpenBSD | __OpenBSD__ | |
+
+
+</br>
 
 
 ### 4. `C` -> `Rust` transition
