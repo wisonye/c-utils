@@ -52,26 +52,26 @@ This is my personal `C` utilities which contain the following modules:
 [PS-3.4 Use `CPP` compiler to run unit test](#ps-34-use-cpp-compiler-to-run-unit-test)</br>
 [PS-4. How to preview preprocess step source code](#ps-4-how-to-preview-preprocess-step-source-code)</br>
 [PS-5. How to print all supported macros on current computer and OS](#ps-5-how-to-print-all-supported-macros-on-current-computer-and-os)</br>
-[Appendix: From `Rust` to `C`](appendix: from `rust` to `c`)
-[A-1. Primitive Data Types](#a-1-primitive-data-types)
-[A-2. `printf` related](#a-2-printf-related)
-[A-3. `string` related](#a-3-string-related)
-[A-4 Life time](#a-4-life-time)
-[A-5 The relationship between `Pointer` and `Array`](#a-5-the-relationship-between-pointer-and-array)
-[A-6. The tricky things in `C Pointer`](#a-6-the-tricky-things-in-c-pointer)
-[A-6.1 `const TYPE *var` and `TYPE const *var`](#a-61-const-type-var-and-type-const-var)
-[A-6.2 `*const TYPE var`](#a-62-const-type-var)
-[A-6.3 `const TYPE *const var` and `TYPE const *const var`](#a-63-const-type-const-var-and-type-const-const-var)
-[A-7. Macro](#a-7-macro)
-[A-7.1 How to only run the preprocessor stage](#a-71-how-to-only-run-the-preprocessor-stage)
-[A-7.2 Comment and empty line in macro](#a-72-comment-and-empty-line-in-macro)
-[A-7.3 String in macro](#a-73-string-in-macro)
-[A-7.4 Expression in macro](#a-74-expression-in-macro)
-[A-7.5 How to write a macro that includes `#ifdef`](#a-75-how-to-write-a-macro-that-includes-#ifdef)
-[A-7.6 Auto type infer in macro](#a-7-6-auto-type-infer-in-macro)
-[A-7.7 Useful macro: Get back the data type from a variable](#a-77-useful-macro-get-back-the-data-type-from-a-variable)
-[A-7.8 Useful macro: Is it the same type between 2 variables/values](#a-78-useful-macro-is-it-the-same-type-between-2-variablesvalues)
-[A-7.9 Generic implementation by using macro](#a-79-generic-implementation-by-using-macro)
+[Appendix: From `Rust` to `C`](appendix: from `rust` to `c`)</br>
+[A-1. Primitive Data Types](#a-1-primitive-data-types)</br>
+[A-2. `printf` related](#a-2-printf-related)</br>
+[A-3. `string` related](#a-3-string-related)</br>
+[A-4 Life time](#a-4-life-time)</br>
+[A-5 The relationship between `Pointer` and `Array`](#a-5-the-relationship-between-pointer-and-array)</br>
+[A-6. The tricky things in `C Pointer`](#a-6-the-tricky-things-in-c-pointer)</br>
+[A-6.1 `const TYPE *var` and `TYPE const *var`](#a-61-const-type-var-and-type-const-var)</br>
+[A-6.2 `*const TYPE var`](#a-62-const-type-var)</br>
+[A-6.3 `const TYPE *const var` and `TYPE const *const var`](#a-63-const-type-const-var-and-type-const-const-var)</br>
+[A-7. Macro](#a-7-macro)</br>
+[A-7.1 How to only run the preprocessor stage](#a-71-how-to-only-run-the-preprocessor-stage)</br>
+[A-7.2 Comment and empty line in macro](#a-72-comment-and-empty-line-in-macro)</br>
+[A-7.3 String in macro](#a-73-string-in-macro)</br>
+[A-7.4 Expression in macro](#a-74-expression-in-macro)</br>
+[A-7.5 How to write a macro that includes `#ifdef`](#a-75-how-to-write-a-macro-that-includes-#ifdef)</br>
+[A-7.6 Auto type infer in macro](#a-7-6-auto-type-infer-in-macro)</br>
+[A-7.7 Useful macro: Get back the data type from a variable](#a-77-useful-macro-get-back-the-data-type-from-a-variable)</br>
+[A-7.8 Useful macro: Is it the same type between 2 variables/values](#a-78-useful-macro-is-it-the-same-type-between-2-variablesvalues)</br>
+[A-7.9 Generic implementation by using macro](#a-79-generic-implementation-by-using-macro)</br>
 
 </br>
 
