@@ -105,8 +105,8 @@ void Vec_push(Vector self, void *element) {
     //
     // Instead, you have to use `memcpy` to deal `void *` data assignment.
     //
-    memcpy(self->_items + self->_element_type_size * self->_length, element,
-           self->_element_type_size);
+    memcpy((u8 *)self->_items + self->_element_type_size * self->_length,
+           element, self->_element_type_size);
 
     /* #ifdef ENABLE_DEBUG_LOG */
     /*     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Vec, self, sizeof(struct
@@ -145,7 +145,7 @@ const VectorIteractor Vec_iter(const Vector self) {
 const void *Vec_get(const Vector self, usize index) {
     if (index < 0 || index > self->_length - 1) return NULL;
 
-    return self->_items + (index * self->_element_type_size);
+    return (u8 *)self->_items + (index * self->_element_type_size);
 }
 
 /*
@@ -281,13 +281,13 @@ const String Vec_join(const Vector self, char *delemiter,
         } else if (strcmp("struct Str", self->_element_type) == 0) {
             // String
             String temp_str =
-                (String)(self->_items + index * Str_struct_size());
+                (String)((u8 *)self->_items + index * Str_struct_size());
             Str_push_str(result, Str_as_str(temp_str));
         } else {
             // Custom struct: Use provided callback to get back `String`
             if (custom_struct_desc != NULL) {
                 SMART_STRING(temp_str) = custom_struct_desc(
-                    self->_items + index * self->_element_type_size);
+                    (u8 *)self->_items + index * self->_element_type_size);
                 Str_push_other(result, temp_str);
             }
         }
