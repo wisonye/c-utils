@@ -278,7 +278,7 @@ void File_print_debug_info(File self) {
     SMART_STRING(debug_info) = Str_from_empty_with_capacity(100);
 
     char file_handler[20] = {0};
-    snprintf(file_handler, sizeof(file_handler), "%p", self->inner);
+    snprintf(file_handler, sizeof(file_handler), "%p", (void *)self->inner);
 
     char file_mode[4] = {0};
     file_mode_to_string(&self->mode, file_mode);
