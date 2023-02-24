@@ -4,12 +4,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define LOG_COLOR_GREEN "\e[1;32m"
-#define LOG_COLOR_YELLOW "\e[1;33m"
-#define LOG_COLOR_RED "\e[1;31m"
-#define LOG_COLOR_DEFAULT "\e[1;32m"
-#define LOG_COLOR_PURPLE "\e[1;35m"
-#define LOG_COLOR_RESET "\e[0m"
+#define LOG_COLOR_GREEN "\033[1;32m"
+#define LOG_COLOR_YELLOW "\033[1;33m"
+#define LOG_COLOR_RED "\033[1;31m"
+#define LOG_COLOR_DEFAULT "\033[1;32m"
+#define LOG_COLOR_PURPLE "\033[1;35m"
+#define LOG_COLOR_RESET "\033[0m"
 
 //
 // Print integer
