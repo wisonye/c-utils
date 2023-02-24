@@ -74,13 +74,13 @@ typedef char *_str;
 //
 //
 //
-#define IS_THE_SAME_TYPE(v_a, v_b)                                         \
-    ({                                                                     \
+#define IS_THE_SAME_TYPE(v_a, v_b, v_result)                               \
+    {                                                                      \
         char _a_type[50] = TYPE_NAME((v_a));                               \
         char _b_type[50] = TYPE_NAME((v_b));                               \
         int is_same_str_non_case_sensitive = strcasecmp(_a_type, _b_type); \
-        (is_same_str_non_case_sensitive == 0);                             \
-    })
+        v_result = (is_same_str_non_case_sensitive == 0);                  \
+    }
 
 //
 // Type name from type
@@ -124,7 +124,6 @@ typedef char *_str;
     double *: sizeof(double*),                                  \
     long double *: sizeof(long double*),                        \
     default : 0)
-
 
 //
 // Type size from type name

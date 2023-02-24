@@ -57,7 +57,9 @@ TEST(DataTypes, TYPE_NAME) {
 TEST(DataTypes, IS_THE_SAME_TYPE) {
     size_t aaa = 100;
     usize bbb = 99;
-    ASSERT_EQ(IS_THE_SAME_TYPE(aaa, bbb), true);
+    bool result = false;
+    IS_THE_SAME_TYPE(aaa, bbb, result);
+    ASSERT_EQ(result, true);
 }
 
 TEST(DataTypes, TYPE_NAME_TO_STRING) {
