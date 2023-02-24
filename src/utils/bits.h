@@ -58,7 +58,7 @@
 // Get back data type name as static `char *`
 //
 #define PRINT_BITS(V)                                                          \
-    ({                                                                         \
+    {                                                                          \
         size_t type_size =                                                     \
             _Generic((V), unsigned char                                        \
                      : sizeof(unsigned char), char                             \
@@ -92,7 +92,7 @@
             char buffer[9] = {"00000000"};                                     \
             _FILL_BITS(buffer, uint8_t, V, u8);                                \
         }                                                                      \
-    })
+    }
 
 //
 //
