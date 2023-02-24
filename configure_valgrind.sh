@@ -1,21 +1,20 @@
 #!/bin/sh
 
 #
-# Remove the old build if exists
+# Remove everything exists
 #
-rm -rf ./build
+./remove_all_cmake_build_folders.sh
 
 #
 # Run cmake to generate all files
 #
-cmake -S ./cmake_memory_leak_checking -B ./build_memory_leak_checking \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-    -DCMAKE_C_FLAGS="-std=gnu17" \
-    -DCMAKE_BUILD_TYPE=Debug
+cmake -S ./cmake -B ./temp_build/build_memory_leak_checking \
+    -DUSE_VALGRIND=ON
 
 #
 # Copy `compile_commands.json` to `build/compile_commands.json` for neovim LSP
 #
 mkdir build
-cp -rvf ./build_memory_leak_checking/compile_commands.json ./build
+cp -rvf ./temp_build/build_memory_leak_checking/compile_commands.json ./build
+
 

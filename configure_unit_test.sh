@@ -1,21 +1,17 @@
 #!/bin/sh
 
 #
-# Remove the old build if exists
+# Remove everything exists
 #
-rm -rf ./build
+./remove_all_cmake_build_folders.sh
 
 #
 # Run cmake to generate all files
 #
-cmake -S ./cmake_unit_test -B ./build_unit_test \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-    -DCMAKE_CXX_FLAGS="-std=gnu++17" \
-    -DCMAKE_BUILD_TYPE=Debug
+cmake -S ./cmake/unit_test -B ./temp_build/unit_test
 
 #
 # Copy `compile_commands.json` to `build/compile_commands.json` for neovim LSP
 #
 mkdir build
-cp -rvf ./build_unit_test/compile_commands.json ./build
-
+cp -rvf ./temp_build/unit_test/compile_commands.json ./build

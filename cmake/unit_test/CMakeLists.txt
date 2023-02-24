@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION "3.22")
 
 project("c-utils")
 
+#
+# Common settings
+# Generate `compile_commands.json` for `Neovim` LSP needed
+#
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_C_FLAGS "-pedantic-errors -std=gnu17")
+set(CMAKE_CXX_FLAGS "-pedantic-errors -std=gnu++11")
+
 enable_testing()
 find_package(GTest REQUIRED)
 
@@ -34,6 +43,7 @@ target_link_libraries("${PROJECT_NAME}-unit-test" GTest::gtest GTest::gtest_main
 # add_test(RunAllTest "${PROJECT_NAME}")
 # add_test(RunsingleLinkTest single_link_list_test)
 
+message(">>> CMAKE_EXPORT_COMPILE_COMMANDS: ${CMAKE_EXPORT_COMPILE_COMMANDS}")
 message(">>> CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 message(">>> CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(">>> CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")

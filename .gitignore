@@ -1,5 +1,4 @@
 build
 .cache
-build_memory_leak_checking
-build_unit_test
+temp_build
 clangd.core
