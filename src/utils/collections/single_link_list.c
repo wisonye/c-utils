@@ -48,7 +48,7 @@ void LL_init_empty(LinkList self) {
 /*
  * Create empty list
  */
-LinkList LL_from_empty() {
+LinkList LL_from_empty(void) {
     LinkList list = malloc(sizeof(struct LL));
 #ifdef ENABLE_DEBUG_LOG
     DEBUG_LOG(SingleLinkList, from_empty, "self ptr: %p", list);

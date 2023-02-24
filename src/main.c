@@ -20,7 +20,7 @@
 //
 //
 //
-LinkList create_integer_list_on_heap() {
+LinkList create_integer_list_on_heap(void) {
     usize stack_value = 9999;
     LinkList list = LL_from_value(sizeof(usize), &stack_value, NULL);
     return list;
@@ -33,7 +33,7 @@ struct LL create_integer_list_on_stack(usize init_value) {
     struct LL list;
     LL_init_empty(&list);
     LL_append_value(&list, sizeof(usize), &init_value, NULL);
-    printf("\n>>> create_integer_list_on_stack, list ptr: %p", &list);
+    printf("\n>>> create_integer_list_on_stack, list ptr: %p", (void *)&list);
     return list;
 }
 
@@ -54,7 +54,7 @@ String clone_string(const String original) { return Str_clone_from(original); }
 //
 //
 //
-void test_link_list() {
+void test_link_list(void) {
     // Just for init the timer, so the following `Timer_get_current_time`
     // compare is more fair.
     long double no_use = Timer_get_current_time(TU_MICROSECONDS);
@@ -66,9 +66,9 @@ void test_link_list() {
     struct LL stack_list;
     LL_init_empty(&stack_list);
     struct LL stack_int_list = create_integer_list_on_stack(8888);
-    printf("\n>>> stack_int_list ptr: %p", &stack_int_list);
+    printf("\n>>> stack_int_list ptr: %p", (void *)&stack_int_list);
     struct LL stack_int_list_2 = create_integer_list_on_stack(1234);
-    printf("\n>>> stack_int_list_2 ptr: %p", &stack_int_list_2);
+    printf("\n>>> stack_int_list_2 ptr: %p", (void *)&stack_int_list_2);
     struct LL stack_short_int_list;
     LL_init_empty(&stack_short_int_list);
 
@@ -128,7 +128,7 @@ void test_link_list() {
 //
 //
 //
-void test_string() {
+void test_string(void) {
     //
     // String
     //
@@ -278,7 +278,7 @@ typedef struct Point {
     float y;
 } Point;
 
-void test_log_macro() {
+void test_log_macro(void) {
     char *string_value = "Wison Ye";
     char char_value = 'c';
     u8 u8_value = 255;
@@ -394,14 +394,14 @@ void test_log_macro() {
 
 int add(int v1, int v2) { return v1 + v2; }
 
-void unimplemented_function() {
+void unimplemented_function(void) {
     assert(false && "This function doesn't implement yet.");
 }
 
 //
 //
 //
-void test_hex_buffer() {
+void test_hex_buffer(void) {
     char hex_str_1[] = "AABBCCDD";
     HexBuffer buffer_1 = Hex_from_string(hex_str_1);
     HexBufferIteractor hex_iter = Hex_iter(buffer_1);
@@ -459,7 +459,7 @@ String get_person_desc(Person *self) {
     return desc;
 }
 
-void test_vector() {
+void test_vector(void) {
     //
     // Bool vec
     //
@@ -595,7 +595,7 @@ void test_vector() {
     DEBUG_LOG(Main, test_vector, "d_value_3: %f", *d_value_3);
 }
 
-void test_vector_element_destructor() {
+void test_vector_element_destructor(void) {
     SMART_VECTOR_WITH_CAPACITY(vec, String, 2);
 
     String str1 = Str_from_str("String in vector");
@@ -629,7 +629,7 @@ void test_vector_element_destructor() {
 //
 //
 //
-void test_timer() {
+void test_timer(void) {
     long double start_time = Timer_get_current_time(TU_NANOSECONDS);
     long double end_time = Timer_get_current_time(TU_NANOSECONDS);
     long double elapsed_time = end_time - start_time;
@@ -647,7 +647,7 @@ struct Person {
 //
 //
 //
-void test_memory() {
+void test_memory(void) {
     int data = 10;
 
     struct Person me = {
@@ -662,12 +662,12 @@ void test_memory() {
     printf("\n>>>\n");
 }
 
-String return_string_on_the_heap() {
+String return_string_on_the_heap(void) {
     String str_on_the_heap = Str_from_str("String allocated on the heap:)");
     return str_on_the_heap;
 }
 
-Vector return_vector_on_the_heap() {
+Vector return_vector_on_the_heap(void) {
     usize double_size = sizeof(double);
     Vector temp_vec =
         Vec_with_capacity(double_size, TYPE_NAME_TO_STRING(double), 5);
@@ -676,7 +676,7 @@ Vector return_vector_on_the_heap() {
     return temp_vec;
 }
 
-void test_smart_ptr() {
+void test_smart_ptr(void) {
     //
     // `return_str` will be destroyed by calling `auto_free_string` automatic
     //
@@ -699,7 +699,7 @@ void test_smart_ptr() {
 //
 //
 //
-void test_bits() {
+void test_bits(void) {
     unsigned char status = 0x3D;
     PRINT_BITS(status);
 
@@ -753,7 +753,7 @@ void test_bits() {
 //
 //
 //
-void test_file() {
+void test_file(void) {
     char *filename = NULL;
 #if defined(__APPLE__)
     // filename = "/Users/wison/temp/temp.html";

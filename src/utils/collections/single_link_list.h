@@ -80,7 +80,7 @@ LinkList LL_from_value(size_t item_size, void *value,
 /*
  * Create empty list on the heap
  */
-LinkList LL_from_empty();
+LinkList LL_from_empty(void);
 
 /*
  * Create list and insert first node that copies from value on the heap

@@ -19,7 +19,7 @@
 // to get back `sizeof(struct Str)` for some reasons, this function is the
 // anwser.
 //
-const usize Str_struct_size() { return sizeof(struct Str); }
+const usize Str_struct_size(void) { return sizeof(struct Str); }
 
 /*
  * Init empty `struct Str`
@@ -57,7 +57,7 @@ void Str_init_with_capacity(String self, usize capacity) {
 /*
  * Create from empty
  */
-String Str_from_empty() {
+String Str_from_empty(void) {
     String string = malloc(sizeof(struct Str));
 
     *string = (struct Str){

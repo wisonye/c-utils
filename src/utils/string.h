@@ -25,7 +25,7 @@ typedef struct Str *String;
 // to get back `sizeof(struct Str)` for some reasons, this function is the
 // anwser.
 //
-const usize Str_struct_size();
+const usize Str_struct_size(void);
 
 //
 //
@@ -58,7 +58,7 @@ void Str_init_with_capacity(String self, usize capacity);
 /*
  * Create from empty
  */
-String Str_from_empty();
+String Str_from_empty(void);
 
 /*
  * Create from empty that ability to hold `capacity` characters
