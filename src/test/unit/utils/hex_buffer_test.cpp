@@ -3,7 +3,7 @@
 extern "C" {
 #include <string.h>
 
-#include "hex_buffer.h"
+#include "../../../utils/hex_buffer.h"
 }
 
 TEST(HexBuffer, EmptyHexBuffer) {

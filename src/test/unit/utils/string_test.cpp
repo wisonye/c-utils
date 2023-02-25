@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-#include "string.h"
+#include "../../../utils/string.h"
 }
 
 TEST(String, StrInit) {

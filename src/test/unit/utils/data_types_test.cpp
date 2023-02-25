@@ -4,7 +4,7 @@ extern "C" {
 #include <stddef.h>
 #include <string.h>
 
-#include "data_types.h"
+#include "../../../utils/data_types.h"
 }
 
 TEST(DataTypes, TYPE_NAME) {

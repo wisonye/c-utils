@@ -3,7 +3,7 @@
 extern "C" {
 #include <string.h>
 
-#include "vector.h"
+#include "../../../../utils/collections/vector.h"
 }
 
 TEST(Vector, EmptyVector) {

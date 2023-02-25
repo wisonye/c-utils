@@ -17,17 +17,17 @@ find_package(GTest REQUIRED)
 add_executable("${PROJECT_NAME}-unit-test"
     "../../src/utils/log.c"
     "../../src/utils/collections/single_link_list.c"
-    "../../src/utils/collections/single_link_list_test.cpp"
     "../../src/utils/collections/vector.c"
-    "../../src/utils/collections/vector_test.cpp"
     "../../src/utils/memory.c"
     "../../src/utils/string.c"
-    "../../src/utils/string_test.cpp"
     "../../src/utils/hex_buffer.c"
-    "../../src/utils/hex_buffer_test.cpp"
-    "../../src/utils/data_types_test.cpp"
     "../../src/utils/file.c"
-    "../../src/utils/file_test.cpp"
+    "../../src/test/unit/utils/file_test.cpp"
+    "../../src/test/unit/utils/hex_buffer_test.cpp"
+    "../../src/test/unit/utils/data_types_test.cpp"
+    "../../src/test/unit/utils/collections/single_link_list_test.cpp"
+    "../../src/test/unit/utils/collections/vector_test.cpp"
+    "../../src/test/unit/utils/string_test.cpp"
     "../../src/main.cpp")
 
 target_link_libraries("${PROJECT_NAME}-unit-test" GTest::gtest GTest::gtest_main)
