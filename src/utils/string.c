@@ -478,7 +478,24 @@ void Str_reset_to_empty(String self) {
     if (self != NULL && self->_buffer != NULL) {
         self->_len = 0;
         self->_capacity = 0;
-        free(self->_buffer);
+        if (self->_buffer != NULL) {
+            free(self->_buffer);
+            self->_buffer = NULL;
+        }
+    }
+}
+
+/*
+ * Reset to empty string without freeing buffer memory, only used in the
+ * following situation:
+ *
+ * Someone calls `memcpy` to do a shallow copy which means the `self->buffer`
+ * ownership has moved away.
+ */
+void Str_reset_to_empty_without_freeing_buffer(String self) {
+    if (self != NULL) {
+        self->_len = 0;
+        self->_capacity = 0;
         self->_buffer = NULL;
     }
 }
