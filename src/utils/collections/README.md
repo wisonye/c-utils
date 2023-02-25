@@ -21,8 +21,13 @@ This `Vector` doesn't support normal generic `<T>` (no auto element type
 inference), that's why you have to provide the `sizeof(ELEMENT_TYPE)` when
 creating a `Vector`.
 
-When pushing an element, `Vector` executes a shallow copy which means doesn't
-copy the internal heap-allocated content!!!
+`Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+If the element is a struct with its own heap-allocated member, that shallow
+copy should be treated as taking ownership of all heap-allocated members.
+
+The shallow copied instance should reset all heap-allocated member's pointers
+to `NULL` and pass an "Element heap-allocated destructor function pointer"
+when creating a new "Vector".
 
 The `SMART_VECTOR` and `SMART_VECTOR_WITH_CAPACITY` macro ensures the
 heap-allocated instance auto-free heap-allocated memory when it goes out of
@@ -37,8 +42,8 @@ Examples:
 #### 1.1 Create empty vector:
 
 ```c
-// `SMART_VECTOR(variable_name, element_type);`
-SMART_VECTOR(empty_vec, usize);
+// `SMART_VECTOR(variable_name, element_type, element_destructor);`
+SMART_VECTOR(empty_vec, usize, NULL);
 // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
 ```
 
@@ -47,12 +52,12 @@ SMART_VECTOR(empty_vec, usize);
 #### 1.2 Create empty vector with pre-allocated space to avoid `realloc` cost:
 
 ```c
-// `SMART_VECTOR_WITH_CAPACITY(variable_name, element_type, capacity);`
+// `SMART_VECTOR_WITH_CAPACITY(variable_name, element_type, capacity, element_destructor);`
 
 //
 // u16 vec
 //
-SMART_VECTOR_WITH_CAPACITY(u16_vec, u16, 10);
+SMART_VECTOR_WITH_CAPACITY(u16_vec, u16, 10, NULL);
 // (D) [ Vector ] > with_capacity - self pointer: 0x5474260, element_type_size: 2, capacity: 10, self->items: 0x54742d0
 
 //
@@ -116,7 +121,7 @@ double double_arr[] = {11.11, 22.22, 33.33};
 usize double_type_size = sizeof(double);
 usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
-SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len);
+SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len, NULL);
 for (usize di = 0; di < double_arr_len; di++) {
     Vec_push(double_vec, &double_arr[di]);
 }
@@ -148,10 +153,18 @@ SMART_STRING(temp_str_2) = Str_from_str("Generic vector works:)");
 SMART_STRING(temp_str_3) =
     Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
 
-SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3);
+SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3,
+                            (void (*)(void *))Str_free_buffer_only);
 Vec_push(string_vec, temp_str_1);
 Vec_push(string_vec, temp_str_2);
 Vec_push(string_vec, temp_str_3);
+
+// Make sure to empty the string but not free the internal buffer, as
+// `Vec_push` calls `memcpy` to do a shallow copy on each `String` instance,
+// the `String` internal buffer should be treated as an ownership movement.
+Str_reset_to_empty_without_freeing_buffer(temp_str_1);
+Str_reset_to_empty_without_freeing_buffer(temp_str_2);
+Str_reset_to_empty_without_freeing_buffer(temp_str_3);
 
 String string_vec_desc = Vec_join(string_vec, " , ", NULL);
 printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));

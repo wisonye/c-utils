@@ -21,12 +21,22 @@ struct Vec {
     usize _element_type_size;
     char *_element_type;
     void *_items;
+    ElementHeapMemberDestructor element_destructor;
 };
 
 /*
- * Create empty vector
+ * Create empty vector.
+ *
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
  */
-Vector Vec_new(usize element_type_size, char *element_type) {
+Vector Vec_new(usize element_type_size, char *element_type,
+               ElementHeapMemberDestructor element_destructor) {
     Vector vec = malloc(sizeof(struct Vec));
     // usize element_type_size = sizeof(TYPE_NAME)
 
@@ -41,15 +51,25 @@ Vector Vec_new(usize element_type_size, char *element_type) {
         ._element_type_size = element_type_size,
         ._element_type = element_type,
         ._items = NULL,
+        .element_destructor = element_destructor,
     };
     return vec;
 }
 
 /*
- * Create an empty vector that ability to hold `capacity` elements
+ * Create an empty vector that ability to hold `capacity` elements.
+ *
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
  */
 Vector Vec_with_capacity(usize element_type_size, char *element_type,
-                         usize capacity) {
+                         usize capacity,
+                         ElementHeapMemberDestructor element_destructor) {
     Vector vec = malloc(sizeof(struct Vec));
 
     *vec = (struct Vec){
@@ -58,6 +78,7 @@ Vector Vec_with_capacity(usize element_type_size, char *element_type,
         ._element_type_size = element_type_size,
         ._element_type = element_type,
         ._items = malloc(element_type_size * capacity),
+        .element_destructor = element_destructor,
     };
 
 #if ENABLE_DEBUG_LOG
@@ -72,8 +93,13 @@ Vector Vec_with_capacity(usize element_type_size, char *element_type,
 /*
  * Push element to the end of the vector
  *
- * Vector executes a shallow copy which means doesn't copy the internal
- * heap-allocated content!!!
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
  */
 void Vec_push(Vector self, void *element) {
     // ensure the vector has enough space to save all elements;
@@ -309,10 +335,28 @@ void Vec_free(Vector self) {
 
     if (self->_items != NULL) {
         //
+        // Call element destructor if exists
+        //
+        if (self->element_destructor != NULL) {
+            for (usize index = 0; index < self->_length; index++) {
+                void *element_ptr =
+                    (u8 *)self->_items + index * self->_element_type_size;
+                /* #ifdef ENABLE_DEBUG_LOG */
+                /*                 DEBUG_LOG(Vector, free, "element ptr: %p",
+                 * element_ptr); */
+                /* #endif */
+                self->element_destructor(element_ptr);
+            }
+        }
+
+        //
         // Free `items` meory
         //
         void *ptr_to_free = self->_items;
         self->_items = NULL;
+        /* #ifdef ENABLE_DEBUG_LOG */
+        /*         DEBUG_LOG(Vector, free, "ptr_to_free: %p", ptr_to_free); */
+        /* #endif */
         free(ptr_to_free);
     }
     self->_capacity = 0;

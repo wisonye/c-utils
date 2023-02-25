@@ -463,7 +463,7 @@ void test_vector(void) {
     //
     // Bool vec
     //
-    SMART_VECTOR_WITH_CAPACITY(bool_vec, bool, 5);
+    SMART_VECTOR_WITH_CAPACITY(bool_vec, bool, 5, NULL);
     bool true_value = true;
     bool false_value = false;
     Vec_push(bool_vec, &true_value);
@@ -478,12 +478,12 @@ void test_vector(void) {
     //
     // Empty vec
     //
-    SMART_VECTOR(empty_vec, usize);
+    SMART_VECTOR(empty_vec, usize, NULL);
 
     //
     // u16 vec
     //
-    SMART_VECTOR_WITH_CAPACITY(u16_vec, u16, 10);
+    SMART_VECTOR_WITH_CAPACITY(u16_vec, u16, 10, NULL);
     //
     // `capacity` should NOT change and no `realloc` will be called before
     // pushing the 11th elements
@@ -517,7 +517,7 @@ void test_vector(void) {
     // int vec
     //
     int int_arr[] = {100, 200, 300};
-    SMART_VECTOR(int_vec, int);
+    SMART_VECTOR(int_vec, int, NULL);
     Vec_push(int_vec, &int_arr[0]);
     Vec_push(int_vec, &int_arr[1]);
     Vec_push(int_vec, &int_arr[2]);
@@ -540,10 +540,18 @@ void test_vector(void) {
     SMART_STRING(temp_str_3) =
         Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
 
-    SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3);
+    SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3,
+                               (void (*)(void *))Str_free_buffer_only);
     Vec_push(string_vec, temp_str_1);
     Vec_push(string_vec, temp_str_2);
     Vec_push(string_vec, temp_str_3);
+
+    // Make sure to empty the string but not free the internal buffer, as
+    // `Vec_push` calls `memcpy` to do a shallow copy on each `String` instance,
+    // the `String` internal buffer should be treated as an ownership movement.
+    Str_reset_to_empty_without_freeing_buffer(temp_str_1);
+    Str_reset_to_empty_without_freeing_buffer(temp_str_2);
+    Str_reset_to_empty_without_freeing_buffer(temp_str_3);
 
     String string_vec_desc = Vec_join(string_vec, " , ", NULL);
     printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
@@ -556,7 +564,7 @@ void test_vector(void) {
     Person fion = {.first_name = "Mr CPP", .last_name = "not bad", .age = 99};
     Person nobody = {
         .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-    SMART_VECTOR_WITH_CAPACITY(person_list, Person, 3);
+    SMART_VECTOR_WITH_CAPACITY(person_list, Person, 3, NULL);
     Vec_push(person_list, &wison);
     Vec_push(person_list, &fion);
     Vec_push(person_list, &nobody);
@@ -581,7 +589,7 @@ void test_vector(void) {
     usize double_type_size = sizeof(double);
     usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
-    SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len);
+    SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len, NULL);
     for (usize di = 0; di < double_arr_len; di++) {
         Vec_push(double_vec, &double_arr[di]);
     }
@@ -596,7 +604,7 @@ void test_vector(void) {
 }
 
 void test_vector_element_destructor(void) {
-    SMART_VECTOR_WITH_CAPACITY(vec, String, 2);
+    SMART_VECTOR_WITH_CAPACITY(vec, String, 2, NULL);
 
     String str1 = Str_from_str("String in vector");
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
@@ -670,7 +678,7 @@ String return_string_on_the_heap(void) {
 Vector return_vector_on_the_heap(void) {
     usize double_size = sizeof(double);
     Vector temp_vec =
-        Vec_with_capacity(double_size, TYPE_NAME_TO_STRING(double), 5);
+        Vec_with_capacity(double_size, TYPE_NAME_TO_STRING(double), 5, NULL);
     double d = 888.88;
     Vec_push(temp_vec, &d);
     return temp_vec;

@@ -23,6 +23,17 @@ typedef struct {
 void auto_free_vector(Vector *ptr);
 
 /*
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
+ */
+typedef void (*ElementHeapMemberDestructor)(void *ptr);
+
+/*
  * Define smart `Vector` var that calls `Vec_free()` automatically when the
  * variable is out of the scope
  *
@@ -37,31 +48,57 @@ void auto_free_vector(Vector *ptr);
  * auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
  * ```
  */
-#define SMART_VECTOR(v_name, element_type)                              \
-    __attribute__((cleanup(auto_free_vector))) Vector v_name = Vec_new( \
-        TYPE_SIZE_FROM_TYPE(element_type), TYPE_NAME_TO_STRING(element_type))
+#define SMART_VECTOR(v_name, element_type, element_destructor) \
+    __attribute__((cleanup(auto_free_vector))) Vector v_name = \
+        Vec_new(TYPE_SIZE_FROM_TYPE(element_type),             \
+                TYPE_NAME_TO_STRING(element_type), element_destructor)
 
-#define SMART_VECTOR_WITH_CAPACITY(v_name, element_type, capacity) \
-    __attribute__((cleanup(auto_free_vector))) Vector v_name =     \
-        Vec_with_capacity(TYPE_SIZE_FROM_TYPE(element_type),       \
-                          TYPE_NAME_TO_STRING(element_type), capacity)
+#define SMART_VECTOR_WITH_CAPACITY(v_name, element_type, capacity,     \
+                                   element_destructor)                 \
+    __attribute__((cleanup(auto_free_vector))) Vector v_name =         \
+        Vec_with_capacity(TYPE_SIZE_FROM_TYPE(element_type),           \
+                          TYPE_NAME_TO_STRING(element_type), capacity, \
+                          element_destructor)
 
 /*
- * Create empty vector
+ * Create empty vector.
+ *
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
  */
-Vector Vec_new(usize element_type_size, char *element_type);
+Vector Vec_new(usize element_type_size, char *element_type,
+               ElementHeapMemberDestructor element_destructor);
 
 /*
- * Create an empty vector that ability to hold `capacity` elements
+ * Create an empty vector that ability to hold `capacity` elements.
+ *
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
  */
 Vector Vec_with_capacity(usize element_type_size, char *element_type,
-                         usize capacity);
+                         usize capacity,
+                         ElementHeapMemberDestructor element_destructor);
 
 /*
  * Push element to the end of the vector:
  *
- * Vector executes a shallow copy which means doesn't copy the internal
- * heap-allocated content!!!
+ * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
+ * If the element is a struct with its own heap-allocated member, that shallow
+ * copy should be treated as taking ownership of all heap-allocated members.
+ *
+ * The shallow copied instance should reset all heap-allocated member's pointers
+ * to `NULL` and pass an "Element heap-allocated destructor function pointer"
+ * when creating a new "Vector".
  */
 void Vec_push(Vector self, void *element);
 
