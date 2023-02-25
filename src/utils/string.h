@@ -150,9 +150,18 @@ const long Str_index_of_case_sensitive(const String self,
 const bool Str_contains(const String self, char *str_to_check);
 
 /*
- * Reset  to empty string
+ * Reset to empty string
  */
 void Str_reset_to_empty(String self);
+
+/*
+ * Reset to empty string without freeing buffer memory, only used in the
+ * following situation:
+ *
+ * Someone calls `memcpy` to do a shallow copy which means the `self->buffer`
+ * ownership has moved away.
+ */
+void Str_reset_to_empty_without_freeing_buffer(String self);
 
 /*
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`
