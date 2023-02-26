@@ -76,6 +76,11 @@ String Str_from_arr(const char arr[]);
 String Str_from_str(const char *str);
 
 /*
+ * Create from `char*` with give position and count
+ */
+String Str_from_str_with_pos(const char *str, int start_pos, int count);
+
+/*
  * Clone from the given `String` instance but don't touch the heap-allocated
  * memory it owned
  */

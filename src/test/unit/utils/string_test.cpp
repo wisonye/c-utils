@@ -82,6 +82,29 @@ TEST(String, StringFromArray) {
     ASSERT_EQ(strcmp(Str_as_str(str), arr), 0);
 }
 
+TEST(String, StringFromStrWithPosAndCount) {
+    const char temp_str[] = "ABCD";
+    SMART_STRING(from_str) = Str_from_str_with_pos(temp_str, 0, 4);
+    ASSERT_EQ(Str_length(from_str), strlen(temp_str));
+    ASSERT_EQ(Str_capacity(from_str), Str_length(from_str) + 1);
+    ASSERT_EQ(strcmp(Str_as_str(from_str), temp_str), 0);
+
+    SMART_STRING(from_str_2) = Str_from_str_with_pos(temp_str, 2, 2);
+    ASSERT_EQ(Str_length(from_str_2), 2);
+    ASSERT_EQ(Str_capacity(from_str_2), 3);
+    ASSERT_EQ(strcmp(Str_as_str(from_str_2), "CD"), 0);
+
+    SMART_STRING(from_str_3) = Str_from_str_with_pos(temp_str, -1, 2);
+    ASSERT_EQ(Str_length(from_str_3), 0);
+    ASSERT_EQ(Str_capacity(from_str_3), 0);
+    ASSERT_EQ(Str_as_str(from_str_3), nullptr);
+
+    SMART_STRING(from_str_4) = Str_from_str_with_pos(temp_str, 0, -1);
+    ASSERT_EQ(Str_length(from_str_4), 0);
+    ASSERT_EQ(Str_capacity(from_str_4), 0);
+    ASSERT_EQ(Str_as_str(from_str_4), nullptr);
+}
+
 TEST(String, StringClone) {
     char arr[] = "Unit Test:)";
     SMART_STRING(str) = Str_from_arr(arr);

@@ -153,6 +153,43 @@ String Str_from_str(const char *str) {
 }
 
 /*
+ * Create from `char*` with give position and count
+ */
+String Str_from_str_with_pos(const char *str, int start_pos, int count) {
+    usize temp_str_len = (str != NULL) ? strlen(str) : 0;
+    usize temp_len = ((start_pos >= 0) && (count >= 1) &&
+                      (start_pos + count - 1 <= temp_str_len - 1))
+                         ? count
+                         : 0;
+    /* printf("\n>>> temp_str_len: %lu\n", temp_str_len); */
+    /* printf("\n>>> temp_len: %lu\n", temp_len); */
+
+    String string = malloc(sizeof(struct Str));
+
+    *string = (struct Str){
+        ._capacity = temp_len > 0 ? temp_len + 1 : 0,
+        ._len = temp_len > 0 ? temp_len : 0,
+        ._buffer = NULL,
+    };
+
+    if (temp_len > 0) {
+        string->_buffer = malloc(string->_capacity);
+        memcpy(string->_buffer, str + start_pos, temp_len);
+        string->_buffer[temp_len] = '\0';
+
+#if ENABLE_DEBUG_LOG
+        DEBUG_LOG(String, from_str,
+                  "self ptr: %p, capacity: %lu, malloc ptr: %p, from_str: %s, "
+                  "start_pos: %i, count: %i",
+                  string, string->_capacity, string->_buffer, str, start_pos,
+                  count);
+#endif
+    }
+
+    return string;
+}
+
+/*
  * Clone from the given `String` instance but don't touch the heap-allocated
  * memory it owned
  */
