@@ -7,7 +7,7 @@ extern "C" {
 }
 
 TEST(Vector, EmptyVector) {
-    SMART_VECTOR(empty_vec, int);
+    SMART_VECTOR(empty_vec, int, NULL);
     ASSERT_EQ(Vec_len(empty_vec), 0);
     ASSERT_EQ(Vec_capacity(empty_vec), 0);
     VectorIteractor iter = Vec_iter(empty_vec);
@@ -16,7 +16,7 @@ TEST(Vector, EmptyVector) {
 }
 
 TEST(Vector, EmptyVectorWithCapiticy) {
-    SMART_VECTOR_WITH_CAPACITY(vec, u16, 10);
+    SMART_VECTOR_WITH_CAPACITY(vec, u16, 10, NULL);
     ASSERT_EQ(Vec_len(vec), 0);
     ASSERT_EQ(Vec_capacity(vec), 10);
     VectorIteractor iter_2 = Vec_iter(vec);
@@ -66,7 +66,7 @@ TEST(Vector, EmptyVectorWithCapiticy) {
 
 TEST(Vector, PushElement_Integer) {
     int int_arr[] = {100, 200, 300};
-    SMART_VECTOR(vec, int);
+    SMART_VECTOR(vec, int, NULL);
     Vec_push(vec, &int_arr[0]);
     ASSERT_EQ(Vec_len(vec), 1);
     ASSERT_EQ(Vec_capacity(vec), 1);
@@ -86,7 +86,7 @@ TEST(Vector, PushElement_Integer) {
     ASSERT_EQ(temp_arr[2], 300);
 
     int int_arr_2[] = {666, 777, 888, 999};
-    SMART_VECTOR(vec_2, int);
+    SMART_VECTOR(vec_2, int, NULL);
     Vec_push(vec_2, &int_arr_2[0]);
     ASSERT_EQ(Vec_len(vec_2), 1);
     ASSERT_EQ(Vec_capacity(vec_2), 1);
@@ -126,7 +126,7 @@ TEST(Vector, PushElement_custom_struct) {
     Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
     Person nobody = {
         .first_name = "Nobody", .last_name = "Nothing", .age = 100};
-    SMART_VECTOR(vec, Person);
+    SMART_VECTOR(vec, Person, NULL);
     Vec_push(vec, &wison);
     ASSERT_EQ(Vec_len(vec), 1);
     ASSERT_EQ(Vec_capacity(vec), 1);
@@ -165,7 +165,7 @@ usize person_type_size = sizeof(Person);
 usize person_arr_len = sizeof(person_arr) / sizeof(person_arr[0]);
 
 TEST(Vector, immutable_get) {
-    SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len);
+    SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len, NULL);
     for (usize di = 0; di < double_arr_len; di++) {
         Vec_push(double_vec, &double_arr[di]);
     }
@@ -181,7 +181,7 @@ TEST(Vector, immutable_get) {
     const double *d_value_4 = (const double *)Vec_get(double_vec, 3);
     ASSERT_EQ(d_value_4, nullptr);
 
-    SMART_VECTOR_WITH_CAPACITY(person_vec, Person, person_arr_len);
+    SMART_VECTOR_WITH_CAPACITY(person_vec, Person, person_arr_len, NULL);
     for (usize pi = 0; pi < double_arr_len; pi++) {
         Vec_push(person_vec, &person_arr[pi]);
     }
