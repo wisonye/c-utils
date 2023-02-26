@@ -1018,7 +1018,7 @@ doas make install
 
 #### PS-3.1 Use `C` compiler and `valgrind` for checking memory leaking
 
-It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
+It uses `cmake/CMakeLists.txt` and compiles `src/main.c`.
 
 </br>
 
@@ -1030,9 +1030,9 @@ It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
 
 </br>
 
-It Generates everything needs into `build_memory_leak_checking ` folder. The
-`build_memory_leak_checking /compile_commands.json` is for `clangd_extensions`
-neovim plugin.
+It Generates everything needs into `temp_build/build_memory_leak_checking `
+folder. The `temp_build/build_memory_leak_checking /compile_commands.json` is
+for `clangd_extensions` neovim plugin.
 
 </br>
 
@@ -1072,7 +1072,7 @@ Compile and run:
 
 #### PS-3.2 Use `C` compiler and use Google [`AddressSanitizer`](https://github.com/google/sanitizers/wiki/AddressSanitizer) for checking memory leaking:
 
-It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
+It uses `cmake/CMakeLists.txt` and compiles `src/main.c`.
 
 </br>
 
@@ -1083,9 +1083,9 @@ It uses `cmake_memory_leak_checking/CMakeLists.txt` and compiles `src/main.c`.
 
 </br>
 
-It Generates everything needs into `cmake_memory_leak_checking ` folder. The
-`cmake_memory_leak_checking /compile_commands.json` is for `clangd_extensions`
-neovim plugin.
+It Generates everything needs into `temp_build/build_memory_leak_checking `
+folder. The `temp_build/build_memory_leak_checking/compile_commands.json` is
+for `clangd_extensions` neovim plugin.
 
 </br>
 
@@ -1154,7 +1154,7 @@ Same settings with `PS-3.2` but use `LLVM-Clang` explicity and remove `ASAN_OPTI
 
 #### PS-3.4 Use `CPP` compiler to run unit test
 
-It uses `cmake_unit_test /CMakeLists.txt` and compiles `src/main.cpp`.
+It uses `cmake/unit_test/CMakeLists.txt` and compiles `src/main.cpp`.
 
 </br>
 
@@ -1163,8 +1163,9 @@ It uses `cmake_unit_test /CMakeLists.txt` and compiles `src/main.cpp`.
 ./configure_unit_test.sh
 ```
 
-It Generates everything needs into `build_unit_test` folder. The
-`build/compile_commands.json` is for `clangd_extensions` neovim plugin.
+It Generates everything needs into `temp_build/unit_test` folder. The
+`temp_build/unit_test/compile_commands.json` is for `clangd_extensions` neovim
+plugin.
 
 </br>
 
