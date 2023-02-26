@@ -178,11 +178,12 @@ String Str_from_str_with_pos(const char *str, int start_pos, int count) {
         string->_buffer[temp_len] = '\0';
 
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, from_str,
-                  "self ptr: %p, capacity: %lu, malloc ptr: %p, from_str: %s, "
-                  "start_pos: %i, count: %i",
-                  string, string->_capacity, string->_buffer, str, start_pos,
-                  count);
+        DEBUG_LOG(
+            String, from_str,
+            "self ptr: %p, capacity: %lu, malloc ptr: %p, _buffer: %s, "
+            "start_pos: %i, count: %i",
+            string, string->_capacity, string->_buffer, string->_buffer,
+            start_pos, count);
 #endif
     }
 
