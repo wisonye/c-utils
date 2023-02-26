@@ -135,6 +135,15 @@ TEST(String, ResetToEmpty) {
     ASSERT_EQ(Str_as_str(temp_str), nullptr);
 }
 
+TEST(String, ResetToEmptyWithoutFreeingBuffer) {
+    SMART_STRING(temp_str) = Str_from_str("Wison Ye:)");
+    Str_reset_to_empty_without_freeing_buffer(temp_str);
+
+    ASSERT_EQ(Str_length(temp_str), 0);
+    ASSERT_EQ(Str_capacity(temp_str), 0);
+    ASSERT_EQ(Str_as_str(temp_str), nullptr);
+}
+
 TEST(String, Push) {
     SMART_STRING(empty_str) = Str_from_empty();
     SMART_STRING(init_empty_str) = Str_from_empty();
