@@ -305,7 +305,8 @@ const String Vec_join(const Vector self, char *delemiter,
             snprintf(str_buffer, 25, "%Lf",
                      *((long double *)self->_items + index));
             Str_push_str(result, str_buffer);
-        } else if (strcmp("struct Str", self->_element_type) == 0) {
+        } else if ((strcmp("struct Str", self->_element_type) == 0) ||
+                   (strcmp("String", self->_element_type) == 0)) {
             // String
             String temp_str =
                 (String)((u8 *)self->_items + index * Str_struct_size());
