@@ -58,15 +58,7 @@ Vector Vec_new(usize element_type_size, char *element_type,
 }
 
 /*
- * Create an empty vector that ability to hold `capacity` elements.
  *
- * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
- * If the element is a struct with its own heap-allocated member, that shallow
- * copy should be treated as taking ownership of all heap-allocated members.
- *
- * The shallow copied instance should reset all heap-allocated member's pointers
- * to `NULL` and pass an "Element heap-allocated destructor function pointer"
- * when creating a new "Vector".
  */
 Vector Vec_with_capacity(usize element_type_size, char *element_type,
                          usize capacity,
@@ -94,15 +86,7 @@ Vector Vec_with_capacity(usize element_type_size, char *element_type,
 }
 
 /*
- * Push element to the end of the vector
  *
- * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
- * If the element is a struct with its own heap-allocated member, that shallow
- * copy should be treated as taking ownership of all heap-allocated members.
- *
- * The shallow copied instance should reset all heap-allocated member's pointers
- * to `NULL` and pass an "Element heap-allocated destructor function pointer"
- * when creating a new "Vector".
  */
 void Vec_push(Vector self, void *element) {
     // ensure the vector has enough space to save all elements;
@@ -165,21 +149,21 @@ void Vec_push(Vector self, void *element) {
 }
 
 /*
- * Return the length
+ *
  */
 const usize Vec_len(const Vector self) {
     return self == NULL ? 0 : self->_length;
 }
 
 /*
- * Return the capacity
+ *
  */
 const usize Vec_capacity(Vector self) {
     return self == NULL ? 0 : self->_capacity;
 }
 
 /*
- * Return the item iterator
+ *
  */
 const VectorIteractor Vec_iter(const Vector self) {
     return self == NULL ? (VectorIteractor){.length = 0, .items = NULL}
@@ -188,7 +172,7 @@ const VectorIteractor Vec_iter(const Vector self) {
 }
 
 /*
- * Return the given index item, return `NULL` is not exists.
+ *
  */
 const void *Vec_get(const Vector self, usize index) {
     if (index < 0 || index > self->_length - 1) return NULL;
@@ -197,7 +181,7 @@ const void *Vec_get(const Vector self, usize index) {
 }
 
 /*
- * Join all elements and return a string
+ *
  */
 const String Vec_join(const Vector self, char *delemiter,
                       String (*custom_struct_desc)(void *ptr)) {
@@ -350,7 +334,7 @@ const String Vec_join(const Vector self, char *delemiter,
 }
 
 /*
- * Free allocated memory
+ *
  */
 void Vec_free(Vector self) {
     if (self == NULL) return;
@@ -387,7 +371,7 @@ void Vec_free(Vector self) {
 }
 
 /*
- * Auto free vector call
+ *
  */
 void auto_free_vector(Vector *ptr) {
 #ifdef ENABLE_DEBUG_LOG

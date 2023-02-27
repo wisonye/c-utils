@@ -30,6 +30,20 @@ void auto_free_vector(Vector *ptr);
  * The shallow copied instance should reset all heap-allocated member's pointers
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
+ *
+ * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * following efforts for `String` type:
+ *
+ * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * destructor.
+ *
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
+ * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
+ * `String` instance anymore.
+ *
+ * Plz check the [`Use
+ * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
+ * example for more details.
  */
 typedef void (*ElementHeapMemberDestructor)(void *ptr);
 
@@ -38,8 +52,8 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * variable is out of the scope
  *
  * ```c
- * SMART_VECTOR(vec, int);
- * SMART_VECTOR_WITH_CAPACITY(usize_vec, usize, 10);
+ * SMART_VECTOR(vec, int, NULL);
+ * SMART_VECTOR_WITH_CAPACITY(usize_vec, usize, 10, NULL);
  *
  * (D) [ Vector ] > new - self pointer: 0x5472040, element_type_size: 4
  * (D) [ Vector ] > with_capacity - self pointer: 0x54730f0, element_type_size:
@@ -62,7 +76,6 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
 
 /*
  * Create empty vector.
- *
  * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
  * If the element is a struct with its own heap-allocated member, that shallow
  * copy should be treated as taking ownership of all heap-allocated members.
@@ -70,6 +83,20 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * The shallow copied instance should reset all heap-allocated member's pointers
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
+ *
+ * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * following efforts for `String` type:
+ *
+ * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * destructor.
+ *
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
+ * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
+ * `String` instance anymore.
+ *
+ * Plz check the [`Use
+ * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
+ * example for more details.
  */
 Vector Vec_new(usize element_type_size, char *element_type,
                ElementHeapMemberDestructor element_destructor);
@@ -84,6 +111,20 @@ Vector Vec_new(usize element_type_size, char *element_type,
  * The shallow copied instance should reset all heap-allocated member's pointers
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
+ *
+ * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * following efforts for `String` type:
+ *
+ * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * destructor.
+ *
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
+ * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
+ * `String` instance anymore.
+ *
+ * Plz check the [`Use
+ * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
+ * example for more details.
  */
 Vector Vec_with_capacity(usize element_type_size, char *element_type,
                          usize capacity,
@@ -99,6 +140,20 @@ Vector Vec_with_capacity(usize element_type_size, char *element_type,
  * The shallow copied instance should reset all heap-allocated member's pointers
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
+ *
+ * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * following efforts for `String` type:
+ *
+ * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * destructor.
+ *
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
+ * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
+ * `String` instance anymore.
+ *
+ * Plz check the [`Use
+ * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
+ * example for more details.
  */
 void Vec_push(Vector self, void *element);
 
