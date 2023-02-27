@@ -6,6 +6,7 @@
 [1.3 Get element via `index`](#13-get-element-via-index)</br>
 [1.4 Use `String`](#14-use-string)</br>
 [1.5 Custom struct case](#15-custom-struct-case)</br>
+[1.6 Not use `SMART_VECTOR` macro](#16-not-use-smart_vector-macro)
 [2. `SingleLinkList`](#2-singlelinklist)</br>
 [2.1 Concept](#21-concept)</br>
 [2.2 use cases](#22-use-cases)</br>
@@ -26,8 +27,22 @@ If the element is a struct with its own heap-allocated member, that shallow
 copy should be treated as taking ownership of all heap-allocated members.
 
 The shallow copied instance should reset all heap-allocated member's pointers
-to `NULL` and pass an "Element heap-allocated destructor function pointer"
-when creating a new "Vector".
+to `NULL` and pass an `Element heap-allocated destructor function pointer`
+when creating a new `Vector`.
+
+The exception is for `struct Str*` or `String`, as `Vector` does the
+following efforts for `String` type:
+
+- Set `Str_free_buffer_only` to `self->element_destructor` as default element
+destructor.
+
+- Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
+need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in `String`
+instance anymore.
+
+Plz check the [`Use String`](#14-use-string) example for more details.
+
+</br>
 
 The `SMART_VECTOR` and `SMART_VECTOR_WITH_CAPACITY` macro ensures the
 heap-allocated instance auto-free heap-allocated memory when it goes out of
@@ -153,31 +168,28 @@ SMART_STRING(temp_str_2) = Str_from_str("Generic vector works:)");
 SMART_STRING(temp_str_3) =
     Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
 
-SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3,
-                            (void (*)(void *))Str_free_buffer_only);
+SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3, NULL);
 Vec_push(string_vec, temp_str_1);
 Vec_push(string_vec, temp_str_2);
 Vec_push(string_vec, temp_str_3);
-
-// Make sure to empty the string but not free the internal buffer, as
-// `Vec_push` calls `memcpy` to do a shallow copy on each `String` instance,
-// the `String` internal buffer should be treated as an ownership movement.
-Str_reset_to_empty_without_freeing_buffer(temp_str_1);
-Str_reset_to_empty_without_freeing_buffer(temp_str_2);
-Str_reset_to_empty_without_freeing_buffer(temp_str_3);
 
 String string_vec_desc = Vec_join(string_vec, " , ", NULL);
 printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
 Str_free(string_vec_desc);
 
-// (D) [ String ] > from_str - self ptr: 0x5475050, malloc ptr: 0x54750a0, from_str: Vector works:)
-// (D) [ String ] > from_str - self ptr: 0x54750f0, malloc ptr: 0x5475140, from_str: Generic vector works:)
-// (D) [ String ] > from_str - self ptr: 0x54751a0, malloc ptr: 0x54751f0, from_str: My Generic vector works, yeah!!!:)>>>>:(
-// (D) [ Vector ] > with_capacity - self pointer: 0x5475260, element_type_size: 16, capacity: 3, self->items: 0x54752d0
-// (D) [ String ] > from_empty - self ptr: 0x5475340
+// (D) [ String ] > from_str - self ptr: 0x603000001930, capacity: 15, malloc ptr: 0x6020000000d0, from_str: Vector works:)
+// (D) [ String ] > from_str - self ptr: 0x603000001960, capacity: 23, malloc ptr: 0x603000001990, from_str: Generic vector works:)
+// (D) [ String ] > from_str - self ptr: 0x6030000019c0, capacity: 41, malloc ptr: 0x6040000002d0, from_str: My Generic vector works, yeah!!!:)>>>>:(
+// (D) [ Vector ] > with_capacity - self pointer: 0x604000000310, element_type_size: 24, capacity: 3, self->items: 0x607000000020
+// (D) [ Vector ] > Vec_join - element_type: struct Str, element_size: 24, delimiter size: 3, length: 3, capacity: 79
+// (D) [ String ] > from_empty_with_capacity - self ptr: 0x6030000019f0, capacity: 79, malloc ptr: 0x607000000090
+// (D) [ String ] > Str_push_str - Realloc needed, current capacity: 79, new capacity: 83, self->_buffer: 0x608000000120
 // >>> string_vec: Vector works:) , Generic vector works:) , My Generic vector works, yeah!!!:)>>>>:(
-
-// (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x5475260, length: 3
+// 
+// (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x604000000310, length: 3
+// (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6030000019c0, as_str: (null)
+// (D) [ String ] > auto_free_string - out of scope with string ptr: 0x603000001960, as_str: (null)
+// (D) [ String ] > auto_free_string - out of scope with string ptr: 0x603000001930, as_str: (null)⏎
 ```
 
 </br>
@@ -246,6 +258,36 @@ Str_free(person_vec_desc);
 
 // (D) [ Vector ] > auto_free_vector - out of scope with vector ptr: 0x54755c0, length: 3
 ```
+
+</br>
+
+#### 1.6 Not use `SMART_VECTOR` macro
+
+```c
+SMART_STRING(temp_str_1) = Str_from_str("Not use macro to create vector");
+
+// Not use `SMART_VECTOR` to create vector
+Vector string_vec = Vec_with_capacity(Str_struct_size(), "String", 3, NULL);
+
+Vec_push(string_vec, temp_str_1);
+
+String string_vec_desc = Vec_join(string_vec, " , ", NULL);
+printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
+Str_free(string_vec_desc);
+
+// Then you have to free vector manually
+Vec_free(string_vec);
+
+// (D) [ String ] > from_str - self ptr: 0x603000001930, capacity: 31, malloc ptr: 0x603000001960, from_str: Not use macro to create vector
+// (D) [ Vector ] > with_capacity - self pointer: 0x6040000002d0, element_type_size: 24, capacity: 3, self->items: 0x607000000020
+// (D) [ Vector ] > Vec_join - element_type: String, element_size: 24, delimiter size: 3, length: 1, capacity: 25
+// (D) [ String ] > from_empty_with_capacity - self ptr: 0x603000001990, capacity: 25, malloc ptr: 0x6030000019c0
+// (D) [ String ] > Str_push_str - Realloc needed, current capacity: 25, new capacity: 31, self->_buffer: 0x6030000019f0
+// >>> string_vec: Not use macro to create vector
+// 
+// (D) [ String ] > auto_free_string - out of scope with string ptr: 0x603000001930, as_str: (null)⏎
+```
+
 
 </br>
 
