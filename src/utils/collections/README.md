@@ -6,7 +6,7 @@
 [1.3 Get element via `index`](#13-get-element-via-index)</br>
 [1.4 Use `String`](#14-use-string)</br>
 [1.5 Custom struct case](#15-custom-struct-case)</br>
-[1.6 Not use `SMART_VECTOR` macro](#16-not-use-smart_vector-macro)
+[1.6 Not use `SMART_VECTOR` macro](#16-not-use-smart_vector-macro)</br>
 [2. `SingleLinkList`](#2-singlelinklist)</br>
 [2.1 Concept](#21-concept)</br>
 [2.2 use cases](#22-use-cases)</br>
