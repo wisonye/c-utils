@@ -540,18 +540,10 @@ void test_vector(void) {
     SMART_STRING(temp_str_3) =
         Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
 
-    SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3,
-                               (void (*)(void *))Str_free_buffer_only);
+    SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3, NULL);
     Vec_push(string_vec, temp_str_1);
     Vec_push(string_vec, temp_str_2);
     Vec_push(string_vec, temp_str_3);
-
-    // Make sure to empty the string but not free the internal buffer, as
-    // `Vec_push` calls `memcpy` to do a shallow copy on each `String` instance,
-    // the `String` internal buffer should be treated as an ownership movement.
-    Str_reset_to_empty_without_freeing_buffer(temp_str_1);
-    Str_reset_to_empty_without_freeing_buffer(temp_str_2);
-    Str_reset_to_empty_without_freeing_buffer(temp_str_3);
 
     String string_vec_desc = Vec_join(string_vec, " , ", NULL);
     printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
