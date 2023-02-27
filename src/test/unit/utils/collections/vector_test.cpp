@@ -205,3 +205,11 @@ TEST(Vector, immutable_get) {
     const Person *person_4 = (const Person *)Vec_get(person_vec, 3);
     ASSERT_EQ(person_4, nullptr);
 }
+
+TEST(Vector, NullTest) {
+    ASSERT_EQ(Vec_len(NULL), 0);
+    ASSERT_EQ(Vec_capacity(NULL), 0);
+    VectorIteractor iter = Vec_iter(NULL);
+    ASSERT_EQ(iter.length, 0);
+    ASSERT_EQ(iter.items, nullptr);
+}

@@ -152,18 +152,24 @@ void Vec_push(Vector self, void *element) {
 /*
  * Return the length
  */
-const usize Vec_len(const Vector self) { return self->_length; }
+const usize Vec_len(const Vector self) {
+    return self == NULL ? 0 : self->_length;
+}
 
 /*
  * Return the capacity
  */
-const usize Vec_capacity(Vector self) { return self->_capacity; }
+const usize Vec_capacity(Vector self) {
+    return self == NULL ? 0 : self->_capacity;
+}
 
 /*
  * Return the item iterator
  */
 const VectorIteractor Vec_iter(const Vector self) {
-    return (VectorIteractor){.length = self->_length, .items = self->_items};
+    return self == NULL ? (VectorIteractor){.length = 0, .items = NULL}
+                        : (VectorIteractor){.length = self->_length,
+                                            .items = self->_items};
 }
 
 /*
