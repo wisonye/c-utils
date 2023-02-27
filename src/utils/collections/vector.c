@@ -25,15 +25,14 @@ struct Vec {
 };
 
 /*
- * Create empty vector.
  *
- * `Vec_push` calls `memcpy` to do a shallow copy on the given element instance.
- * If the element is a struct with its own heap-allocated member, that shallow
- * copy should be treated as taking ownership of all heap-allocated members.
+ */
+bool is_string_type(const char *type) {
+    return ((strcmp(type, "struct Str") == 0) || (strcmp(type, "String") == 0));
+}
+
+/*
  *
- * The shallow copied instance should reset all heap-allocated member's pointers
- * to `NULL` and pass an "Element heap-allocated destructor function pointer"
- * when creating a new "Vector".
  */
 Vector Vec_new(usize element_type_size, char *element_type,
                ElementHeapMemberDestructor element_destructor) {
@@ -51,7 +50,9 @@ Vector Vec_new(usize element_type_size, char *element_type,
         ._element_type_size = element_type_size,
         ._element_type = element_type,
         ._items = NULL,
-        .element_destructor = element_destructor,
+        .element_destructor = is_string_type(element_type)
+                                  ? (void (*)(void *))Str_free_buffer_only
+                                  : element_destructor,
     };
     return vec;
 }
@@ -78,7 +79,9 @@ Vector Vec_with_capacity(usize element_type_size, char *element_type,
         ._element_type_size = element_type_size,
         ._element_type = element_type,
         ._items = malloc(element_type_size * capacity),
-        .element_destructor = element_destructor,
+        .element_destructor = is_string_type(element_type)
+                                  ? (void (*)(void *))Str_free_buffer_only
+                                  : element_destructor,
     };
 
 #if ENABLE_DEBUG_LOG
@@ -147,6 +150,18 @@ void Vec_push(Vector self, void *element) {
     /*                                       self->_length *
      * self->_element_type_size); */
     /* #endif */
+
+    //
+    // Handly reset for `String` instance:
+    //
+    // Reset the `String` to empty, then you don't need to call
+    // `Str_reset_to_empty_without_freeing_buffer` manually!!!
+    //
+    if (is_string_type(self->_element_type)) {
+        ((struct Str *)element)->_len = 0;
+        ((struct Str *)element)->_capacity = 0;
+        ((struct Str *)element)->_buffer = 0;
+    }
 }
 
 /*
