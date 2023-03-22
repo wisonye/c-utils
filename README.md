@@ -50,9 +50,9 @@ This is my personal `C` utilities which contain the following modules:
 [A-6.1 `const TYPE *var` and `TYPE const *var`](#a-61-const-type-var-and-type-const-var)</br>
 [A-6.2 `*const TYPE var`](#a-62-const-type-var)</br>
 [A-6.3 `const TYPE *const var` and `TYPE const *const var`](#a-63-const-type-const-var-and-type-const-const-var)</br>
-[A-7. Deal with `va_list` (Variable Argument List, AKA `...`)](#a-7-Deal-with-va_list-(variable-argument-list-aka))</br>
-[A-7.1 First argument is the total number of the rest arguments](a-71-first-argument-is-the-total-number-of-the-rest-arguments)</br>
-[A-7.1 NULL ended style, no need to pass the total number of rest params as the first parameter](#a-71-null-ended-style-no-need-to-pass-the-total-number-of-rest-params-as-the-first-parameter)</br>
+[A-7. Deal with `va_list` (Variable Argument List, AKA `...`)](#a-7-deal-with-va_list-variable-argument-list-aka-)</br>
+[A-7.1 First argument is the total number of the rest arguments](#a-71-first-argument-is-the-total-number-of-the-rest-arguments)</br>
+[A-7.1 NULL ended style](#a-71-null-ended-style)</br>
 [A-8. Macro](#a-8-macro)</br>
 [A-8.1 How to only run the preprocessor stage](#a-81-how-to-only-run-the-preprocessor-stage)</br>
 [A-8.2 Comment and empty line in macro](#a-82-comment-and-empty-line-in-macro)</br>
@@ -1884,8 +1884,10 @@ rest parameters, result is undefined behaviours!!!
 
 </br>
 
-#### A-7.1 NULL ended style, no need to pass the total number of rest params as
-the first parameter
+#### A-7.1 NULL ended style
+
+You don't need to pass the total number of rest params as the first parameter
+anymore
 
 ```c
 int add_numbers_2(int first_number, ...) {
