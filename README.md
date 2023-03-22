@@ -50,16 +50,20 @@ This is my personal `C` utilities which contain the following modules:
 [A-6.1 `const TYPE *var` and `TYPE const *var`](#a-61-const-type-var-and-type-const-var)</br>
 [A-6.2 `*const TYPE var`](#a-62-const-type-var)</br>
 [A-6.3 `const TYPE *const var` and `TYPE const *const var`](#a-63-const-type-const-var-and-type-const-const-var)</br>
-[A-7. Macro](#a-7-macro)</br>
-[A-7.1 How to only run the preprocessor stage](#a-71-how-to-only-run-the-preprocessor-stage)</br>
-[A-7.2 Comment and empty line in macro](#a-72-comment-and-empty-line-in-macro)</br>
-[A-7.3 String in macro](#a-73-string-in-macro)</br>
-[A-7.4 Expression in macro](#a-74-expression-in-macro)</br>
-[A-7.5 How to write a macro that includes `#ifdef`](#a-75-how-to-write-a-macro-that-includes-ifdef)</br>
-[A-7.6 Auto type infer in macro](#a-76-auto-type-infer-in-macro)</br>
-[A-7.7 Useful macro: Get back the data type from a variable](#a-77-useful-macro-get-back-the-data-type-from-a-variable)</br>
-[A-7.8 Useful macro: Is it the same type between 2 variables/values](#a-78-useful-macro-is-it-the-same-type-between-2-variablesvalues)</br>
-[A-7.9 Generic implementation by using macro](#a-79-generic-implementation-by-using-macro)</br>
+[A-7. Deal with `va_list` (Variable Argument List, AKA `...`)](#a-7-Deal-with-va_list-(variable-argument-list-aka))</br>
+[A-7.1 First argument is the total number of the rest arguments](a-71-first-argument-is-the-total-number-of-the-rest-arguments)</br>
+[A-7.1 NULL ended style, no need to pass the total number of rest params as the first parameter](#a-71-null-ended-style-no-need-to-pass-the-total-number-of-rest-params-as-the-first-parameter)</br>
+[A-8. Macro](#a-8-macro)</br>
+[A-8.1 How to only run the preprocessor stage](#a-81-how-to-only-run-the-preprocessor-stage)</br>
+[A-8.2 Comment and empty line in macro](#a-82-comment-and-empty-line-in-macro)</br>
+[A-8.3 String in macro](#a-83-string-in-macro)</br>
+[A-8.4 Expression in macro](#a-84-expression-in-macro)</br>
+[A-8.4.1 Use `__VA_ARGS__` macro to pass `...` into another macro](#a-841-use-__va_args__-macro-to-pass-...-into-another-macro)</br>
+[A-8.5 How to write a macro that includes `#ifdef`](#a-85-how-to-write-a-macro-that-includes-ifdef)</br>
+[A-8.6 Auto type infer in macro](#a-86-auto-type-infer-in-macro)</br>
+[A-8.7 Useful macro: Get back the data type from a variable](#a-87-useful-macro-get-back-the-data-type-from-a-variable)</br>
+[A-8.8 Useful macro: Is it the same type between 2 variables/values](#a-88-useful-macro-is-it-the-same-type-between-2-variablesvalues)</br>
+[A-8.9 Generic implementation by using macro](#a-89-generic-implementation-by-using-macro)</br>
 
 </br>
 
@@ -1640,8 +1644,16 @@ You can found a fews things from the above code:
     </br>
 
 For the `temp_arr` variable, actually the compile treats it as `a pointer that
-points to the first element of the allocated array`, and you can use that
-`temp_arr` as just a pointer. That's why the following code works:
+points to the first element of the allocated array`:
+
+```c
+u16 temp_arr[] = {1, 2, 3, 4, 5};
+
+// That said the `temp_arr` variable means `&temp_arr[0]`
+```
+
+and you can use that `temp_arr` as just a pointer. That's why the following
+code works:
 
 ```c
 
@@ -1789,12 +1801,127 @@ a_ptr = &b;
 
 </br>
 
-### A-7. Macro
+### A-7. Deal with `va_list` (Variable Argument List, AKA `...`)
+
+`...`/`va_list` is super useful in `C`, it gives you the ability to define a
+flexible parameter list function.
+
+Here is how it works:
+
+- `va_list` declares a variable argument list instance (but doesn't initial yet)
+
+    ```c
+    va_list args
+    ```
+
+    </br>
+
+- `va_start` initializes the `va_list` with the first argument
+
+    ```c
+    va_list args
+    va_start(args, FIRST_ARGUMENT_NAME_HERE)
+    ```
+
+    </br>
+
+- `va_arg` gives you back the next argument
+
+    As `va_arg` doesn't know how many bytes the argument is and how to stop,
+    that's why you need to provide the `T` data type to help it read the next
+    argument.
+
+    ```c
+    va_list args
+    va_start(args, FIRST_ARGUMENT_NAME_HERE)
+    var_arg(args, T)
+    ```
+
+    </br>
+
+- `va_end` end the `va_list` that you have to call
+
+    ```c
+    va_list args
+    va_start(args, FIRST_ARGUMENT_NAME_HERE)
+    va_arg(args, T)
+    va_end(args)
+    ```
+
+    </br>
+
+There are 2 major forms to use `...`
+
+#### A-7.1 First argument is the total number of the rest arguments
+
+```c
+int add_numbers(int rest_param_count, ...) {
+    int sum = 0;
+
+    // Uninitialized `va_list` instance
+    va_list args;
+
+    // Init the `va_list` instance with the first parameter
+    va_start(args, rest_param_count);
+
+    // Loop the rest params
+    for (int i = 0; i < rest_param_count; i++) {
+        sum += va_arg(args, int);
+    }
+
+    // Done with using `va_list` instance
+    va_end(args);
+    return sum;
+}
+
+printf("add_numbers result: %d\n", add_numbers(5, 1, 1, 1, 1));
+```
+
+</br>
+
+So, if you pass the wrong `rest_param_count` or passing the wrong number of the
+rest parameters, result is undefined behaviours!!!
+
+</br>
+
+#### A-7.1 NULL ended style, no need to pass the total number of rest params as
+the first parameter
+
+```c
+int add_numbers_2(int first_number, ...) {
+    int sum = first_number;
+
+    // Uninitialized `va_list` instance
+    va_list args;
+
+    // Init the `va_list` instance with the first parameter
+    va_start(args, first_number);
+
+    // Keep looping the rest until it hits `NULL` (0)
+    int next_number = va_arg(args, int);
+    while (next_number != 0) {
+        sum += next_number;
+        next_number = va_arg(args, int);
+    }
+
+    // Done with using `va_list` instance
+    va_end(args);
+    return sum;
+}
+
+printf("add_numbers_2 result: %d\n", add_numbers_2(1, 1, 1, 1, NULL));
+```
+
+But it messes up if you have a `0` in your parameters before `NULL`.
+
+</br>
+
+### A-8. Macro
 
 The macro in `C` is a super powerful weapon that helps you to generate the most
 flexible source code.
 
-#### A-7.1 How to only run the preprocessor stage
+#### A-8.1 How to only run the preprocessor stage
 
 You can run `CC` with the `-E` flag to generate the source code that only apply
 the preprocessor stage before compiling it.
@@ -1806,7 +1933,7 @@ clang -E src/utils/vec.c | bat
 
 </br>
 
-#### A-7.2 Comment and empty line in macro
+#### A-8.2 Comment and empty line in macro
 
 You only can use `/* */` comment in macro body, `//` won't work!!!
 
@@ -1824,7 +1951,7 @@ If you want an empty line, just add a `\` (multi line character) there.
 </br>
 
 
-#### A-7.3 String in macro
+#### A-8.3 String in macro
 
 When using a macro argument starts with `#` (in the macro body), it treats as
 a string. That's why the `#FORMAT_TYPE` (in the following sample) will become
@@ -1852,7 +1979,7 @@ int main() {
 
 </br>
 
-#### A-7.4 Expression in macro
+#### A-8.4 Expression in macro
 
 If you want the macro parameter support passing in an expression, then you should
 wrap the parameter with `()` (in the macro body).
@@ -1888,7 +2015,25 @@ int main() {
 
 </br>
 
-#### A-7.5 How to write a macro that includes `#ifdef`
+#### A-8.4.1 Use `__VA_ARGS__` macro to pass `...` into another macro
+
+```c
+/**
+ * Log
+ */
+void __log__(LogLevel log_level, const char *module_name,
+             const char *function_name, const char *format_str, ...);
+
+/**
+ * Debug log
+ */
+#define DEBUG_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...) \
+    __log__(LL_DEBUG, #MODULE_NAME, #FUNCTION_NAME, format_str, __VA_ARGS__)
+```
+
+</br>
+
+#### A-8.5 How to write a macro that includes `#ifdef`
 
 The answer is `NO, you can't do that!!!` and you have to define 2 macros with
 the same name and wrap them into a `#ifdef #else #endif` block like below:
@@ -1913,7 +2058,7 @@ the same name and wrap them into a `#ifdef #else #endif` block like below:
 
 </br>
 
-#### A-7.6 Auto type infer in macro
+#### A-8.6 Auto type infer in macro
 
 [Official doc](https://gcc.gnu.org/onlinedocs/gcc/Typeof.html)
 
@@ -1953,7 +2098,7 @@ int main() {
 
 </br>
 
-#### A-7.7 Useful macro: Get back the data type from a variable
+#### A-8.7 Useful macro: Get back the data type from a variable
 
 That's the `_Generic` selection at compile time, doc is [here](https://en.cppreference.com/w/c/language/generic)
 
@@ -2150,7 +2295,7 @@ int main() {
 </br>
 
 
-#### A-7.8 Useful macro: Is it the same type between 2 variables/values
+#### A-8.8 Useful macro: Is it the same type between 2 variables/values
 
 ```c
 
@@ -2194,7 +2339,7 @@ int main() {
 </br>
 
 
-#### A-7.9 Generic implementation by using macro
+#### A-8.9 Generic implementation by using macro
 
 Let's see what `C` deals with generic:)
 
