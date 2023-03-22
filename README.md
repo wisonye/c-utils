@@ -58,7 +58,7 @@ This is my personal `C` utilities which contain the following modules:
 [A-8.2 Comment and empty line in macro](#a-82-comment-and-empty-line-in-macro)</br>
 [A-8.3 String in macro](#a-83-string-in-macro)</br>
 [A-8.4 Expression in macro](#a-84-expression-in-macro)</br>
-[A-8.4.1 Use `__VA_ARGS__` macro to pass `...` into another macro](#a-841-use-__va_args__-macro-to-pass-...-into-another-macro)</br>
+[A-8.4.1 Use `__VA_ARGS__` macro to pass `...` into another macro](#a-841-use-__va_args__-macro-to-pass--into-another-macro)</br>
 [A-8.5 How to write a macro that includes `#ifdef`](#a-85-how-to-write-a-macro-that-includes-ifdef)</br>
 [A-8.6 Auto type infer in macro](#a-86-auto-type-infer-in-macro)</br>
 [A-8.7 Useful macro: Get back the data type from a variable](#a-87-useful-macro-get-back-the-data-type-from-a-variable)</br>
