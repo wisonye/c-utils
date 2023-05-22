@@ -471,8 +471,13 @@ long Str_find_substring(const String self, const char *str_to_find,
         return -1;
     }
 
+#ifdef __APPLE__
     char *temp_ptr = (case_sensitive) ? strstr(self->_buffer, str_to_find)
                                       : strcasestr(self->_buffer, str_to_find);
+#else
+    char *temp_ptr = (case_sensitive) ? strstr(self->_buffer, str_to_find)
+                                      : strstr(self->_buffer, str_to_find);
+#endif
 
 #if ENABLE_LINK_LIST_DEBUG
     printf(
