@@ -151,16 +151,12 @@ void Vec_push(Vector self, void *element) {
 /*
  *
  */
-usize Vec_len(const Vector self) {
-    return self == NULL ? 0 : self->_length;
-}
+usize Vec_len(const Vector self) { return self == NULL ? 0 : self->_length; }
 
 /*
  *
  */
-usize Vec_capacity(Vector self) {
-    return self == NULL ? 0 : self->_capacity;
-}
+usize Vec_capacity(Vector self) { return self == NULL ? 0 : self->_capacity; }
 
 /*
  *
@@ -175,7 +171,7 @@ VectorIteractor Vec_iter(const Vector self) {
  *
  */
 const void *Vec_get(const Vector self, usize index) {
-    if (index < 0 || index > self->_length - 1) return NULL;
+    if (index > self->_length - 1) return NULL;
 
     return (u8 *)self->_items + (index * self->_element_type_size);
 }
@@ -184,7 +180,7 @@ const void *Vec_get(const Vector self, usize index) {
  *
  */
 String Vec_join(const Vector self, char *delemiter,
-                      String (*custom_struct_desc)(void *ptr)) {
+                String (*custom_struct_desc)(void *ptr)) {
     if (self == NULL || self->_length <= 0) return Str_from_empty();
 
     //
