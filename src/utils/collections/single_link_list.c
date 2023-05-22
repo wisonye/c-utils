@@ -342,16 +342,15 @@ void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func) {
     self->_head = NULL;
     self->_tail = NULL;
 
-    if (need_to_free_myself == true) {
-        free(self);
-    }
-
 #ifdef ENABLE_DEBUG_LOG
     DEBUG_LOG(SingleLinkList, free,
               "self ptr: %p, total free node amount: %lu, total free node data "
               "amount: %lu",
               self, free_node_amount, free_node_data_amount);
 #endif
+    if (need_to_free_myself == true) {
+        free(self);
+    }
 }
 
 /*
