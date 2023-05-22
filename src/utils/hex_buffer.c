@@ -109,7 +109,7 @@ HexBuffer Hex_from_string(const char *hex_str) {
  * Return the hex buffer length
  */
 usize Hex_length(HexBuffer self) {
-    if (self == NULL || self->_len < 0) return 0;
+    if (self == NULL) return 0;
 
     return self->_len;
 }
