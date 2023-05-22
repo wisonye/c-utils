@@ -120,8 +120,8 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert);
 /*
  * Insert `char *` at the given index
  */
-void Str_insert_at_index(String self, const char *str_to_insert,
-                         usize index_to_insert);
+// void Str_insert_at_index(String self, const char *str_to_insert,
+//                          usize index_to_insert);
 
 /*
  * Get back string length

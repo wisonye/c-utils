@@ -15,7 +15,7 @@
 #include "utils/memory.h"
 #include "utils/random.h"
 #include "utils/smart_ptr.h"
-#include "utils/string.h"
+#include "utils/str.h"
 #include "utils/timer.h"
 
 //

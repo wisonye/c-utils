@@ -2,7 +2,7 @@
 #define __UTILS_VECTOR_H__
 
 #include "../data_types.h"
-#include "../string.h"
+#include "../str.h"
 
 /*
  * Vector: Heap allocated dynamic array
