@@ -778,8 +778,8 @@ void test_file(void) {
         LOG_VAR(file_content);
 
     } else {
-        fprintf(stderr, "Failed to open file '%s': %s\n", filename,
-                File_get_error(my_file));
+        fprintf(stderr, "Failed to open file '%s': %s\n",
+                filename == NULL ? "NULL" : filename, File_get_error(my_file));
     }
 
 #ifdef ENABLE_DEBUG_LOG
