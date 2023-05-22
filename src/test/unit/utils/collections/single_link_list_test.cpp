@@ -19,7 +19,7 @@ TEST(SingleLinkList, CreateEmptyList) {
 //
 LinkList create_integer_list() {
     size_t stack_value = 9999;
-    LinkList list = LL_from_value(sizeof(size_t), &stack_value, nullptr);
+    LinkList list = LL_from_value(sizeof(size_t), &stack_value);
     return list;
 }
 
@@ -38,7 +38,7 @@ TEST(SingleLinkList, IntegerListWithOneNode) {
 //
 LinkList create_double_list() {
     double stack_value = 8888.888;
-    LinkList list = LL_from_value(sizeof(double), &stack_value, nullptr);
+    LinkList list = LL_from_value(sizeof(double), &stack_value);
 
     return list;
 }
@@ -60,11 +60,11 @@ TEST(SingleLinkList, IntListAppendNode) {
 
     // Append a few nodes
     size_t values[] = {111, 222, 333, 444, 555};
-    LL_append_value(short_int_list, sizeof(uint16_t), &values[0], nullptr);
-    LL_append_value(short_int_list, sizeof(uint16_t), &values[1], nullptr);
-    LL_append_value(short_int_list, sizeof(uint16_t), &values[2], nullptr);
-    LL_append_value(short_int_list, sizeof(uint16_t), &values[3], nullptr);
-    LL_append_value(short_int_list, sizeof(uint16_t), &values[4], nullptr);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[0]);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[1]);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[2]);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[3]);
+    LL_append_value(short_int_list, sizeof(uint16_t), &values[4]);
 
     ASSERT_EQ(LL_length(short_int_list), 5);
     ASSERT_NE(LL_get_head(short_int_list), nullptr);
