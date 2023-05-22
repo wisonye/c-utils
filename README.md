@@ -38,6 +38,7 @@ This is my personal `C` utilities which contain the following modules:
 [PS-3.2 Use `C` compiler and Google `AddressSanitizer` for checking memory leaking](#ps-32-use-c-compiler-and-use-google-addresssanitizer-for-checking-memory-leaking)</br>
 [PS-3.3 Use `C` compiler and Google `AddressSanitizer` for checking memory leaking on `FreeBSD`](#ps-33-use-c-compiler-and-use-google-addresssanitizer-for-checking-memory-leaking-on-freebsd)</br>
 [PS-3.4 Use `CPP` compiler to run unit test](#ps-34-use-cpp-compiler-to-run-unit-test)</br>
+[PS-3.5 Install `c-utils` share library](#ps-35-c-utils-share-library)</br>
 [PS-4. How to preview preprocess step source code](#ps-4-how-to-preview-preprocess-step-source-code)</br>
 [PS-5. How to print all supported macros on current computer and OS](#ps-5-how-to-print-all-supported-macros-on-current-computer-and-os)</br>
 [Appendix: From `Rust` to `C`](#appendix-from-rust-to-c)</br>
@@ -1235,6 +1236,33 @@ Compile and run all unit test:
     ```
 
     </br>
+
+
+#### PS-3.5 Install `c-utils` share library
+
+Install the `c-utils` share library to your system
+
+```bash
+./install-lib.sh
+
+# [100%] Linking C shared library libc-utils.dylib
+# [100%] Built target c-utils
+# Install the project...
+# -- Install configuration: "Debug"
+# -- Installing: /usr/local/lib/libc-utils.dylib
+# -- Up-to-date: /usr/local/include/c-utils/bits.h
+# -- Installing: /usr/local/include/c-utils/data_types.h
+# -- Installing: /usr/local/include/c-utils/file.h
+# -- Installing: /usr/local/include/c-utils/hex_buffer.h
+# -- Installing: /usr/local/include/c-utils/log.h
+# -- Installing: /usr/local/include/c-utils/memory.h
+# -- Installing: /usr/local/include/c-utils/random.h
+# -- Installing: /usr/local/include/c-utils/smart_ptr.h
+# -- Installing: /usr/local/include/c-utils/string.h
+# -- Installing: /usr/local/include/c-utils/timer.h
+```
+
+</br>
 
 #### PS-4. How to preview preprocess step source code
 
