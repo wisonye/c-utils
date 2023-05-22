@@ -46,7 +46,7 @@
 #define _FILL_BITS(_BUFFER, TYPE, VALUE, LOG_PREFIX)                       \
     size_t total_bits = (sizeof(TYPE) * 8);                                \
     TYPE temp_value = VALUE;                                               \
-    for (int bit = 0; bit < total_bits; bit++) {                           \
+    for (size_t bit = 0; bit < total_bits; bit++) {                           \
         _BUFFER[total_bits - bit - 1] = temp_value & 0x01 ? '1' : '0';     \
         temp_value = temp_value >> 1;                                      \
     }                                                                      \

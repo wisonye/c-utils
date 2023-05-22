@@ -25,7 +25,7 @@ typedef struct Str *String;
 // to get back `sizeof(struct Str)` for some reasons, this function is the
 // anwser.
 //
-const usize Str_struct_size(void);
+usize Str_struct_size(void);
 
 //
 //
@@ -126,12 +126,12 @@ void Str_insert_at_index(String self, const char *str_to_insert,
 /*
  * Get back string length
  */
-const usize Str_length(const String self);
+usize Str_length(const String self);
 
 /*
  * Get back capacity
  */
-const usize Str_capacity(const String self);
+usize Str_capacity(const String self);
 
 /*
  * Get back `char *`
@@ -141,18 +141,18 @@ const char *Str_as_str(const String self);
 /*
  * Find the given `char *` index, return `-1` if not found.
  */
-const long Str_index_of(const String self, const char *str_to_find);
+long Str_index_of(const String self, const char *str_to_find);
 
 /*
  * Find the given `char *` (case sensitive) index, return `-1` if not found.
  */
-const long Str_index_of_case_sensitive(const String self,
+long Str_index_of_case_sensitive(const String self,
                                        const char *str_to_find);
 
 /*
  * Check whether contain the given `char *` or not
  */
-const bool Str_contains(const String self, char *str_to_check);
+bool Str_contains(const String self, char *str_to_check);
 
 /*
  * Reset to empty string

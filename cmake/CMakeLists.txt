@@ -8,7 +8,8 @@ project("c-utils-demo")
 #
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_C_FLAGS "-pedantic-errors -std=gnu17")
+set(CMAKE_C_FLAGS "-pedantic-errors -Wall -Werror -Wextra -std=gnu17")
+
 
 #
 # Use different `C` compilation flags based on different optional settings
@@ -22,10 +23,10 @@ if (USE_VALGRIND)
     message(">>>\n>>> Use 'Valgrind' for memory leaking detection and switch to Release build\n>>>")
 # elseif ((USE_ADDRESS_SANITIZER) OR (USE_ADDRESS_SANITIZER_FOR_FREE_BSD))
 elseif (USE_ADDRESS_SANITIZER )
-    set(CMAKE_C_FLAGS "-pedantic-errors -std=gnu17 -fsanitize=address -O1 -fno-omit-frame-pointer")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
     message(">>>\n>>> Use 'Address Sanitizer' for memory leaking detection\n>>>")
 elseif (USE_ADDRESS_SANITIZER_FOR_FREE_BSD)
-    set(CMAKE_C_FLAGS "-pedantic-errors -std=gnu17 -fsanitize=address -O1 -fno-omit-frame-pointer")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
     message(">>>\n>>> Use 'Address Sanitizer' (FreeBSD) for memory leacking detection\n>>>")
 endif()
 

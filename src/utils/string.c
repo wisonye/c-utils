@@ -19,7 +19,7 @@
 // to get back `sizeof(struct Str)` for some reasons, this function is the
 // anwser.
 //
-const usize Str_struct_size(void) { return sizeof(struct Str); }
+usize Str_struct_size(void) { return sizeof(struct Str); }
 
 /*
  * Init empty `struct Str`
@@ -156,7 +156,7 @@ String Str_from_str(const char *str) {
  * Create from `char*` with give position and count
  */
 String Str_from_str_with_pos(const char *str, int start_pos, int count) {
-    usize temp_str_len = (str != NULL) ? strlen(str) : 0;
+    int temp_str_len = (str != NULL) ? strlen(str) : 0;
     usize temp_len = ((start_pos >= 0) && (count >= 1) &&
                       (start_pos + count - 1 <= temp_str_len - 1))
                          ? count
@@ -178,12 +178,11 @@ String Str_from_str_with_pos(const char *str, int start_pos, int count) {
         string->_buffer[temp_len] = '\0';
 
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(
-            String, from_str,
-            "self ptr: %p, capacity: %lu, malloc ptr: %p, _buffer: %s, "
-            "start_pos: %i, count: %i",
-            string, string->_capacity, string->_buffer, string->_buffer,
-            start_pos, count);
+        DEBUG_LOG(String, from_str,
+                  "self ptr: %p, capacity: %lu, malloc ptr: %p, _buffer: %s, "
+                  "start_pos: %i, count: %i",
+                  string, string->_capacity, string->_buffer, string->_buffer,
+                  start_pos, count);
 #endif
     }
 
@@ -311,11 +310,11 @@ void Str_push_str(String self, const char *str_to_push) {
     //
     if (new_len_with_null_terminated_char > self->_capacity) {
         need_realloc = true;
-        usize old_capacity = self->_capacity;
         self->_buffer =
             realloc(self->_buffer, new_len_with_null_terminated_char);
 
 #ifdef ENABLE_DEBUG_LOG
+        usize old_capacity = self->_capacity;
         DEBUG_LOG(String, Str_push_str,
                   "Realloc needed, current capacity: %lu, new capacity: %lu, "
                   "self->_buffer: %p",
@@ -389,11 +388,11 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
     //
     if (new_len_with_null_terminated_char > self->_capacity) {
         need_realloc = true;
-        usize old_capacity = self->_capacity;
         self->_buffer =
             realloc(self->_buffer, new_len_with_null_terminated_char);
 
 #ifdef ENABLE_DEBUG_LOG
+        usize old_capacity = self->_capacity;
         DEBUG_LOG(String, Str_push_str,
                   "Realloc needed, current capacity: %lu, new capacity: %lu, "
                   "self->_buffer: %p",
@@ -437,20 +436,18 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
 /*
  * Insert `char *` at the given index
  */
-void Str_insert_at_index(String self, const char *str_to_insert,
-                         usize index_to_insert) {}
+// void Str_insert_at_index(String self, const char *str_to_insert,
+//                          usize index_to_insert) {}
 
 /*
  * Get back string length
  */
-const usize Str_length(const String self) {
-    return (self != NULL) ? self->_len : 0;
-}
+usize Str_length(const String self) { return (self != NULL) ? self->_len : 0; }
 
 /*
  * Get back capacity
  */
-const usize Str_capacity(const String self) {
+usize Str_capacity(const String self) {
     return (self != NULL) ? self->_capacity : 0;
 }
 
@@ -490,22 +487,21 @@ long Str_find_substring(const String self, const char *str_to_find,
 /*
  * Find the given `char *` index, return `-1` if not found.
  */
-const long Str_index_of(const String self, const char *str_to_find) {
+long Str_index_of(const String self, const char *str_to_find) {
     return Str_find_substring(self, str_to_find, false);
 }
 
 /*
  * Find the given `char *` (case sensitive) index, return `-1` if not found.
  */
-const long Str_index_of_case_sensitive(const String self,
-                                       const char *str_to_find) {
+long Str_index_of_case_sensitive(const String self, const char *str_to_find) {
     return Str_find_substring(self, str_to_find, true);
 }
 
 /*
  * Check whether contain the given `char *` or not
  */
-const bool Str_contains(const String self, char *str_to_check) {
+bool Str_contains(const String self, char *str_to_check) {
     return Str_find_substring(self, str_to_check, false) != -1;
 }
 

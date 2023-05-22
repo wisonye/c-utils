@@ -275,7 +275,7 @@ void File_print_out_file_like_bat(File self) {
  * Print out self for debugging purpose
  */
 void File_print_debug_info(File self) {
-    SMART_STRING(debug_info) = Str_from_empty_with_capacity(100);
+    // SMART_STRING(debug_info) = Str_from_empty_with_capacity(100);
 
     char file_handler[20] = {0};
     snprintf(file_handler, sizeof(file_handler), "%p", (void *)self->inner);

@@ -45,7 +45,7 @@ int Hex_to_string(const HexBuffer self, char *out_buffer,
 /*
  * Return the u8 array iterator
  */
-const HexBufferIteractor Hex_iter(const HexBuffer self);
+HexBufferIteractor Hex_iter(const HexBuffer self);
 
 /*
  * Free

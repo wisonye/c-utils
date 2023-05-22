@@ -23,7 +23,7 @@
 //
 LinkList create_integer_list_on_heap(void) {
     usize stack_value = 9999;
-    LinkList list = LL_from_value(sizeof(usize), &stack_value, NULL);
+    LinkList list = LL_from_value(sizeof(usize), &stack_value);
     return list;
 }
 
@@ -33,7 +33,7 @@ LinkList create_integer_list_on_heap(void) {
 struct LL create_integer_list_on_stack(usize init_value) {
     struct LL list;
     LL_init_empty(&list);
-    LL_append_value(&list, sizeof(usize), &init_value, NULL);
+    LL_append_value(&list, sizeof(usize), &init_value);
     printf("\n>>> create_integer_list_on_stack, list ptr: %p", (void *)&list);
     return list;
 }
@@ -47,6 +47,7 @@ String create_string(const char str[]) {
            Str_length(temp_str), Str_as_str(temp_str));
 
     SMART_STRING(temp_str_2) = Str_from_str("Hey Hey Hey!");
+    Str_length(temp_str_2);
     return temp_str;
 }
 
@@ -59,8 +60,7 @@ void test_link_list(void) {
     // Just for init the timer, so the following `Timer_get_current_time`
     // compare is more fair.
     long double no_use = Timer_get_current_time(TU_MICROSECONDS);
-
-    int temp = 0;
+    printf("\n>>> Init timer: %Lf", no_use);
 
     long double start_time_2 = Timer_get_current_time(TU_MICROSECONDS);
 
@@ -99,6 +99,7 @@ void test_link_list(void) {
     long double start_time = Timer_get_current_time(TU_MICROSECONDS);
 
     SMART_LINKLIST(list) = LL_from_empty();
+    LL_length(list);
     /* SMART_LINKLIST(int_list) = create_integer_list_on_heap(); */
     /* SMART_LINKLIST(int_list_2) = create_integer_list_on_heap(); */
     SMART_LINKLIST(short_int_list) = LL_from_empty();
@@ -112,11 +113,11 @@ void test_link_list(void) {
 
     // Append a few nodes
     usize values[] = {111, 222, 333, 444, 555};
-    LL_append_value(short_int_list, sizeof(uint16), &values[0], NULL);
-    LL_append_value(short_int_list, sizeof(uint16), &values[1], NULL);
-    LL_append_value(short_int_list, sizeof(uint16), &values[2], NULL);
-    LL_append_value(short_int_list, sizeof(uint16), &values[3], NULL);
-    LL_append_value(short_int_list, sizeof(uint16), &values[4], NULL);
+    LL_append_value(short_int_list, sizeof(uint16), &values[0]);
+    LL_append_value(short_int_list, sizeof(uint16), &values[1]);
+    LL_append_value(short_int_list, sizeof(uint16), &values[2]);
+    LL_append_value(short_int_list, sizeof(uint16), &values[3]);
+    LL_append_value(short_int_list, sizeof(uint16), &values[4]);
 
     // Get back the iter and check all data
     SMART_LINKLIST_ITERATOR(iter) = LL_iter(short_int_list);
@@ -134,6 +135,7 @@ void test_string(void) {
     // String
     //
     SMART_STRING(my_name) = Str_from_str("Wison Ye:)");
+    Str_length(my_name);
 
     SMART_STRING(empty_str_1) = Str_from_str(NULL);
     SMART_STRING(empty_str_2) = Str_from_str("");
@@ -480,6 +482,7 @@ void test_vector(void) {
     // Empty vec
     //
     SMART_VECTOR(empty_vec, usize, NULL);
+    Vec_len(empty_vec);
 
     //
     // u16 vec
@@ -579,7 +582,6 @@ void test_vector(void) {
 
     // Double list
     double double_arr[] = {11.11, 22.22, 33.33};
-    usize double_type_size = sizeof(double);
     usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
     SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len, NULL);
@@ -811,7 +813,7 @@ void test_random_numbers(void) {
 //
 //
 //
-int main(int argc, char **argv) {
+int main(void) {
     /* test_file(); */
 
     /* test_link_list(); */

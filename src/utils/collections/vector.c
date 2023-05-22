@@ -151,21 +151,21 @@ void Vec_push(Vector self, void *element) {
 /*
  *
  */
-const usize Vec_len(const Vector self) {
+usize Vec_len(const Vector self) {
     return self == NULL ? 0 : self->_length;
 }
 
 /*
  *
  */
-const usize Vec_capacity(Vector self) {
+usize Vec_capacity(Vector self) {
     return self == NULL ? 0 : self->_capacity;
 }
 
 /*
  *
  */
-const VectorIteractor Vec_iter(const Vector self) {
+VectorIteractor Vec_iter(const Vector self) {
     return self == NULL ? (VectorIteractor){.length = 0, .items = NULL}
                         : (VectorIteractor){.length = self->_length,
                                             .items = self->_items};
@@ -183,7 +183,7 @@ const void *Vec_get(const Vector self, usize index) {
 /*
  *
  */
-const String Vec_join(const Vector self, char *delemiter,
+String Vec_join(const Vector self, char *delemiter,
                       String (*custom_struct_desc)(void *ptr)) {
     if (self == NULL || self->_length <= 0) return Str_from_empty();
 

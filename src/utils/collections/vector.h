@@ -160,17 +160,17 @@ void Vec_push(Vector self, void *element);
 /*
  * Return the length
  */
-const usize Vec_len(const Vector self);
+usize Vec_len(const Vector self);
 
 /*
  * Return the capacity
  */
-const usize Vec_capacity(const Vector self);
+usize Vec_capacity(const Vector self);
 
 /*
  * Return the item iterator
  */
-const VectorIteractor Vec_iter(const Vector self);
+VectorIteractor Vec_iter(const Vector self);
 
 /*
  * Return the given index item, return `NULL` is not exists.
@@ -180,7 +180,7 @@ const void *Vec_get(const Vector self, usize index);
 /*
  * Join all elements and return a string
  */
-const String Vec_join(const Vector self, char *delemiter,
+String Vec_join(const Vector self, char *delemiter,
                       String (*custom_struct_desc)(void *ptr));
 
 /*

@@ -65,8 +65,7 @@ LinkList LL_from_empty(void) {
 /*
  * Create list and insert first node that copies from value
  */
-LinkList LL_from_value(size_t item_size, void *value,
-                       CloneFromFunc clone_from_func) {
+LinkList LL_from_value(size_t item_size, void *value) {
     // Create first node
     LinkListNode node = malloc(sizeof(struct LLNode));
     *node = (struct LLNode){
@@ -107,8 +106,8 @@ LinkList LL_from_value(size_t item_size, void *value,
 /*
  * Create list and insert first node that copies from value
  */
-LinkList LL_from_array(size_t item_size, void *array,
-                       CloneFromFunc clone_from_func) {}
+// LinkList LL_from_array(size_t item_size, void *array,
+//                        CloneFromFunc clone_from_func) {}
 
 /*
  * Return the link length
@@ -118,7 +117,7 @@ size_t LL_length(const LinkList self) { return self->_len; }
 /*
  * Return the header (first node) pointer
  */
-const LinkListNode LL_get_head(const LinkList self) { return self->_head; }
+LinkListNode LL_get_head(const LinkList self) { return self->_head; }
 
 /*
  * Return the header (first node) data pointer
@@ -130,7 +129,7 @@ const void *LL_get_head_data(const LinkList self) {
 /*
  * Return the tail (last node) pointer
  */
-const LinkListNode LL_get_tail(const LinkList self) { return self->_tail; }
+LinkListNode LL_get_tail(const LinkList self) { return self->_tail; }
 
 /*
  * Return the tail (last node) data pointer
@@ -159,8 +158,7 @@ const void *LL_get_tail_data(const LinkList self) {
  * ```
  *
  */
-void LL_append_value(LinkList self, size_t item_size, void *value,
-                     CloneFromFunc clone_from_func) {
+void LL_append_value(LinkList self, size_t item_size, void *value) {
     // Create append node
     LinkListNode node = malloc(sizeof(struct LLNode));
     *node = (struct LLNode){

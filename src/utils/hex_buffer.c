@@ -150,13 +150,15 @@ int Hex_to_string(const HexBuffer self, char *out_buffer,
     for (usize index = 0; index < self->_len; index++) {
         char hex_value[3] = {0};
 
+#ifdef ENABLE_DEBUG_LOG
         // `02` means left-padding `0` until output len is 2
         usize copied_size =
             snprintf(hex_value, 3, "%02X", self->_buffer[index]);
-
-#ifdef ENABLE_DEBUG_LOG
         DEBUG_LOG(HexBuffer, Hex_to_string, "copied_size: %lu, hex_value: %s",
                   copied_size, hex_value);
+#else
+        // `02` means left-padding `0` until output len is 2
+        snprintf(hex_value, 3, "%02X", self->_buffer[index]);
 #endif
         memcpy(copy_ptr, hex_value, 2);
         copy_ptr += 2;
@@ -169,7 +171,7 @@ int Hex_to_string(const HexBuffer self, char *out_buffer,
 /*
  * Return the u8 array iterator
  */
-const HexBufferIteractor Hex_iter(const HexBuffer self) {
+HexBufferIteractor Hex_iter(const HexBuffer self) {
     return (HexBufferIteractor){.length = self->_len, .arr = self->_buffer};
 }
 
