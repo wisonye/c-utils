@@ -38,6 +38,7 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/memory.c"
     "../src/utils/timer.c"
     "../src/utils/file.c"
+    "../src/utils/random.c"
     "../src/main.c")
 
 # target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG ENABLE_PRINT_STRING_MEMORY)

@@ -13,6 +13,7 @@
 #include "utils/hex_buffer.h"
 #include "utils/log.h"
 #include "utils/memory.h"
+#include "utils/random.h"
 #include "utils/smart_ptr.h"
 #include "utils/string.h"
 #include "utils/timer.h"
@@ -787,8 +788,31 @@ void test_file(void) {
 //
 //
 //
+void test_random_numbers(void) {
+    // LOG_VAR(RAND_MAX);
+    const usize loop_amount = 20;
+    const u32 max_uint = 30;
+    const float max_float = 30;
+    for (usize index = 0; index < loop_amount; index++) {
+        DEBUG_LOG(Main, test_random_numbers,
+                  "random float between 0 and 1: %.2f",
+                  get_random_float_between_0_and_1());
+    }
+    for (usize index = 0; index < loop_amount; index++) {
+        DEBUG_LOG(Main, test_random_numbers, "random float: %.2f",
+                  get_random_float(max_float));
+    }
+    for (usize index = 0; index < loop_amount; index++) {
+        DEBUG_LOG(Main, test_random_numbers, "random uint: %u",
+                  get_random_uint(max_uint));
+    }
+}
+
+//
+//
+//
 int main(int argc, char **argv) {
-    test_file();
+    /* test_file(); */
 
     /* test_link_list(); */
     /* test_string(); */
@@ -806,13 +830,13 @@ int main(int argc, char **argv) {
 
     // unimplemented_function();
 
-    SMART_STRING(my_str) = Str_from_str("My name is Wison Ye");
-    DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
-    DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-    DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-    INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-    WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-    ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+    /* SMART_STRING(my_str) = Str_from_str("My name is Wison Ye"); */
+    /* DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3)); */
+    /* DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2); */
+    /* DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
+    /* INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
+    /* WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
+    /* ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
 
     // String my_name_str = Str_from_str("Wison Ye");
     // String clone_from_empty_str = Str_clone(&my_name_str);
@@ -829,6 +853,8 @@ int main(int argc, char **argv) {
     /* test_timer(); */
     /* test_smart_ptr(); */
     /* test_bits(); */
+
+    test_random_numbers();
 
     return 0;
 }
