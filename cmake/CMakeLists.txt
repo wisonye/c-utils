@@ -62,7 +62,7 @@ target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
 # https://cmake.org/cmake/help/v3.0/command/add_library.html?highlight=add_library
 # -----------------------------------------------------------------------------
 
-set(UTILS_LIBRARY_NAME "c-utils")
+set(UTILS_LIBRARY_NAME "c_utils")
 set(UTILS_LIBRARY_SOURCE_FILE
     "../src/utils/file.c"
     "../src/utils/hex_buffer.c"

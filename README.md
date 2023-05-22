@@ -1238,28 +1238,39 @@ Compile and run all unit test:
     </br>
 
 
-#### PS-3.5 Install `c-utils` share library
+#### PS-3.5 Install `c_utils` share library
 
-Install the `c-utils` share library to your system
+Install the `cutils` share library to your system
 
 ```bash
 ./install-lib.sh
 
-# [100%] Linking C shared library libc-utils.dylib
-# [100%] Built target c-utils
+# [100%] Linking C shared library libcutils.dylib
+# [100%] Built target cutils
 # Install the project...
 # -- Install configuration: "Debug"
-# -- Installing: /usr/local/lib/libc-utils.dylib
-# -- Up-to-date: /usr/local/include/c-utils/bits.h
-# -- Installing: /usr/local/include/c-utils/data_types.h
-# -- Installing: /usr/local/include/c-utils/file.h
-# -- Installing: /usr/local/include/c-utils/hex_buffer.h
-# -- Installing: /usr/local/include/c-utils/log.h
-# -- Installing: /usr/local/include/c-utils/memory.h
-# -- Installing: /usr/local/include/c-utils/random.h
-# -- Installing: /usr/local/include/c-utils/smart_ptr.h
-# -- Installing: /usr/local/include/c-utils/string.h
-# -- Installing: /usr/local/include/c-utils/timer.h
+# -- Installing: /usr/local/lib/libc_utils.dylib
+# -- Up-to-date: /usr/local/include/c_utils/bits.h
+# -- Installing: /usr/local/include/c_utils/data_types.h
+# -- Installing: /usr/local/include/c_utils/file.h
+# -- Installing: /usr/local/include/c_utils/hex_buffer.h
+# -- Installing: /usr/local/include/c_utils/log.h
+# -- Installing: /usr/local/include/c_utils/memory.h
+# -- Installing: /usr/local/include/c_utils/random.h
+# -- Installing: /usr/local/include/c_utils/smart_ptr.h
+# -- Installing: /usr/local/include/c_utils/string.h
+# -- Installing: /usr/local/include/c_utils/timer.h
+```
+
+</br>
+
+After that, make sure to add `-I/usr/local/include` when neede. Then you can
+include like this:
+
+```c
+#include "c_utils/data_types.h"
+#include "c_utils/log.h"
+// ...ignore another include
 ```
 
 </br>
