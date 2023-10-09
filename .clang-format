@@ -21,3 +21,5 @@
 # `GNU` A style complying with the GNU coding standards
 BasedOnStyle: Google
 IndentWidth: 4
+PPIndentWidth: 4
+IndentPPDirectives: BeforeHash
