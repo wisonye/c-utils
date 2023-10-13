@@ -32,7 +32,7 @@ Examples:
 #+END_SRC
 
 
-*** 1.3 Clone from other String
+*** 1.3 Clone from other ~String~
 
 Clone from the given ~String~ instance but don't touch the heap-allocated memory it owned
 
@@ -48,7 +48,7 @@ Clone from the given ~String~ instance but don't touch the heap-allocated memory
 #+END_SRC
 
 
-*** 1.4 Move from other String
+*** 1.4 Move from other ~String~
 
 Move from the given ~String~ instance and move ownership of the heap-allocated memory to the newly created ~String~ instance. The original ~String~ becomes an empty string, as it points to nothing!!!
 
@@ -65,7 +65,7 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 #+END_SRC
 
 
-*** 1.5 Push to the end, get back length and get back char *
+*** 1.5 Push to the end, get back length and get back ~char *~
 
 #+BEGIN_SRC c
   SMART_STRING(original_str) = Str_from_str("I'm original:)");
@@ -152,7 +152,7 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 #+END_SRC
 
 
-*** 1.9 Create String on the stack and free it manually
+*** 1.9 Create ~String~ on the stack and free it manually
 
 Usually, it's convenient to use ~SMART_STRING~ to create a ~String~ instance,  it's an opaque pointer to ~struct Str~. The variable created via ~SMART_STRING~ will be freed automatically when the variable goes out of scope.
 
@@ -208,7 +208,7 @@ You need to create 1000 ~struct Str~ to handle a complicated logic in a loop. By
 
 Handy logging implementation.
 
-*** 2.1 LOG_VAR macro
+*** 2.1 ~LOG_VAR~ macro
 
 It's only available when ~ENABLE_DEBUG_LOG~ macro is defined!!!
 
@@ -243,7 +243,7 @@ Use to print the single variable's value, only for debugging purposes.
 #+END_SRC
 
 
-*** 2.2 printf liked formatted logger macro
+*** 2.2 ~printf~ liked formatted logger macro
 
 **** Interface
 
@@ -298,7 +298,7 @@ Use to print the single variable's value, only for debugging purposes.
 
 Handle convertion between ~char *~ and ~u8[]~
 
-*** 3.1 char * to HexBuffer
+*** 3.1 ~char *~ to ~HexBuffer~
 
 **** Interface
 
@@ -349,7 +349,7 @@ Handle convertion between ~char *~ and ~u8[]~
 #+END_SRC
 
 
-*** 3.2 HexBuffer to char *
+*** 3.2 ~HexBuffer~ to ~char *~
 
 **** Interface
 
@@ -421,7 +421,7 @@ Handle convertion between ~char *~ and ~u8[]~
 
 Handy memory utils.
 
-*** 4.1 PRINT_MEMORY_BLOCK macro
+*** 4.1 ~PRINT_MEMORY_BLOCK~ macro
 
 It's only available when ~ENABLE_DEBUG_LOG~ macro is defined!!!
 
@@ -434,7 +434,7 @@ It's used to print the memory block data in HEX format from a given variable.
 #+END_SRC
 
 
-*** Example:
+**** Example:
 
 #+BEGIN_SRC c
   struct Person {
@@ -463,7 +463,7 @@ It's used to print the memory block data in HEX format from a given variable.
 #+END_SRC
 
 
-*** 4.2 PRINT_MEMORY_BLOCK_FOR_SMART_TYPE macro
+*** 4.2 ~PRINT_MEMORY_BLOCK_FOR_SMART_TYPE~ macro
 
 It's only available when ~ENABLE_DEBUG_LOG~ macro is defined!!!
 
@@ -533,11 +533,11 @@ High resolution timer utils
   long double elapsed_time = end_time - start_time;
 
   DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);
-  ```
+#+END_SRC
 
-  </br>
 
-  ```bash
+#+BEGIN_SRC bash
+  
   time ./build_memory_leak_checking/c-utils
 
   # (D) [ Timer ] > Timer_get_current_time - FreeBSD Initialization
@@ -549,7 +549,6 @@ High resolution timer utils
   #    sys time    5.93 millis    0.00 micros    5.93 millis
 #+END_SRC
 
-    </br>
 
 ** 6. Smart pointer
 
@@ -610,7 +609,7 @@ High resolution timer utils
 
 Handy macros to handle bits, only available when ~ENABLE_DEBUG_LOG~ macro is defined!!!
 
-*** 7.1 PRINT_BITS macro
+*** 7.1 ~PRINT_BITS~ macro
 
 **** Interface
 
@@ -641,7 +640,7 @@ Handy macros to handle bits, only available when ~ENABLE_DEBUG_LOG~ macro is def
 #+END_SRC
 
 
-*** 7.2 IS_BIT_1 macro
+*** 7.2 ~IS_BIT_1~ macro
 
 Check whether the given bit is 1 or not
 
@@ -771,7 +770,7 @@ Examples:
 
 ** Project Setup
 
-*** PS-1. CMake configurations
+*** PS-1. =CMake= configurations
 
 This project has 2 ~cmake~ setups for different purposes:
 
@@ -784,7 +783,7 @@ This project has 2 ~cmake~ setups for different purposes:
     As =GoogleTest= only work for =CPP=, that's why you need the separated =CPP= compilation setup.
 
 
-*** PS-2. Make sure you compile and install GoogleTest
+*** PS-2. Make sure you compile and install =GoogleTest=
 
 #+BEGIN_SRC bash
   cd ~/temp
@@ -871,9 +870,9 @@ Install headers and libs:
 #+END_SRC
 
 
-*** PS-3. cmake setup and run
+*** PS-3. =CMake= setup and run
 
-**** PS-3.1 Use C compiler and valgrind for checking memory leaking
+**** PS-3.1 Use C compiler and =valgrind= for checking memory leaking
 
 It uses ~cmake/CMakeLists.txt~ and compiles ~src/main.c~.
 
@@ -918,7 +917,7 @@ Compile and run:
 #+END_SRC
 
 
-**** PS-3.2 Use C compiler and Google AddressSanitizer for checking memory leaking
+**** PS-3.2 Use C compiler and =Google AddressSanitizer= for checking memory leaking
 
 [[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]]
 
@@ -972,7 +971,7 @@ Compile and run:
 #+END_SRC
 
 
-**** PS-3.3 Use C compiler and Google AddressSanitizer for checking memory leaking on FreeBSD
+**** PS-3.3 Use C compiler and =Google AddressSanitizer= for checking memory leaking on FreeBSD
 
 [[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]]
 
@@ -1052,7 +1051,7 @@ Example:
 #+END_SRC
 
 
-**** PS-3.5 Install c_utils share library
+**** PS-3.5 Install =c_utils= share library
 
 Install the =cutils= share library to your system
 
@@ -1084,7 +1083,6 @@ After that, make sure to add =-I/usr/local/include= when needed. Then you can in
   // ...ignore another include
 #+END_SRC
 
-</br>
 
 **** PS-4. How to preview preprocess step source code
 
@@ -1139,7 +1137,7 @@ Support OS:
 
 
 
-** Appendix: From Rust to C
+** Appendix: From =Rust= to =C=
 
 *** A-1. Primitive Data Types
 
@@ -1166,7 +1164,7 @@ Here is the [[https://en.wikipedia.org/wiki/C_data_types][C Date Types]]
 | _Bool              | ~bool~                           |
 
 
-*** A-2. printf related
+*** A-2. ~printf~ related
 
 **** How to print fixed width HEX
 
@@ -1414,7 +1412,7 @@ That's why passing any stack memory pointer to outside world is super dangerous 
 Also, have a look at the =./c_demo_struct_stack_frame_analysis.txt=, as it shows the function call stack details.
 
 
-*** A-5. The relationship between Pointer and Array
+*** A-5. The relationship between =Pointer= and =Array=
 
 Actually, =pointer= is just like an =array= in the other form, the =C= design assumes that you use a =pointer= like an =array=. That's why the following code works:
 
@@ -1532,7 +1530,7 @@ Compiler produces the error on line of ~temp_arr[10] = 10~ but not the rest of l
 
 *** A-6. The tricky things in C Pointer: constants pointer differences
 
-**** A-6.1 const TYPE *var and TYPE const *var
+**** A-6.1 ~const TYPE *var~ and ~TYPE const *var~
 
 For the pointer to constants, you can change the pointer var (address) value itself, but you can't change the value it points to!!!
 
@@ -1554,7 +1552,7 @@ For the pointer to constants, you can change the pointer var (address) value its
 </br>
 
 
-**** A-6.2 *const TYPE var
+**** A-6.2 ~*const TYPE var~
 
 For the constants pointer, you can change the value it points to, but you can't change the pointer (address) value itself!!!
 
@@ -1574,7 +1572,7 @@ For the constants pointer, you can change the value it points to, but you can't 
 #+END_SRC
 
 
-**** A-6.3 const TYPE *const var and TYPE const *const var
+**** A-6.3 ~const TYPE *const var~ and ~TYPE const *const var~
 
 For the constants pointer to constants, you can't change both!!!
 
@@ -1595,7 +1593,7 @@ For the constants pointer to constants, you can't change both!!!
 #+END_SRC
 
 
-*** A-7. Deal with va_list (Variable Argument List, AKA ...)
+*** A-7. Deal with =va_list= (Variable Argument List, AKA =...=)
 
 =...= or =va_list= is super useful in =C=, it gives you the ability to define a flexible parameter list function.
 
