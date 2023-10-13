@@ -2,13 +2,11 @@
 
 This is my personal =C= utilities which contain the following modules:
 
-- [[#string][String]]
-- [[#create-empty-string][1.1 Create empty string]]
+- [[1. String]]
+- [[1.1 Create empty string]]
+- [[1.2 Create from char * or char \[\]]]
 
 ** 1. String
-:PROPERTIES:
-  :CUSTOM_ID: string
-  :END:
 
 Wrap and hide all =null-terminated= C-style string in =struct=, hide the =null-terminated= detail and pointer, just deal with normal function call.
 
@@ -17,9 +15,6 @@ The ~SMART_STRING~ and ~SMART_STRING_WITH_CAPACITY~ macro ensures the heap-alloc
 Examples:
 
 *** 1.1 Create empty string
-:PROPERTIES:
-  :CUSTOM_ID: create-empty-string
-  :END:
 
 #+BEGIN_SRC c
   // `SMART_STRING(variable_name);`
@@ -31,7 +26,7 @@ Examples:
 #+END_SRC
 
 
-*** 1.2 Create from ~char *~ or ~char []~
+*** 1.2 Create from char * or char []
 
 #+BEGIN_SRC c
   char arr[] = "Unit Test:)";
