@@ -2,71 +2,13 @@
 
 This is my personal =C= utilities which contain the following modules:
 
-[[1. String]]
-[[1.1 Create empty string]]
-[[1.2 Create from char * or char \[\]]]
-[[1.3 Clone from other String]]
-[[1.4 Move from other String]]
-[[1.5 Push to the end, get back length and get back char *]]
-[[1.6 Insert at beginning]]
-[[1.7 Find substring]]
-[[1.8 Reset to empty]]
-[[1.9 Create String on the stack and free it manually]]
-[[2. Log]]
-[[2.1 LOG_VAR macro]]
-[[2.2 printf liked formatted logger macro]]
-[[3. HexBuffer]]
-[[3.1 char * to HexBuffer]]
-[[3.2 HexBuffer to char *]]
-[[4. Memory]]
-[[4.1 PRINT_MEMORY_BLOCK macro]]
-[[4.2 PRINT_MEMORY_BLOCK_FOR_SMART_TYPE macro]]
-[[5. Timer]]
-[[6. Smart pointer]]
-[[7. Bits]]
-[[7.1 PRINT_BITS macro]]
-[[7.2 IS_BIT_1 macro]]
-[[8. File]]
-[[8.1 Open existing file and read all data into internal buffer]]
-[[8.2 Open non-existing file]]
-[[file:src/utils/collections/README.org][9. Collection]]
-[[Project Setup]]
-[[PS-1. CMake configurations]]
-[[PS-2. Make sure you compile and install GoogleTest]]
-[[PS-3. cmake setup and run]]
-[[PS-3.1 Use C compiler and valgrind for checking memory leaking]]
-[[PS-3.2 Use C compiler and Google AddressSanitizer for checking memory leaking]]
-[[PS-3.3 Use C compiler and Google AddressSanitizer for checking memory leaking on FreeBSD]]
-[[PS-3.4 Use CPP compiler to run unit test]]
-[[PS-3.5 Install c_utils share library]]
-[[PS-4. How to preview preprocess step source code]]
-[[PS-5. How to print all supported macros on current computer and OS]]
-[[Appendix: From Rust to C]]
-[[A-1. Primitive Data Types]]
-[[A-2. printf related]]
-[[A-3. string related]]
-[[A-4. Life time]]
-[[A-5. The relationship between Pointer and Array]]
-[[A-6. The tricky things in C Pointer: constants pointer differences]]
-[[A-6.1 const TYPE *var and TYPE const *var]]
-[[A-6.2 *const TYPE var]]
-[[A-6.3 const TYPE *const var and TYPE const *const var]]
-[[A-7. Deal with va_list (Variable Argument List, AKA ...)]]
-[[A-7.1 First argument is the total number of the rest arguments]]
-[[A-7.1 NULL ended style]]
-[[A-8. Macro]]
-[[A-8.1 How to only run the preprocessor stage]]
-[[A-8.2 Comment and empty line in macro]]
-[[A-8.3 String in macro]]
-[[A-8.4 Expression in macro]]
-[[A-8.4.1 Use __VA_ARGS__ macro to pass ... into another macro]]
-[[A-8.5 How to write a macro that includes #ifdef]]
-[[A-8.6 Auto type infer in macro]]
-[[A-8.7 Useful macro: Get back the data type from a variable]]
-[[A-8.8 Useful macro: Is it the same type between 2 variables/values]]
-[[A-8.9 Generic implementation by using macro]]
+- [[#string][String]]
+- [[#create-empty-string][1.1 Create empty string]]
 
 ** 1. String
+:PROPERTIES:
+  :CUSTOM_ID: string
+  :END:
 
 Wrap and hide all =null-terminated= C-style string in =struct=, hide the =null-terminated= detail and pointer, just deal with normal function call.
 
@@ -75,6 +17,9 @@ The ~SMART_STRING~ and ~SMART_STRING_WITH_CAPACITY~ macro ensures the heap-alloc
 Examples:
 
 *** 1.1 Create empty string
+:PROPERTIES:
+  :CUSTOM_ID: create-empty-string
+  :END:
 
 #+BEGIN_SRC c
   // `SMART_STRING(variable_name);`
@@ -86,7 +31,7 @@ Examples:
 #+END_SRC
 
 
-*** 1.2 Create from char * or char []
+*** 1.2 Create from ~char *~ or ~char []~
 
 #+BEGIN_SRC c
   char arr[] = "Unit Test:)";
