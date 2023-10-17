@@ -872,12 +872,29 @@ Install headers and libs:
 
 *** PS-3. =CMake= setup and run
 
-**** PS-3.1 Use C compiler and =valgrind= for checking memory leaking
+
+**** PS-3.1 Use C compiler
+
+You should only use this configuration when you try to installing =c_utils=!!!
+
+If you're trying to development, then you should use one of the rest configured ways to enable checking memory leaking!!!
+
+It uses ~cmake/CMakeLists.txt~ and compiles ~src/main.c~.
+
+Also, it set the default prefix install path to ~/home/${USER}/my-installed~, feel free to change it if want to install to somewhere else.
+
+#+BEGIN_SRC bash
+  # Make sure you're in the project root folder
+  ./configure.sh
+#+END_SRC
+
+
+**** PS-3.2 Use C compiler and =valgrind= for checking memory leaking
 
 It uses ~cmake/CMakeLists.txt~ and compiles ~src/main.c~.
 
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC bash
   # Make sure you're in the project root folder
   ./configure_valgrind.sh
 #+END_SRC
@@ -917,7 +934,7 @@ Compile and run:
 #+END_SRC
 
 
-**** PS-3.2 Use C compiler and =Google AddressSanitizer= for checking memory leaking
+**** PS-3.3 Use C compiler and =Google AddressSanitizer= for checking memory leaking
 
 [[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]]
 
@@ -971,7 +988,7 @@ Compile and run:
 #+END_SRC
 
 
-**** PS-3.3 Use C compiler and =Google AddressSanitizer= for checking memory leaking on FreeBSD
+**** PS-3.4 Use C compiler and =Google AddressSanitizer= for checking memory leaking on FreeBSD
 
 [[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]]
 
@@ -1036,6 +1053,7 @@ Compile and run all unit test:
 By default, =GoogleTest= run all tests even any test is fail.
 
 In ~run_unit_test.sh~, added a env var ~GTEST_FAIL_FAST=true~ which allows skip all the rest tests if any test is fail. Feel free to remove it if you don't like that.
+
 
 ***** How to run the given TestSuite only
 
