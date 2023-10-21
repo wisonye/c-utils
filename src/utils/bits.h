@@ -97,7 +97,7 @@
 //
 //
 //
-#define BIT_IS_1(V, WHICH_BIT) (v >> (which_bit - 1) & 0x01)
+#define BIT_IS_1(V, WHICH_BIT) (V & (1 << WHICH_BIT))
 
 #else
 
