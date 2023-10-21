@@ -501,6 +501,127 @@ It works like the same with the ~PRINT_MEMORY_BLOCK~ macro but focuses on the ~S
 #+END_SRC
 
 
+** Bit Field Declaration
+
+For example if you have the following struct:
+
+#+BEGIN_SRC c
+   typedef struct {
+         bool gpio;
+         bool adc;
+         bool i2c;
+         bool spi;
+  } ResetReg;
+#+END_SRC
+
+The original purpose of ~ResetReg~ is to define a structure to hold 4 ~boolean~ values (either ~0~ or ~1~) in a group to represent the particular MCU register status. Nothing is wrong but only it consumes =4 Bytes= to store just =4 Bits= information:
+
+#+BEGIN_SRC c
+  ResetReg reg1 = (ResetReg) {
+          .gpio = false,
+          .adc = false,
+          .i2c = true,
+          .spi = true,
+  };
+  PRINT_MEMORY_BLOCK(ResetReg, reg1);
+#+END_SRC
+
+The output should be:
+
+#+BEGIN_SRC bash
+  >>> ResetReg size: 4
+
+  (D) [ Memory ] > print_memory_block - [ ResetReg reg1, size: 4 ]
+  (D) [ Memory ] > print_memory_block - --------
+  (D) [ Memory ] > print_memory_block - 00000101
+  (D) [ Memory ] > print_memory_block - --------
+#+END_SRC
+
+So, how to optimize it?
+
+The answer is use =Bit Field=: give the =width= of how many bits should be used for the given type. The =width= (bits) must less or equal than the data type!!!
+
+For example
+
+#+BEGIN_SRC c
+  typedef struct {
+      u8 a: 1; // Only use 1 bit in a uint8_t, that's fine
+      u8 b: 2; // Only use 2 bit2 in a uint8_t, that's fine
+      u8 c: 4; // Only use 4 bit2 in a uint8_t, that's fine
+      u8 d: 9; // Try to use 9 bits in a uint8_t, that's NOT OK!!!
+  } TestA;
+#+END_SRC
+
+If you try to use a =width= bigger than the give data type, you got error (e.g. error from the ~u8 d: 9~ line):
+
+#+BEGIN_SRC bash
+  error: width of bit-field 'd' (9 bits) exceeds the width of its type (8 bits)
+#+END_SRC
+
+
+Here is the optimized version of ~ResetReg~:
+
+#+BEGIN_SRC c
+  // typedef struct {
+  //       u8 gpio: 1;
+  //       u8 adc: 1;
+  //       u8 i2c: 1;
+  //       u8 spi: 1;
+  // } ResetReg2;
+
+  // `bool` and `u8` both are just one byte
+  typedef struct {
+        bool gpio: 1; // Only use 1 bit
+        bool adc: 1;
+        bool i2c: 1;
+        bool spi: 1;
+  } ResetReg2;
+
+  bool is_gpio_enabled(const ResetReg2 *self) {
+        return self->gpio;
+  }
+  bool is_adc_enabled(const ResetReg2 *self) {
+        return self->adc;
+  }
+  bool is_i2c_enabled(const ResetReg2 *self) {
+        return self->i2c;
+  }
+  bool is_spi_enabled(const ResetReg2 *self) {
+        return self->spi;
+  }
+
+  ResetReg2 reg2 = (ResetReg2) {
+          .gpio = true,
+          .adc = true,
+          .i2c = false,
+          .spi = false,
+  };
+
+  PRINT_MEMORY_BLOCK(ResetReg2, reg2);
+
+  printf("\n>>> reg2->gpio enabled: %s", is_gpio_enabled(&reg2) ? "Yes" : "No");
+  printf("\n>>> reg2->adc enabled: %s", is_adc_enabled(&reg2) ? "Yes" : "No");
+  printf("\n>>> reg2->i2c enabled: %s", is_i2c_enabled(&reg2) ? "Yes" : "No");
+  printf("\n>>> reg2->spi enabled: %s", is_spi_enabled(&reg2) ? "Yes" : "No");
+#+END_SRC
+
+Now, total type size of ~ResetReg2~ should just =1 byte= (use 4 bits):
+
+#+BEGIN_SRC bash
+   >>> ResetReg2 size: 1
+
+  (D) [ Memory ] > print_memory_block - [ ResetReg2 reg2, size: 1 ]
+  (D) [ Memory ] > print_memory_block - --
+  (D) [ Memory ] > print_memory_block - 03
+  (D) [ Memory ] > print_memory_block - --
+
+  >>> reg2->gpio enabled: Yes
+  >>> reg2->adc enabled: Yes
+  >>> reg2->i2c enabled: No
+  >>> reg2->spi enabled: No⏎
+#+END_SRC
+
+
 ** 5. Timer
 
 High resolution timer utils
