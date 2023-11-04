@@ -1569,7 +1569,9 @@ What you should know about a =Pointer= is:
   uint16_t data = 0xAA;
 
   //
+  // `&` means `address of` (get back the address of xxx)
   // Suppose that the `data` variable address is `0x100`
+  //
   // `ptr`'s value is `0x100`, just an unsigned integer and it points to
   // the memory location where the address is `0x100`
   //
@@ -1587,6 +1589,12 @@ Here is the memory after the above code runs:
 So, let's deference the ~ptr~ and set it's value to ~0xBB~:
 
 #+BEGIN_SRC c
+  //
+  // `*` means get back the memory/value from the given address
+  // `*ptr` => `*0x100` get back the memory value from `0x100`
+  // `*ptr =` => `*0x100 =` get back the memory from `0x100` and assign new value (overwrite) to that memory chunk
+  // `*ptr = 0xBB` => `*0x100 = 0xBB` get back the memory from `0x100` and assign `0xBB` to that memory chunk
+  //
   *ptr = 0xBB; // -> Set `0x00BB` (uint16_t is 2 bytes) to the memory chunk whose address is `0x100`
 #+END_SRC
 
