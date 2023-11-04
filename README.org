@@ -1551,7 +1551,96 @@ That's why passing any stack memory pointer to outside world is super dangerous 
 Also, have a look at the =./c_demo_struct_stack_frame_analysis.txt=, as it shows the function call stack details.
 
 
-*** A-5. The relationship between =Pointer= and =Array=
+
+*** A-5.1 What is =pointer= and how it works
+
+What you should know about a =Pointer= is:
+
+- It's just an unsigned integer, that's why you can convert an unsigned integer as a pointer.
+
+- That said the value of a pointer variable is an unsigned interger.
+
+- The meaning of pointer value (unsigned integer) is the memory address/location
+
+- The meaning of pointer value (unsigned integer) is the memory address/location, that's why you need to =dereference= to get back the data the pointer points to (as pointer just store the data memory address/location, NOT the data itself)!!!
+
+
+#+BEGIN_SRC c
+  uint16_t data = 0xAA;
+
+  //
+  // Suppose that the `data` variable address is `0x100`
+  // `ptr`'s value is `0x100`, just an unsigned integer and it points to
+  // the memory location where the address is `0x100`
+  //
+  uint16_t *ptr = &data;
+#+END_SRC
+
+Here is the memory after the above code runs:
+
+  -----> 0x100  (data) | 0xAA  | 0x00 |
+  |      0x103  (ptr)  | 0x100 | 0x00 |
+  |               |
+  |   points to   |
+  -----------------
+
+So, let's deference the ~ptr~ and set it's value to ~0xBB~:
+
+#+BEGIN_SRC c
+  *ptr = 0xBB; // -> Set `0x00BB` (uint16_t is 2 bytes) to the memory chunk whose address is `0x100`
+#+END_SRC
+
+After the code above runs, memory looks like this:
+
+  -----> 0x100  (data) | ~0xBB~  | 0x00 |
+  |      0x103  (ptr)  | 0x100 | 0x00 |
+  |               |
+  |   points to   |
+  -----------------
+
+
+*** A-5.2 =Pointer= arithmetic
+
+What ~ptr + x~ means:
+
+It's saying: add/move the pointer address to =X unit of pointed type= from the current memory location (address) that the pointer points to.
+
+So, here is the pseudo formula: ~ptr + x~ => ~ptr + x * sizeof(POINTER_TYPE)~
+
+Here is the example:
+
+#+BEGIN_SRC c
+  //
+  // Force to convert the integer decimal value `100` as the pointer address
+  //
+  int *int_ptr = (int *)100;
+  printf("\n>>> int_ptr addr: %llu", (uint64_t)((void *)int_ptr));
+
+  // -> int_ptr += 1 * sizeof(int) // + 4 or say move 4 bytes
+  int_ptr++; 
+  printf("\n>>> int_ptr addr: %llu", (uint64_t)((void *)int_ptr));
+
+  // -> int_ptr += 1 * sizeof(int) // + 4 or say move 4 bytes
+  int_ptr += 1;
+  printf("\n>>> int_ptr addr: %llu", (uint64_t)((void *)int_ptr));
+
+  // -> int_ptr += 2 * sizeof(int) // + 8 or say move 8 bytes
+  int_ptr += 2;
+  printf("\n>>> int_ptr addr: %llu", (uint64_t)((void *)int_ptr));
+#+END_SRC
+
+And here is the result:
+
+#+BEGIN_SRC bash
+  >>> int_ptr addr: 100
+  >>> int_ptr addr: 104
+  >>> int_ptr addr: 108
+  >>> int_ptr addr: 116
+#+END_SRC
+
+
+*** A-5.3 The relationship between =Pointer= and =Array=
+
 
 Actually, =pointer= is just like an =array= in the other form, the =C= design assumes that you use a =pointer= like an =array=. That's why the following code works:
 
@@ -1587,7 +1676,9 @@ You can found a fews things from the above code:
 
     It's saying: add/move the pointer address to =X unit of pointed type= from the current position (start from =0x820d9d686= on above print out sample).
 
-    That's why ~loop_ptr + 1~ actually moved 2 bytes (=0x820d9d686 + 2=), as the pointer points to type ~u16~!!!
+    So, here is the pseudo formula: ~ptr + x~ => ~ptr + x * sizeof(POINTER_TYPE)~
+
+    That's why ~loop_ptr + 1~ -> ~loop_ptr + 1 * sizeof(u16)~, and it actually moved 2 bytes (=0x820d9d686 + 2=), as the pointer points to type ~u16~!!!
 
 
 For the ~temp_arr~ variable, actually the compile treats it as =a pointer that points to the first element of the allocated array=:
