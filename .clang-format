@@ -20,6 +20,13 @@
 #
 # `GNU` A style complying with the GNU coding standards
 BasedOnStyle: Google
+ColumnLimit: 80
 IndentWidth: 4
 PPIndentWidth: 4
 IndentPPDirectives: BeforeHash
+AlignAfterOpenBracket: Align
+# AlignAfterOpenBracket: AlwaysBreak
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: Inline
+BinPackArguments: false
+BinPackParameters: false
