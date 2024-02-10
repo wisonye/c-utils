@@ -1,5 +1,12 @@
 #!/bin/sh
 
+OS_TYPE=`uname -s`
+echo ">>> OS_TYPE: ${OS_TYPE}"
+
+INSTALL_PREFIX="/home/${USER}/my-installed"
+
+echo ">>> INSTALL_PREFIX: ${INSTALL_PREFIX}"
+
 #
 # Remove everything exists
 #
@@ -11,6 +18,7 @@
 LLVM_CLANG=$(which cc)
 cmake -S ./cmake -B ./temp_build/build_memory_leak_checking \
     -DUSE_ADDRESS_SANITIZER_FOR_FREE_BSD=ON \
+    -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
     -DCMAKE_C_COMPILER="${LLVM_CLANG}"
 
 #
