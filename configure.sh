@@ -8,6 +8,11 @@ INSTALL_PREFIX="/home/${USER}/my-installed"
 if [ "${OS_TYPE}" = "Darwin" ]; then
     INSTALL_PREFIX="/Users/${USER}/my-installed"
 fi
+
+if [ "${OS_TYPE}" = "FreeBSD" ]; then
+    INSTALL_PREFIX="/home/${USER}/my-installed"
+fi
+
 echo ">>> INSTALL_PREFIX: ${INSTALL_PREFIX}"
 
 #
