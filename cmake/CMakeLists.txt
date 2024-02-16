@@ -45,6 +45,8 @@ add_executable("${PROJECT_NAME}"
 # target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG ENABLE_PRINT_STRING_MEMORY)
 target_compile_definitions("${PROJECT_NAME}" PRIVATE ENABLE_DEBUG_LOG)
 
+target_link_libraries("${PROJECT_NAME}" m)
+
 # -----------------------------------------------------------------------------
 # Compile the particular source code as a static/dynamic library
 #
