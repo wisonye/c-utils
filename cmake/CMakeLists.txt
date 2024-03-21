@@ -8,7 +8,8 @@ project("c-utils-demo")
 #
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_C_FLAGS "-pedantic-errors -Wall -Werror -Wextra -std=gnu17")
+# set(CMAKE_C_FLAGS "-pedantic-errors -Wall -Werror -Wextra -std=gnu17")
+set(CMAKE_C_FLAGS "-pedantic -ansi -Wall -Werror -Wextra -std=gnu17")
 
 
 #

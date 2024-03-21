@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <time.h>
 
 //
 // Linux
@@ -30,6 +29,19 @@
 //
 #elif defined(__FreeBSD__)
     #include <sys/_timespec.h>
+    #include <time.h>
+
+    #ifdef CLOCK_MONOTONIC
+        #define CLOCKID CLOCK_MONOTONIC
+    #else
+        #define CLOCKID CLOCK_REALTIME
+    #endif
+
+//
+// OpenBSD
+//
+#elif defined(__OpenBSD__)
+    #include <sys/_time.h>
     #include <time.h>
 
     #ifdef CLOCK_MONOTONIC
@@ -109,12 +121,12 @@ long double Timer_get_current_time(TimeUnit time_unit) {
     #ifdef ENABLE_DEBUG_LOG
         DEBUG_LOG(Timer, Timer_get_current_time, "OpenBSD Initialization", "");
     #endif
-        clock_getres(CLOCK_MONOTONIC, &bsd_rate);
+        clock_getres(CLOCKID, &bsd_rate);
         is_init = 1;
     }
 
     struct timespec spec;
-    clock_gettime(CLOCK_MONOTONIC, &spec);
+    clock_gettime(CLOCKID, &spec);
     now = spec.tv_sec * 1.0e9 + spec.tv_nsec;
 #endif
 
