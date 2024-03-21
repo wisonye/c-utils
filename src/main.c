@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+
 
 #include "utils/bits.h"
 #include "utils/collections/single_link_list.h"
@@ -633,8 +635,9 @@ void test_vector_element_destructor(void) {
 //
 //
 void test_timer(void) {
-    long double start_time = Timer_get_current_time(TU_NANOSECONDS);
-    long double end_time = Timer_get_current_time(TU_NANOSECONDS);
+    long double start_time = Timer_get_current_time(TU_SECONDS);
+    sleep(1);
+    long double end_time = Timer_get_current_time(TU_SECONDS);
     long double elapsed_time = end_time - start_time;
 
     DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);

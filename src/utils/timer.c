@@ -2,40 +2,41 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <time.h>
 
 //
 // Linux
 //
 #if defined(__linux)
-#define HAVE_POSIX_TIMER
-#include <time.h>
+    #define HAVE_POSIX_TIMER
+    #include <time.h>
 
-#ifdef CLOCK_MONOTONIC
-#define CLOCKID CLOCK_MONOTONIC
-#else
-#define CLOCKID CLOCK_REALTIME
-#endif
+    #ifdef CLOCK_MONOTONIC
+        #define CLOCKID CLOCK_MONOTONIC
+    #else
+        #define CLOCKID CLOCK_REALTIME
+    #endif
 
 //
 // Apple/Darwin
 //
 #elif defined(__APPLE__)
 
-#define HAVE_MACH_TIMER
-#include <mach/mach_time.h>
+    #define HAVE_MACH_TIMER
+    #include <mach/mach_time.h>
 
 //
 // FreeBSD
 //
 #elif defined(__FreeBSD__)
-#include <sys/_timespec.h>
-#include <time.h>
+    #include <sys/_timespec.h>
+    #include <time.h>
 
-#ifdef CLOCK_MONOTONIC
-#define CLOCKID CLOCK_MONOTONIC
-#else
-#define CLOCKID CLOCK_REALTIME
-#endif
+    #ifdef CLOCK_MONOTONIC
+        #define CLOCKID CLOCK_MONOTONIC
+    #else
+        #define CLOCKID CLOCK_REALTIME
+    #endif
 
 #endif
 
@@ -44,7 +45,7 @@
 //
 #ifdef ENABLE_DEBUG_LOG
 
-#include "log.h"
+    #include "log.h"
 
 #endif
 
@@ -63,10 +64,10 @@ long double Timer_get_current_time(TimeUnit time_unit) {
 #if defined(__APPLE__)
     static mach_timebase_info_data_t info;
     if (0 == is_init) {
-#ifdef ENABLE_DEBUG_LOG
-        DEBUG_LOG(Timer, Timer_get_current_time, "Apple/Darwin Initialization",
-                  "");
-#endif
+    #ifdef ENABLE_DEBUG_LOG
+        DEBUG_LOG(
+            Timer, Timer_get_current_time, "Apple/Darwin Initialization", "");
+    #endif
         mach_timebase_info(&info);
         is_init = 1;
     }
@@ -77,9 +78,9 @@ long double Timer_get_current_time(TimeUnit time_unit) {
 #elif defined(__linux)
     static struct timespec linux_rate;
     if (0 == is_init) {
-#ifdef ENABLE_DEBUG_LOG
+    #ifdef ENABLE_DEBUG_LOG
         DEBUG_LOG(Timer, Timer_get_current_time, "Linux Initialization", "");
-#endif
+    #endif
         clock_getres(CLOCKID, &linux_rate);
         is_init = 1;
     }
@@ -91,15 +92,29 @@ long double Timer_get_current_time(TimeUnit time_unit) {
 #elif defined(__FreeBSD__)
     static struct timespec bsd_rate;
     if (0 == is_init) {
-#ifdef ENABLE_DEBUG_LOG
+    #ifdef ENABLE_DEBUG_LOG
         DEBUG_LOG(Timer, Timer_get_current_time, "FreeBSD Initialization", "");
-#endif
+    #endif
         clock_getres(CLOCKID, &bsd_rate);
         is_init = 1;
     }
 
     struct timespec spec;
     clock_gettime(CLOCKID, &spec);
+    now = spec.tv_sec * 1.0e9 + spec.tv_nsec;
+
+#elif defined(__OpenBSD__)
+    static struct timespec bsd_rate = {0};
+    if (0 == is_init) {
+    #ifdef ENABLE_DEBUG_LOG
+        DEBUG_LOG(Timer, Timer_get_current_time, "OpenBSD Initialization", "");
+    #endif
+        clock_getres(CLOCK_MONOTONIC, &bsd_rate);
+        is_init = 1;
+    }
+
+    struct timespec spec;
+    clock_gettime(CLOCK_MONOTONIC, &spec);
     now = spec.tv_sec * 1.0e9 + spec.tv_nsec;
 #endif
 
