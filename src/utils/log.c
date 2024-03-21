@@ -40,6 +40,9 @@ void print_usize(char *v_name, usize v) {
 #elif __FreeBSD__
     printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%" PRIu64, v_name,
            v);
+#elif __OpenBSD__
+    printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%zu", v_name,
+           v);
 #else
     printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%" PRIu64, v_name,
            v);
@@ -76,6 +79,9 @@ void print_long(char *v_name, long v) {
     printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%li", v_name, v);
 #elif __FreeBSD__
     printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%" PRIi64, v_name,
+           v);
+#elif __OpenBSD__
+    printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%li", v_name,
            v);
 #else
     printf("\n" LOG_COLOR_PURPLE ">>> %s: " LOG_COLOR_RESET "%" PRIi64, v_name,
@@ -150,6 +156,10 @@ void print_usize_ptr(char *v_name, usize *v) {
 #elif __FreeBSD__
     printf("\n" LOG_COLOR_PURPLE ">>> %s (ptr): " LOG_COLOR_RESET "0x%" PRIXPTR
            ", value: %" PRIu64,
+           v_name, (uintptr_t)v, *v);
+#elif __OpenBSD__
+    printf("\n" LOG_COLOR_PURPLE ">>> %s (ptr): " LOG_COLOR_RESET "0x%" PRIXPTR
+           ", value: %zu",
            v_name, (uintptr_t)v, *v);
 #else
     printf("\n" LOG_COLOR_PURPLE ">>> %s (ptr): " LOG_COLOR_RESET "0x%" PRIXPTR
