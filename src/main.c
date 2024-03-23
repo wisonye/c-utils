@@ -115,11 +115,11 @@ void test_link_list(void) {
 
     // Append a few nodes
     usize values[] = {111, 222, 333, 444, 555};
-    LL_append_value(short_int_list, sizeof(uint16), &values[0]);
-    LL_append_value(short_int_list, sizeof(uint16), &values[1]);
-    LL_append_value(short_int_list, sizeof(uint16), &values[2]);
-    LL_append_value(short_int_list, sizeof(uint16), &values[3]);
-    LL_append_value(short_int_list, sizeof(uint16), &values[4]);
+    LL_append_value(short_int_list, sizeof(u16), &values[0]);
+    LL_append_value(short_int_list, sizeof(u16), &values[1]);
+    LL_append_value(short_int_list, sizeof(u16), &values[2]);
+    LL_append_value(short_int_list, sizeof(u16), &values[3]);
+    LL_append_value(short_int_list, sizeof(u16), &values[4]);
 
     // Get back the iter and check all data
     SMART_LINKLIST_ITERATOR(iter) = LL_iter(short_int_list);
