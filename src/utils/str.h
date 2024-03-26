@@ -44,6 +44,7 @@ void auto_free_string(String *ptr);
  * ```
  */
 #define SMART_STRING(x) __attribute__((cleanup(auto_free_string))) String x
+#define defer_string(x) __attribute__((cleanup(auto_free_string))) String x
 
 /*
  * Init empty `struct Str`
