@@ -5,12 +5,12 @@
 #include <string.h>
 
 #if ENABLE_DEBUG_LOG
-#include <stdio.h>
+    #include <stdio.h>
 
-#include "log.h"
-#if ENABLE_PRINT_STRING_MEMORY
-#include "memory.h"
-#endif
+    #include "log.h"
+    #if ENABLE_PRINT_STRING_MEMORY
+        #include "memory.h"
+    #endif
 #endif
 
 //
@@ -19,7 +19,9 @@
 // to get back `sizeof(struct Str)` for some reasons, this function is the
 // anwser.
 //
-usize Str_struct_size(void) { return sizeof(struct Str); }
+usize Str_struct_size(void) {
+    return sizeof(struct Str);
+}
 
 /*
  * Init empty `struct Str`
@@ -27,12 +29,15 @@ usize Str_struct_size(void) { return sizeof(struct Str); }
 void Str_init(String self) {
     *self = (struct Str){
         ._capacity = 0,
-        ._len = 0,
-        ._buffer = NULL,
+        ._len      = 0,
+        ._buffer   = NULL,
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, init, "self ptr: %p, capacity: %lu", self,
+    DEBUG_LOG(String,
+              init,
+              "self ptr: %p, capacity: %lu",
+              self,
               self->_capacity);
 #endif
 }
@@ -43,14 +48,17 @@ void Str_init(String self) {
 void Str_init_with_capacity(String self, usize capacity) {
     *self = (struct Str){
         ._capacity = capacity,
-        ._len = 0,
-        ._buffer = calloc(capacity, 1),
+        ._len      = 0,
+        ._buffer   = calloc(capacity, 1),
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, init_with_capacity,
-              "self ptr: %p, capacity: %lu, malloc ptr: %p", self,
-              self->_capacity, self->_buffer);
+    DEBUG_LOG(String,
+              init_with_capacity,
+              "self ptr: %p, capacity: %lu, malloc ptr: %p",
+              self,
+              self->_capacity,
+              self->_buffer);
 #endif
 }
 
@@ -62,12 +70,15 @@ String Str_from_empty(void) {
 
     *string = (struct Str){
         ._capacity = 0,
-        ._len = 0,
-        ._buffer = NULL,
+        ._len      = 0,
+        ._buffer   = NULL,
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, from_empty, "self ptr: %p, capacity: %lu", string,
+    DEBUG_LOG(String,
+              from_empty,
+              "self ptr: %p, capacity: %lu",
+              string,
               string->_capacity);
 #endif
 
@@ -82,14 +93,17 @@ String Str_from_empty_with_capacity(usize capacity) {
 
     *string = (struct Str){
         ._capacity = capacity,
-        ._len = 0,
-        ._buffer = calloc(capacity, 1),
+        ._len      = 0,
+        ._buffer   = calloc(capacity, 1),
     };
 
 #if ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, from_empty_with_capacity,
-              "self ptr: %p, capacity: %lu, malloc ptr: %p", string,
-              string->_capacity, string->_buffer);
+    DEBUG_LOG(String,
+              from_empty_with_capacity,
+              "self ptr: %p, capacity: %lu, malloc ptr: %p",
+              string,
+              string->_capacity,
+              string->_buffer);
 #endif
 
     return string;
@@ -105,16 +119,20 @@ String Str_from_arr(const char arr[]) {
 
     *string = (struct Str){
         ._capacity = temp_len > 0 ? temp_len + 1 : 0,
-        ._len = temp_len > 0 ? temp_len : 0,
-        ._buffer = NULL,
+        ._len      = temp_len > 0 ? temp_len : 0,
+        ._buffer   = NULL,
     };
 
     if (temp_len > 0) {
         string->_buffer = malloc(string->_capacity);
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, from_arr,
+        DEBUG_LOG(String,
+                  from_arr,
                   "self ptr: %p, capacity: %lu, malloc ptr: %p, from_arr: %s",
-                  string, string->_capacity, string->_buffer, arr);
+                  string,
+                  string->_capacity,
+                  string->_buffer,
+                  arr);
 #endif
         memcpy(string->_buffer, arr, temp_len);
         string->_buffer[temp_len] = '\0';
@@ -133,8 +151,8 @@ String Str_from_str(const char *str) {
 
     *string = (struct Str){
         ._capacity = temp_len > 0 ? temp_len + 1 : 0,
-        ._len = temp_len > 0 ? temp_len : 0,
-        ._buffer = NULL,
+        ._len      = temp_len > 0 ? temp_len : 0,
+        ._buffer   = NULL,
     };
 
     if (temp_len > 0) {
@@ -143,9 +161,13 @@ String Str_from_str(const char *str) {
         string->_buffer[temp_len] = '\0';
 
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, from_str,
+        DEBUG_LOG(String,
+                  from_str,
                   "self ptr: %p, capacity: %lu, malloc ptr: %p, from_str: %s",
-                  string, string->_capacity, string->_buffer, str);
+                  string,
+                  string->_capacity,
+                  string->_buffer,
+                  str);
 #endif
     }
 
@@ -157,10 +179,10 @@ String Str_from_str(const char *str) {
  */
 String Str_from_str_with_pos(const char *str, int start_pos, int count) {
     int temp_str_len = (str != NULL) ? strlen(str) : 0;
-    usize temp_len = ((start_pos >= 0) && (count >= 1) &&
+    usize temp_len   = ((start_pos >= 0) && (count >= 1) &&
                       (start_pos + count - 1 <= temp_str_len - 1))
-                         ? count
-                         : 0;
+                           ? count
+                           : 0;
     /* printf("\n>>> temp_str_len: %lu\n", temp_str_len); */
     /* printf("\n>>> temp_len: %lu\n", temp_len); */
 
@@ -168,8 +190,8 @@ String Str_from_str_with_pos(const char *str, int start_pos, int count) {
 
     *string = (struct Str){
         ._capacity = temp_len > 0 ? temp_len + 1 : 0,
-        ._len = temp_len > 0 ? temp_len : 0,
-        ._buffer = NULL,
+        ._len      = temp_len > 0 ? temp_len : 0,
+        ._buffer   = NULL,
     };
 
     if (temp_len > 0) {
@@ -178,11 +200,16 @@ String Str_from_str_with_pos(const char *str, int start_pos, int count) {
         string->_buffer[temp_len] = '\0';
 
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, from_str,
+        DEBUG_LOG(String,
+                  from_str,
                   "self ptr: %p, capacity: %lu, malloc ptr: %p, _buffer: %s, "
                   "start_pos: %i, count: %i",
-                  string, string->_capacity, string->_buffer, string->_buffer,
-                  start_pos, count);
+                  string,
+                  string->_capacity,
+                  string->_buffer,
+                  string->_buffer,
+                  start_pos,
+                  count);
 #endif
     }
 
@@ -198,27 +225,34 @@ String Str_clone_from(const String other) {
 
     *string = (struct Str){
         ._capacity = 0,
-        ._len = 0,
-        ._buffer = NULL,
+        ._len      = 0,
+        ._buffer   = NULL,
     };
 
     if (other != NULL && other->_len > 0 && other->_buffer != NULL) {
-        string->_len = other->_len;
+        string->_len      = other->_len;
         string->_capacity = other->_len + 1;
-        string->_buffer = malloc(string->_capacity);
+        string->_buffer   = malloc(string->_capacity);
         memcpy(string->_buffer, other->_buffer, other->_len);
         string->_buffer[string->_len] = '\0';
 
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, clone_from,
+        DEBUG_LOG(String,
+                  clone_from,
                   "self ptr: %p, capacity: %lu, malloc ptr: %p, other: %s",
-                  string, string->_capacity, string->_buffer,
+                  string,
+                  string->_capacity,
+                  string->_buffer,
                   Str_as_str(other));
 #endif
     } else {
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, clone_from, "self ptr: %p, capacity: %lu, other: %s",
-                  string, string->_capacity, Str_as_str(other));
+        DEBUG_LOG(String,
+                  clone_from,
+                  "self ptr: %p, capacity: %lu, other: %s",
+                  string,
+                  string->_capacity,
+                  Str_as_str(other));
 #endif
     }
 
@@ -234,12 +268,12 @@ String Str_move_from(String other) {
 
     *string = (struct Str){
         ._capacity = 0,
-        ._len = 0,
-        ._buffer = NULL,
+        ._len      = 0,
+        ._buffer   = NULL,
     };
 
     if (other != NULL && other->_len > 0 && other->_buffer != NULL) {
-        string->_len = other->_len;
+        string->_len      = other->_len;
         string->_capacity = other->_len + 1;
 
         //
@@ -249,15 +283,22 @@ String Str_move_from(String other) {
         string->_buffer = other->_buffer;
 
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, move_from,
+        DEBUG_LOG(String,
+                  move_from,
                   "self ptr: %p, capacity: %lu, malloc ptr: %p, other: %s",
-                  string, string->_capacity, string->_buffer,
+                  string,
+                  string->_capacity,
+                  string->_buffer,
                   Str_as_str(other));
 #endif
     } else {
 #if ENABLE_DEBUG_LOG
-        DEBUG_LOG(String, move_from, "self ptr: %p, capacity: %lu, other: %s",
-                  string, string->_capacity, Str_as_str(other));
+        DEBUG_LOG(String,
+                  move_from,
+                  "self ptr: %p, capacity: %lu, other: %s",
+                  string,
+                  string->_capacity,
+                  Str_as_str(other));
 #endif
     }
 
@@ -266,9 +307,9 @@ String Str_move_from(String other) {
     // becomes the only one pointer to the previous heap-allocated memory, it
     // becomes the owner of that chunk of memory.
     //
-    other->_len = 0;
+    other->_len      = 0;
     other->_capacity = 0;
-    other->_buffer = NULL;
+    other->_buffer   = NULL;
 
     return string;
 }
@@ -298,7 +339,7 @@ void Str_push_str(String self, const char *str_to_push) {
     }
 
     usize new_len_with_null_terminated_char = self->_len + str_to_push_len + 1;
-    bool need_realloc = false;
+    bool need_realloc                       = false;
 
 #ifdef ENABLE_PRINT_STRING_MEMORY
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer, self->_capacity);
@@ -315,16 +356,19 @@ void Str_push_str(String self, const char *str_to_push) {
 
 #ifdef ENABLE_DEBUG_LOG
         usize old_capacity = self->_capacity;
-        DEBUG_LOG(String, Str_push_str,
+        DEBUG_LOG(String,
+                  Str_push_str,
                   "Realloc needed, current capacity: %lu, new capacity: %lu, "
                   "self->_buffer: %p",
-                  old_capacity, new_len_with_null_terminated_char,
+                  old_capacity,
+                  new_len_with_null_terminated_char,
                   self->_buffer);
 #endif
     }
 
 #ifdef ENABLE_PRINT_STRING_MEMORY
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *",
+                                      self->_buffer,
                                       new_len_with_null_terminated_char);
 #endif
 
@@ -344,7 +388,8 @@ void Str_push_str(String self, const char *str_to_push) {
     self->_buffer[new_len_with_null_terminated_char - 1] = '\0';
 
 #ifdef ENABLE_PRINT_STRING_MEMORY
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *",
+                                      self->_buffer,
                                       new_len_with_null_terminated_char);
 #endif
 
@@ -380,7 +425,7 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
     }
 
     usize new_len_with_null_terminated_char = self->_len + insert_len + 1;
-    bool need_realloc = false;
+    bool need_realloc                       = false;
 
     //
     // ensure the `_buffer` has enough space to hold all characters;
@@ -393,16 +438,19 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
 
 #ifdef ENABLE_DEBUG_LOG
         usize old_capacity = self->_capacity;
-        DEBUG_LOG(String, Str_push_str,
+        DEBUG_LOG(String,
+                  Str_push_str,
                   "Realloc needed, current capacity: %lu, new capacity: %lu, "
                   "self->_buffer: %p",
-                  old_capacity, new_len_with_null_terminated_char,
+                  old_capacity,
+                  new_len_with_null_terminated_char,
                   self->_buffer);
 #endif
     }
 
 #ifdef ENABLE_PRINT_STRING_MEMORY
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *",
+                                      self->_buffer,
                                       new_len_with_null_terminated_char);
 #endif
 
@@ -422,7 +470,8 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
     self->_buffer[new_len_with_null_terminated_char - 1] = '\0';
 
 #ifdef ENABLE_PRINT_STRING_MEMORY
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *", self->_buffer,
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE("char *",
+                                      self->_buffer,
                                       new_len_with_null_terminated_char);
 #endif
 
@@ -442,7 +491,9 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
 /*
  * Get back string length
  */
-usize Str_length(const String self) { return (self != NULL) ? self->_len : 0; }
+usize Str_length(const String self) {
+    return (self != NULL) ? self->_len : 0;
+}
 
 /*
  * Get back capacity
@@ -461,7 +512,8 @@ const char *Str_as_str(const String self) {
 /*
  * Find implementation (not public)
  */
-long Str_find_substring(const String self, const char *str_to_find,
+long Str_find_substring(const String self,
+                        const char *str_to_find,
                         bool case_sensitive) {
     if (self == NULL || self->_buffer == NULL || str_to_find == NULL ||
         strlen(str_to_find) <= 0) {
@@ -483,7 +535,10 @@ long Str_find_substring(const String self, const char *str_to_find,
     printf(
         "\n>>> Str_find_substring - temp_ptr: %p, buffer_ptr: %p, index: %li, "
         "temp_ptr == 0: %d",
-        temp_ptr, self->_buffer, (temp_ptr - self->_buffer), temp_ptr == 0x00);
+        temp_ptr,
+        self->_buffer,
+        (temp_ptr - self->_buffer),
+        temp_ptr == 0x00);
 #endif
     return (temp_ptr == NULL || temp_ptr == 0x0) ? -1
                                                  : temp_ptr - self->_buffer;
@@ -515,7 +570,7 @@ bool Str_contains(const String self, char *str_to_check) {
  */
 void Str_reset_to_empty(String self) {
     if (self != NULL && self->_buffer != NULL) {
-        self->_len = 0;
+        self->_len      = 0;
         self->_capacity = 0;
         if (self->_buffer != NULL) {
             free(self->_buffer);
@@ -533,9 +588,9 @@ void Str_reset_to_empty(String self) {
  */
 void Str_reset_to_empty_without_freeing_buffer(String self) {
     if (self != NULL) {
-        self->_len = 0;
+        self->_len      = 0;
         self->_capacity = 0;
-        self->_buffer = NULL;
+        self->_buffer   = NULL;
     }
 }
 
@@ -547,11 +602,11 @@ void Str_free(String self) {
 
     if (self->_buffer != NULL) {
         void *ptr_to_free = self->_buffer;
-        self->_buffer = NULL;
+        self->_buffer     = NULL;
         free(ptr_to_free);
     }
 
-    self->_len = 0;
+    self->_len      = 0;
     self->_capacity = 0;
     free(self);
 }
@@ -565,11 +620,11 @@ void Str_free_buffer_only(String self) {
 
     if (self->_buffer != NULL) {
         void *ptr_to_free = self->_buffer;
-        self->_buffer = NULL;
+        self->_buffer     = NULL;
         free(ptr_to_free);
     }
 
-    self->_len = 0;
+    self->_len      = 0;
     self->_capacity = 0;
 }
 
@@ -578,8 +633,10 @@ void Str_free_buffer_only(String self) {
  */
 void auto_free_string(String *ptr) {
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(String, auto_free_string,
-              "out of scope with string ptr: %p, as_str: %s", *ptr,
+    DEBUG_LOG(String,
+              auto_free_string,
+              "out of scope with string ptr: %p, as_str: %s",
+              *ptr,
               Str_as_str(*ptr));
 #endif
     Str_free(*ptr);

@@ -19,13 +19,13 @@ TEST(SingleLinkList, CreateEmptyList) {
 //
 LinkList create_integer_list() {
     size_t stack_value = 9999;
-    LinkList list = LL_from_value(sizeof(size_t), &stack_value);
+    LinkList list      = LL_from_value(sizeof(size_t), &stack_value);
     return list;
 }
 
 TEST(SingleLinkList, IntegerListWithOneNode) {
     SMART_LINKLIST(int_list) = create_integer_list();
-    LinkListNode head = LL_get_head(int_list);
+    LinkListNode head        = LL_get_head(int_list);
     ASSERT_EQ(LL_length(int_list), 1);
     ASSERT_NE(head, nullptr);
     ASSERT_NE(LL_get_tail(int_list), nullptr);
@@ -38,14 +38,14 @@ TEST(SingleLinkList, IntegerListWithOneNode) {
 //
 LinkList create_double_list() {
     double stack_value = 8888.888;
-    LinkList list = LL_from_value(sizeof(double), &stack_value);
+    LinkList list      = LL_from_value(sizeof(double), &stack_value);
 
     return list;
 }
 
 TEST(SingleLinkList, DoubleListWithOneNode) {
     SMART_LINKLIST(double_list) = create_double_list();
-    LinkListNode head = LL_get_head(double_list);
+    LinkListNode head           = LL_get_head(double_list);
     ASSERT_EQ(LL_length(double_list), 1);
     ASSERT_NE(head, nullptr);
     ASSERT_NE(LL_get_tail(double_list), nullptr);

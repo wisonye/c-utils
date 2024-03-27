@@ -16,7 +16,10 @@ void print_memory_block(char *type_name, usize type_size, void *value) {
     }
     hr[hex_len_in_char] = '\0';
 
-    DEBUG_LOG(Memory, print_memory_block, "[ %s, size: %lu ]", type_name,
+    DEBUG_LOG(Memory,
+              print_memory_block,
+              "[ %s, size: %lu ]",
+              type_name,
               type_size);
     DEBUG_LOG(Memory, print_memory_block, "%s", hr);
 
@@ -24,7 +27,7 @@ void print_memory_block(char *type_name, usize type_size, void *value) {
         DEBUG_LOG(Memory, print_memory_block, "value is NULL", "");
         DEBUG_LOG(Memory, print_memory_block, "%s\n", hr);
     } else {
-        u8 memory_byte = 0x00;
+        u8 memory_byte         = 0x00;
         usize memory_bytes_len = hex_len_in_char + 1;
         char memory_bytes[memory_bytes_len];
         memset(memory_bytes, 0, memory_bytes_len);

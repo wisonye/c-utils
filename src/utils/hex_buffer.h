@@ -39,7 +39,8 @@ usize Hex_length(HexBuffer self);
  * Return 0 when something wrong
  * Return -1 when `out_buffer_size` is not big enough to hold the hex string.
  */
-int Hex_to_string(const HexBuffer self, char *out_buffer,
+int Hex_to_string(const HexBuffer self,
+                  char *out_buffer,
                   usize out_buffer_size);
 
 /*

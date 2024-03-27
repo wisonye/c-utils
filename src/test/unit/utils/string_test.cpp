@@ -75,7 +75,7 @@ TEST(String, EmptyStringWithCapacity) {
 }
 
 TEST(String, StringFromArray) {
-    char arr[] = "Unit Test:)";
+    char arr[]        = "Unit Test:)";
     SMART_STRING(str) = Str_from_arr(arr);
     ASSERT_EQ(Str_length(str), strlen(arr));
     ASSERT_EQ(Str_capacity(str), Str_length(str) + 1);
@@ -83,7 +83,7 @@ TEST(String, StringFromArray) {
 }
 
 TEST(String, StringFromStrWithPosAndCount) {
-    const char temp_str[] = "ABCD";
+    const char temp_str[]  = "ABCD";
     SMART_STRING(from_str) = Str_from_str_with_pos(temp_str, 0, 4);
     ASSERT_EQ(Str_length(from_str), strlen(temp_str));
     ASSERT_EQ(Str_capacity(from_str), Str_length(from_str) + 1);
@@ -106,7 +106,7 @@ TEST(String, StringFromStrWithPosAndCount) {
 }
 
 TEST(String, StringClone) {
-    char arr[] = "Unit Test:)";
+    char arr[]        = "Unit Test:)";
     SMART_STRING(str) = Str_from_arr(arr);
     ASSERT_EQ(Str_length(str), strlen(arr));
     ASSERT_EQ(Str_capacity(str), Str_length(str) + 1);
@@ -117,7 +117,7 @@ TEST(String, StringClone) {
     ASSERT_EQ(Str_capacity(clone_1), Str_length(clone_1) + 1);
     ASSERT_EQ(strcmp(Str_as_str(clone_1), arr), 0);
 
-    SMART_STRING(empty_str) = Str_from_str("");
+    SMART_STRING(empty_str)        = Str_from_str("");
     SMART_STRING(clone_from_empty) = Str_clone_from(empty_str);
     ASSERT_EQ(Str_length(clone_from_empty), 0);
     ASSERT_EQ(Str_capacity(clone_from_empty), 0);
@@ -168,10 +168,10 @@ TEST(String, ResetToEmptyWithoutFreeingBuffer) {
 }
 
 TEST(String, Push) {
-    SMART_STRING(empty_str) = Str_from_empty();
+    SMART_STRING(empty_str)      = Str_from_empty();
     SMART_STRING(init_empty_str) = Str_from_empty();
-    SMART_STRING(original_str) = Str_from_str("Wison Ye:)");
-    SMART_STRING(other_str) = Str_from_str("Other string.");
+    SMART_STRING(original_str)   = Str_from_str("Wison Ye:)");
+    SMART_STRING(other_str)      = Str_from_str("Other string.");
 
     Str_push_str(init_empty_str, Str_as_str(original_str));
     ASSERT_EQ(Str_length(init_empty_str), Str_length(original_str));
@@ -196,9 +196,9 @@ TEST(String, Push) {
 }
 
 TEST(String, InsertAtBegin) {
-    SMART_STRING(empty_str) = Str_from_empty();
+    SMART_STRING(empty_str)      = Str_from_empty();
     SMART_STRING(init_empty_str) = Str_from_empty_with_capacity(14);
-    SMART_STRING(other_str) = Str_from_str("12345");
+    SMART_STRING(other_str)      = Str_from_str("12345");
 
     ASSERT_EQ(Str_capacity(empty_str), 0);
     ASSERT_EQ(Str_capacity(init_empty_str), 14);
@@ -213,7 +213,7 @@ TEST(String, InsertAtBegin) {
 }
 
 TEST(String, MoveSemantic) {
-    SMART_STRING(s1) = Str_from_str("123456");
+    SMART_STRING(s1)            = Str_from_str("123456");
     SMART_STRING(clone_from_s1) = Str_clone_from(s1);
     ASSERT_EQ(Str_length(clone_from_s1), Str_length(s1));
     ASSERT_EQ(Str_capacity(clone_from_s1), Str_length(clone_from_s1) + 1);

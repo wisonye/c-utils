@@ -64,7 +64,7 @@ void auto_free_linklist(LinkList *ptr);
  * amount: 0, total free node data amount: 0
  * ```
  */
-#define SMART_LINKLIST(x) \
+#define SMART_LINKLIST(x)                                                      \
     __attribute__((cleanup(auto_free_linklist))) LinkList x
 
 /*
@@ -163,7 +163,7 @@ void auto_free_linklist_iter(LLIterator **ptr);
  * //
  * ```
  */
-#define SMART_LINKLIST_ITERATOR(x) \
+#define SMART_LINKLIST_ITERATOR(x)                                             \
     __attribute__((cleanup(auto_free_linklist_iter))) LLIterator *x
 
 /*

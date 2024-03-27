@@ -27,8 +27,8 @@ TEST(Vector, EmptyVectorWithCapiticy) {
     // `capacity` should NOT change and no `realloc` will be called before
     // pushing the 11th elements
     //
-    u16 short_arr[] = {5000, 5001, 5002, 5003, 5004, 5005,
-                       5006, 5007, 5008, 5009, 6000};
+    u16 short_arr[] =
+        {5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5008, 5009, 6000};
     Vec_push(vec, &short_arr[0]);
     Vec_push(vec, &short_arr[1]);
     Vec_push(vec, &short_arr[2]);
@@ -122,10 +122,11 @@ typedef struct {
 } Person;
 
 TEST(Vector, PushElement_custom_struct) {
-    Person wison = {.first_name = "Wison", .last_name = "Ye", .age = 88};
-    Person fion = {.first_name = "Fion", .last_name = "Li", .age = 99};
-    Person nobody = {
-        .first_name = "Nobody", .last_name = "Nothing", .age = 100};
+    Person wison  = {.first_name = "Wison", .last_name = "Ye", .age = 88};
+    Person fion   = {.first_name = "Fion", .last_name = "Li", .age = 99};
+    Person nobody = {.first_name = "Nobody",
+                     .last_name  = "Nothing",
+                     .age        = 100};
     SMART_VECTOR(vec, Person, NULL);
     Vec_push(vec, &wison);
     ASSERT_EQ(Vec_len(vec), 1);
@@ -152,9 +153,9 @@ TEST(Vector, PushElement_custom_struct) {
     ASSERT_EQ(temp_arr[2].age, 100);
 }
 
-double double_arr[] = {11.11, 22.22, 33.33};
+double double_arr[]    = {11.11, 22.22, 33.33};
 usize double_type_size = sizeof(double);
-usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
+usize double_arr_len   = sizeof(double_arr) / sizeof(double_arr[0]);
 
 Person person_arr[] = {
     {.first_name = "first_1", .last_name = "last_1", .age = 11},
@@ -162,7 +163,7 @@ Person person_arr[] = {
     {.first_name = "first_3", .last_name = "last_3", .age = 33},
 };
 usize person_type_size = sizeof(Person);
-usize person_arr_len = sizeof(person_arr) / sizeof(person_arr[0]);
+usize person_arr_len   = sizeof(person_arr) / sizeof(person_arr[0]);
 
 TEST(Vector, immutable_get) {
     SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len, NULL);

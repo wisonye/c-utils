@@ -6,7 +6,6 @@
 #include <string.h>
 #include <unistd.h>
 
-
 #include "utils/bits.h"
 #include "utils/collections/single_link_list.h"
 #include "utils/collections/vector.h"
@@ -25,7 +24,7 @@
 //
 LinkList create_integer_list_on_heap(void) {
     usize stack_value = 9999;
-    LinkList list = LL_from_value(sizeof(usize), &stack_value);
+    LinkList list     = LL_from_value(sizeof(usize), &stack_value);
     return list;
 }
 
@@ -46,14 +45,17 @@ struct LL create_integer_list_on_stack(usize init_value) {
 String create_string(const char str[]) {
     String temp_str = Str_from_arr(str);
     printf("\n>>> create_string - temp_str len: %lu, value: %s",
-           Str_length(temp_str), Str_as_str(temp_str));
+           Str_length(temp_str),
+           Str_as_str(temp_str));
 
     SMART_STRING(temp_str_2) = Str_from_str("Hey Hey Hey!");
     Str_length(temp_str_2);
     return temp_str;
 }
 
-String clone_string(const String original) { return Str_clone_from(original); }
+String clone_string(const String original) {
+    return Str_clone_from(original);
+}
 
 //
 //
@@ -75,9 +77,10 @@ void test_link_list(void) {
     struct LL stack_short_int_list;
     LL_init_empty(&stack_short_int_list);
 
-    long double end_time_2 = Timer_get_current_time(TU_MICROSECONDS);
+    long double end_time_2     = Timer_get_current_time(TU_MICROSECONDS);
     long double elapsed_time_2 = end_time_2 - start_time_2;
-    DEBUG_LOG(Main, test_link_list,
+    DEBUG_LOG(Main,
+              test_link_list,
               "Time to create 4 smart LinkList instance (stack-allocated): %Lf "
               "microseconds\n",
               elapsed_time_2);
@@ -106,9 +109,10 @@ void test_link_list(void) {
     /* SMART_LINKLIST(int_list_2) = create_integer_list_on_heap(); */
     SMART_LINKLIST(short_int_list) = LL_from_empty();
 
-    long double end_time = Timer_get_current_time(TU_MICROSECONDS);
+    long double end_time     = Timer_get_current_time(TU_MICROSECONDS);
     long double elapsed_time = end_time - start_time;
-    DEBUG_LOG(Main, test_link_list,
+    DEBUG_LOG(Main,
+              test_link_list,
               "Time to create 4 smart LinkList instance (heap-allocated): %Lf "
               "microseconds\n",
               elapsed_time);
@@ -141,9 +145,11 @@ void test_string(void) {
 
     SMART_STRING(empty_str_1) = Str_from_str(NULL);
     SMART_STRING(empty_str_2) = Str_from_str("");
-    printf("\n>> empty_str_1 len: %lu, value: %s", Str_length(empty_str_1),
+    printf("\n>> empty_str_1 len: %lu, value: %s",
+           Str_length(empty_str_1),
            Str_as_str(empty_str_1) == NULL ? "NULL" : Str_as_str(empty_str_1));
-    printf("\n>> empty_str_2 len: %lu, value: '%s'", Str_length(empty_str_2),
+    printf("\n>> empty_str_2 len: %lu, value: '%s'",
+           Str_length(empty_str_2),
            Str_as_str(empty_str_2) == NULL ? "NULL" : Str_as_str(empty_str_2));
 
     SMART_STRING(clone_from_empty_str) = Str_clone_from(empty_str_2);
@@ -153,7 +159,7 @@ void test_string(void) {
                ? "NULL"
                : Str_as_str(clone_from_empty_str));
 
-    char temp_id[] = "123456789";
+    char temp_id[]   = "123456789";
     char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
     printf("\n>>> temp_id: %s", temp_id);
     printf("\n>>> temp_id_2: %s", temp_id_2);
@@ -161,14 +167,17 @@ void test_string(void) {
     SMART_STRING(str_1) = Str_from_arr(temp_id);
     SMART_STRING(str_2) = Str_from_arr(temp_id_2);
 
-    printf("\n>> str_1 len: %lu, value: %s", Str_length(str_1),
+    printf("\n>> str_1 len: %lu, value: %s",
+           Str_length(str_1),
            Str_as_str(str_1));
-    printf("\n>> str_2 len: %lu, value: %s", Str_length(str_2),
+    printf("\n>> str_2 len: %lu, value: %s",
+           Str_length(str_2),
            Str_as_str(str_2));
 
-    char order[] = "MyOrder-ZXCVB";
+    char order[]        = "MyOrder-ZXCVB";
     SMART_STRING(str_3) = create_string(order);
-    printf("\n>> str_3 len: %lu, value: %s", Str_length(str_3),
+    printf("\n>> str_3 len: %lu, value: %s",
+           Str_length(str_3),
            Str_as_str(str_3));
 
     SMART_STRING(clone_from_order_str) = Str_clone_from(str_3);
@@ -179,19 +188,26 @@ void test_string(void) {
                : Str_as_str(clone_from_order_str));
 
     SMART_STRING(original_str) = Str_from_str("Wison Ye:)");
-    printf("\n>>> Search '' in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search '' in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, ""));
-    printf("\n>>> Search NULL in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search NULL in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, NULL));
-    printf("\n>>> Search ' ' in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search ' ' in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, " "));
-    printf("\n>>> Search 'w' in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search 'w' in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, "w"));
-    printf("\n>>> Search 'W' in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search 'W' in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, "W"));
-    printf("\n>>> Search ':)' in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search ':)' in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, ":)"));
-    printf("\n>>> Search 'a' in '%s', index: %li", Str_as_str(original_str),
+    printf("\n>>> Search 'a' in '%s', index: %li",
+           Str_as_str(original_str),
            Str_index_of(original_str, "a"));
     printf("\n>>> Search 'w' (case-sensitive) in '%s', index: %li",
            Str_as_str(original_str),
@@ -206,14 +222,15 @@ void test_string(void) {
            Str_as_str(original_str),
            Str_contains(original_str, "fi") ? "TRUE" : "FALSE");
 
-    SMART_STRING(src_str) = Str_from_str("Hey:)");
+    SMART_STRING(src_str)    = Str_from_str("Hey:)");
     SMART_STRING(cloned_str) = clone_string(src_str);
 
-    printf("\n>> cloned_str len: %lu, value: %s", Str_length(cloned_str),
+    printf("\n>> cloned_str len: %lu, value: %s",
+           Str_length(cloned_str),
            Str_as_str(cloned_str));
 
     // String push to the end
-    SMART_STRING(temp_str) = Str_from_str("Hey-->");
+    SMART_STRING(temp_str)              = Str_from_str("Hey-->");
     SMART_STRING(empty_str_before_push) = Str_from_empty();
     Str_push_str(empty_str_before_push, "");
     Str_push_str(empty_str_before_push, NULL);
@@ -266,13 +283,16 @@ void test_string(void) {
     SMART_STRING(move_from_clone_s1) = Str_move_from(clone_from_s1);
 
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, Str_struct_size());
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, move_from_clone_s1,
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String,
+                                      move_from_clone_s1,
                                       Str_struct_size());
 
     printf("\n>>> clone_from_1 - len: %lu, value: %s",
-           Str_length(clone_from_s1), Str_as_str(clone_from_s1));
+           Str_length(clone_from_s1),
+           Str_as_str(clone_from_s1));
     printf("\n>>> move_from_clone_s1 - len: %lu, value: %s",
-           Str_length(move_from_clone_s1), Str_as_str(move_from_clone_s1));
+           Str_length(move_from_clone_s1),
+           Str_as_str(move_from_clone_s1));
 }
 
 //
@@ -284,24 +304,24 @@ typedef struct Point {
 } Point;
 
 void test_log_macro(void) {
-    char *string_value = "Wison Ye";
-    char char_value = 'c';
-    u8 u8_value = 255;
-    u16 u16_value = 65535;
-    u32 u32_value = 99999;
-    u64 u64_value = 99999;
-    usize usize_value = 99999;
-    i8 i8_value = 127;
-    i16 i16_value = 65535 / 2;
-    i32 i32_value = -99999;
-    i64 i64_value = -2299999;
-    int int_value = 999999;
-    long long_value = 999999;
-    long long long_long_value = 999999;
-    float float_value = 123.123;
-    double double_value = 99999.123;
+    char *string_value            = "Wison Ye";
+    char char_value               = 'c';
+    u8 u8_value                   = 255;
+    u16 u16_value                 = 65535;
+    u32 u32_value                 = 99999;
+    u64 u64_value                 = 99999;
+    usize usize_value             = 99999;
+    i8 i8_value                   = 127;
+    i16 i16_value                 = 65535 / 2;
+    i32 i32_value                 = -99999;
+    i64 i64_value                 = -2299999;
+    int int_value                 = 999999;
+    long long_value               = 999999;
+    long long long_long_value     = 999999;
+    float float_value             = 123.123;
+    double double_value           = 99999.123;
     long double long_double_value = 99999.123;
-    bool bool_value = true;
+    bool bool_value               = true;
 
     printf("\n>>> char_value type: %s", TYPE_NAME(char_value));
     printf("\n>>> u8_value type: %s", TYPE_NAME(u8_value));
@@ -340,19 +360,19 @@ void test_log_macro(void) {
     LOG_VAR(bool_value);
     LOG_VAR(string_value);
 
-    void *void_ptr = &string_value;
-    bool *bool_ptr = &bool_value;
-    u8 *u8_ptr = &u8_value;
-    u16 *u16_ptr = &u16_value;
-    u32 *u32_ptr = &u32_value;
-    u64 *u64_ptr = &u64_value;
-    usize *usize_ptr = &usize_value;
-    i8 *i8_ptr = &i8_value;
-    i16 *i16_ptr = &i16_value;
-    i32 *i32_ptr = &i32_value;
-    i64 *i64_ptr = &i64_value;
-    float *float_ptr = &float_value;
-    double *double_ptr = &double_value;
+    void *void_ptr               = &string_value;
+    bool *bool_ptr               = &bool_value;
+    u8 *u8_ptr                   = &u8_value;
+    u16 *u16_ptr                 = &u16_value;
+    u32 *u32_ptr                 = &u32_value;
+    u64 *u64_ptr                 = &u64_value;
+    usize *usize_ptr             = &usize_value;
+    i8 *i8_ptr                   = &i8_value;
+    i16 *i16_ptr                 = &i16_value;
+    i32 *i32_ptr                 = &i32_value;
+    i64 *i64_ptr                 = &i64_value;
+    float *float_ptr             = &float_value;
+    double *double_ptr           = &double_value;
     long double *long_double_ptr = &long_double_value;
 
     printf("\n>>> void_ptr type: %s", TYPE_NAME(void_ptr));
@@ -385,7 +405,7 @@ void test_log_macro(void) {
     LOG_VAR(long_double_ptr);
 
     char my_string[] = "My String:)";
-    u8 my_u8_arr[] = {0x01, 0x02, 0x03};
+    u8 my_u8_arr[]   = {0x01, 0x02, 0x03};
     printf("\n>>> my_string type: %s", TYPE_NAME(my_string));
     printf("\n>>> my_u8_arr type: %s", TYPE_NAME(my_u8_arr));
 
@@ -397,7 +417,9 @@ void test_log_macro(void) {
     // LOG_VAR(point);
 }
 
-int add(int v1, int v2) { return v1 + v2; }
+int add(int v1, int v2) {
+    return v1 + v2;
+}
 
 void unimplemented_function(void) {
     assert(false && "This function doesn't implement yet.");
@@ -407,8 +429,8 @@ void unimplemented_function(void) {
 //
 //
 void test_hex_buffer(void) {
-    char hex_str_1[] = "AABBCCDD";
-    HexBuffer buffer_1 = Hex_from_string(hex_str_1);
+    char hex_str_1[]            = "AABBCCDD";
+    HexBuffer buffer_1          = Hex_from_string(hex_str_1);
     HexBufferIteractor hex_iter = Hex_iter(buffer_1);
     for (usize index = 0; index < hex_iter.length; index++) {
         printf("\n>>> hex_iter[%lu]: 0x%02X", index, hex_iter.arr[index]);
@@ -424,16 +446,18 @@ void test_hex_buffer(void) {
     usize return_hex_len = Hex_to_string(buffer_1, hex_string, out_buffer_size);
     DEBUG_LOG(Main, test_hex_buffer, "return_hex_len: %lu", return_hex_len);
     if (return_hex_len > 0) {
-        DEBUG_LOG(Main, test_hex_buffer, "hex_string len: %lu, value: %s",
-                  strlen(hex_string), hex_string);
+        DEBUG_LOG(Main,
+                  test_hex_buffer,
+                  "hex_string len: %lu, value: %s",
+                  strlen(hex_string),
+                  hex_string);
     }
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(char[], hex_string, out_buffer_size);
 
-    HexBuffer buffer_2 = Hex_from_string(
-        " A $%@@!!@!@!`"
-        ""
-        ""
-        "`&*())@$%%   B C D ");
+    HexBuffer buffer_2 = Hex_from_string(" A $%@@!!@!@!`"
+                                         ""
+                                         ""
+                                         "`&*())@$%%   B C D ");
     char hex_string_2[Hex_length(buffer_2) * 2];
     usize return_hex_len_2 =
         Hex_to_string(buffer_2, hex_string_2, Hex_length(buffer_2) * 2);
@@ -456,10 +480,14 @@ typedef struct {
 } Person;
 
 String get_person_desc(Person *self) {
-    usize buffer_size = sizeof(Person) + 34 + 1;
+    usize buffer_size                    = sizeof(Person) + 34 + 1;
     char buffer[sizeof(Person) + 34 + 1] = {0};
-    snprintf(buffer, buffer_size, "(first_name: %s, last_name: %s, age: %u)",
-             self->first_name, self->last_name, self->age);
+    snprintf(buffer,
+             buffer_size,
+             "(first_name: %s, last_name: %s, age: %u)",
+             self->first_name,
+             self->last_name,
+             self->age);
     String desc = Str_from_str(buffer);
     return desc;
 }
@@ -469,7 +497,7 @@ void test_vector(void) {
     // Bool vec
     //
     SMART_VECTOR_WITH_CAPACITY(bool_vec, bool, 5, NULL);
-    bool true_value = true;
+    bool true_value  = true;
     bool false_value = false;
     Vec_push(bool_vec, &true_value);
     Vec_push(bool_vec, &true_value);
@@ -494,8 +522,8 @@ void test_vector(void) {
     // `capacity` should NOT change and no `realloc` will be called before
     // pushing the 11th elements
     //
-    u16 short_arr[] = {5000, 5001, 5002, 5003, 5004, 5005,
-                       5006, 5007, 5008, 5009, 6000};
+    u16 short_arr[] =
+        {5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5008, 5009, 6000};
     Vec_push(u16_vec, &short_arr[0]);
     Vec_push(u16_vec, &short_arr[1]);
     Vec_push(u16_vec, &short_arr[2]);
@@ -510,9 +538,12 @@ void test_vector(void) {
     Vec_push(u16_vec, &short_arr[10]);
     // Element value check
     VectorIteractor short_arr_iter = Vec_iter(u16_vec);
-    u16 *temp_short_arr = (u16 *)short_arr_iter.items;
+    u16 *temp_short_arr            = (u16 *)short_arr_iter.items;
     for (usize sa_index = 0; sa_index < short_arr_iter.length; sa_index++) {
-        DEBUG_LOG(Main, test_vector, "short_arr_iter[%lu]: %d", sa_index,
+        DEBUG_LOG(Main,
+                  test_vector,
+                  "short_arr_iter[%lu]: %d",
+                  sa_index,
                   temp_short_arr[sa_index]);
     }
     String u16_vec_desc = Vec_join(u16_vec, " , ", NULL);
@@ -529,9 +560,12 @@ void test_vector(void) {
     Vec_push(int_vec, &int_arr[2]);
 
     VectorIteractor int_arr_iter = Vec_iter(int_vec);
-    int *temp_int_arr = (int *)int_arr_iter.items;
+    int *temp_int_arr            = (int *)int_arr_iter.items;
     for (usize index = 0; index < int_arr_iter.length; index++) {
-        DEBUG_LOG(Main, test_vector, "int_arr_iter[%lu]: %d", index,
+        DEBUG_LOG(Main,
+                  test_vector,
+                  "int_arr_iter[%lu]: %d",
+                  index,
                   temp_int_arr[index]);
     }
     String int_vec_desc = Vec_join(int_vec, " , ", NULL);
@@ -558,32 +592,44 @@ void test_vector(void) {
     //
     // Person list
     //
-    Person wison = {.first_name = "Mr C", .last_name = "cool", .age = 88};
-    Person fion = {.first_name = "Mr CPP", .last_name = "not bad", .age = 99};
-    Person nobody = {
-        .first_name = "Nobody", .last_name = "Nothing", .age = 100};
+    Person wison  = {.first_name = "Mr C", .last_name = "cool", .age = 88};
+    Person fion   = {.first_name = "Mr CPP", .last_name = "not bad", .age = 99};
+    Person nobody = {.first_name = "Nobody",
+                     .last_name  = "Nothing",
+                     .age        = 100};
     SMART_VECTOR_WITH_CAPACITY(person_list, Person, 3, NULL);
     Vec_push(person_list, &wison);
     Vec_push(person_list, &fion);
     Vec_push(person_list, &nobody);
 
     VectorIteractor person_list_iter = Vec_iter(person_list);
-    Person *temp_person_arr = (Person *)person_list_iter.items;
+    Person *temp_person_arr          = (Person *)person_list_iter.items;
     for (usize index = 0; index < person_list_iter.length; index++) {
-        DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].first_name: %s",
-                  index, temp_person_arr[index].first_name);
-        DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].last_name: %s",
-                  index, temp_person_arr[index].last_name);
-        DEBUG_LOG(Main, test_vector, "person_list_iter[%lu].age: %u", index,
+        DEBUG_LOG(Main,
+                  test_vector,
+                  "person_list_iter[%lu].first_name: %s",
+                  index,
+                  temp_person_arr[index].first_name);
+        DEBUG_LOG(Main,
+                  test_vector,
+                  "person_list_iter[%lu].last_name: %s",
+                  index,
+                  temp_person_arr[index].last_name);
+        DEBUG_LOG(Main,
+                  test_vector,
+                  "person_list_iter[%lu].age: %u",
+                  index,
                   temp_person_arr[index].age);
     }
-    String person_vec_desc = Vec_join(
-        person_list, " , ", (struct Str * (*)(void *)) get_person_desc);
+    String person_vec_desc =
+        Vec_join(person_list,
+                 " , ",
+                 (struct Str * (*)(void *)) get_person_desc);
     printf("\n>>> person_vec: %s\n", Str_as_str(person_vec_desc));
     Str_free(person_vec_desc);
 
     // Double list
-    double double_arr[] = {11.11, 22.22, 33.33};
+    double double_arr[]  = {11.11, 22.22, 33.33};
     usize double_arr_len = sizeof(double_arr) / sizeof(double_arr[0]);
 
     SMART_VECTOR_WITH_CAPACITY(double_vec, double, double_arr_len, NULL);
@@ -627,8 +673,10 @@ void test_vector_element_destructor(void) {
     /*               Str_as_str(temp_str)); */
     /* } */
 
-    DEBUG_LOG(Main, test_vector_element_destructor,
-              "Before smart vector out of scope", "");
+    DEBUG_LOG(Main,
+              test_vector_element_destructor,
+              "Before smart vector out of scope",
+              "");
 }
 
 //
@@ -637,7 +685,7 @@ void test_vector_element_destructor(void) {
 void test_timer(void) {
     long double start_time = Timer_get_current_time(TU_SECONDS);
     sleep(1);
-    long double end_time = Timer_get_current_time(TU_SECONDS);
+    long double end_time     = Timer_get_current_time(TU_SECONDS);
     long double elapsed_time = end_time - start_time;
 
     DEBUG_LOG(Main, test_timer, "elapsed_time: %Lf\n", elapsed_time);
@@ -658,7 +706,7 @@ void test_memory(void) {
 
     struct Person me = {
         .birthday = "19880531",
-        .age = 0xAA,
+        .age      = 0xAA,
     };
     PRINT_MEMORY_BLOCK(int, data);
     PRINT_MEMORY_BLOCK(struct Person, me)
@@ -695,11 +743,17 @@ void test_smart_ptr(void) {
     MAKE_UNIQUE_PTR(Vector return_vec = return_vector_on_the_heap(),
                     auto_free_vector);
 
-    DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
+    DEBUG_LOG(Main,
+              test_smart_ptr,
+              "return_str: %p, value: %s",
+              return_str,
               Str_as_str(return_str));
-    DEBUG_LOG(Main, test_smart_ptr,
-              "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
-              Vec_len(return_vec), *((double *)Vec_get(return_vec, 0)));
+    DEBUG_LOG(Main,
+              test_smart_ptr,
+              "return_vec: %p, len: %lu, first elemnt: %f",
+              return_vec,
+              Vec_len(return_vec),
+              *((double *)Vec_get(return_vec, 0)));
 }
 
 //
@@ -718,41 +772,63 @@ void test_bits(void) {
     long long status_64 = 0x376DAA0B5F8E9ABC;
     PRINT_BITS(status_64);
 
-    u8 v = 0x02;
+    u8 v         = 0x02;
     u8 which_bit = 2;
-    printf("\n>>> bit %d in '0x%02X' is 1?: result: 0x%02X, %s\n", which_bit, v,
-           v >> (which_bit - 1), v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: result: 0x%02X, %s\n",
+           which_bit,
+           v,
+           v >> (which_bit - 1),
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
 
-    v = 0x08;
+    v         = 0x08;
     which_bit = 4;
-    printf("\n>>> bit %d in '0x%02X' is 1?: result: 0x%02X, %s\n", which_bit, v,
-           v >> (which_bit - 1), v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
+    printf("\n>>> bit %d in '0x%02X' is 1?: result: 0x%02X, %s\n",
+           which_bit,
+           v,
+           v >> (which_bit - 1),
+           v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
 
     v = 0xCD;
     PRINT_BITS(v);
     which_bit = 1;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 2;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 3;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 4;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 5;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 6;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 7;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
     which_bit = 8;
-    printf("\n>>> bit %d in '0x%02X' is 1?: %s", which_bit, v,
+    printf("\n>>> bit %d in '0x%02X' is 1?: %s",
+           which_bit,
+           v,
            v >> (which_bit - 1) & 0x01 ? "Yes" : "No");
 }
 
@@ -773,16 +849,18 @@ void test_file(void) {
 
     SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
     if (File_is_open_successfully(my_file)) {
-        usize read_bytes = File_load_into_buffer(my_file);
+        usize read_bytes         = File_load_into_buffer(my_file);
         const char *file_content = File_get_data(my_file);
-        usize file_size = File_get_size(my_file);
+        usize file_size          = File_get_size(my_file);
         LOG_VAR(read_bytes);
         LOG_VAR(file_size);
         LOG_VAR(file_content);
 
     } else {
-        fprintf(stderr, "Failed to open file '%s': %s\n",
-                filename == NULL ? "NULL" : filename, File_get_error(my_file));
+        fprintf(stderr,
+                "Failed to open file '%s': %s\n",
+                filename == NULL ? "NULL" : filename,
+                File_get_error(my_file));
     }
 
 #ifdef ENABLE_DEBUG_LOG
@@ -796,19 +874,24 @@ void test_file(void) {
 void test_random_numbers(void) {
     // LOG_VAR(RAND_MAX);
     const usize loop_amount = 20;
-    const u32 max_uint = 30;
-    const float max_float = 30;
+    const u32 max_uint      = 30;
+    const float max_float   = 30;
     for (usize index = 0; index < loop_amount; index++) {
-        DEBUG_LOG(Main, test_random_numbers,
+        DEBUG_LOG(Main,
+                  test_random_numbers,
                   "random float between 0 and 1: %.2f",
                   get_random_float_between_0_and_1());
     }
     for (usize index = 0; index < loop_amount; index++) {
-        DEBUG_LOG(Main, test_random_numbers, "random float: %.2f",
+        DEBUG_LOG(Main,
+                  test_random_numbers,
+                  "random float: %.2f",
                   get_random_float(max_float));
     }
     for (usize index = 0; index < loop_amount; index++) {
-        DEBUG_LOG(Main, test_random_numbers, "random uint: %u",
+        DEBUG_LOG(Main,
+                  test_random_numbers,
+                  "random uint: %u",
                   get_random_uint(max_uint));
     }
 }

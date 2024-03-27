@@ -60,80 +60,83 @@ typedef enum LogLevel { LL_DEBUG, LL_INFO, LL_WARN, LL_ERROR } LogLevel;
 /**
  * Log
  */
-void __log__(LogLevel log_level, const char *module_name,
-             const char *function_name, const char *format_str, ...);
+void __log__(LogLevel log_level,
+             const char *module_name,
+             const char *function_name,
+             const char *format_str,
+             ...);
 
 #ifdef ENABLE_DEBUG_LOG
 
-/**
- * Log the variable value based the primitive type, only available when defined
- * `ENABLE_DEBUG_LOG`
- */
-#define LOG_VAR(V) \
-    _Generic((V), \
-        _Bool: print_bool, \
-        unsigned char: print_u8, \
-        char: print_char, \
-        signed char: print_i8, \
-        short int: print_i16, \
-        unsigned short int: print_u16, \
-        int: print_int, \
-        unsigned int: print_u32, \
-        long int: print_long, \
-        unsigned long int: print_usize, \
-        long long int: print_i64, \
-        unsigned long long int: print_u64, \
-        float: print_float, \
-        double: print_long_double, \
-        long double: print_long_double, \
-        char *: print_string, \
-        const char *: print_const_string, \
-        void *: print_void_ptr, \
-        _Bool *: print_bool_ptr, \
-        unsigned char *: print_u8_ptr, \
-        unsigned short int *: print_u16_ptr, \
-        unsigned int *: print_u32_ptr, \
-        unsigned long int *: print_usize_ptr,            \
-        unsigned long long int *: print_u64_ptr,  \
-        signed char *: print_i8_ptr, \
-        short int *: print_i16_ptr, \
-        int *: print_i32_ptr, \
-        long int *: print_i64_ptr, \
-        long long int *: print_i64_ptr, \
-        float *: print_float_ptr, \
-        double *: print_double_ptr, \
-        long double *: print_long_double_ptr, \
-        default : print_const_string)(#V, (V))
+    /**
+     * Log the variable value based the primitive type, only available when
+     * defined `ENABLE_DEBUG_LOG`
+     */
+    #define LOG_VAR(V)                                                         \
+        _Generic((V),                                                          \
+            _Bool: print_bool,                                                 \
+            unsigned char: print_u8,                                           \
+            char: print_char,                                                  \
+            signed char: print_i8,                                             \
+            short int: print_i16,                                              \
+            unsigned short int: print_u16,                                     \
+            int: print_int,                                                    \
+            unsigned int: print_u32,                                           \
+            long int: print_long,                                              \
+            unsigned long int: print_usize,                                    \
+            long long int: print_i64,                                          \
+            unsigned long long int: print_u64,                                 \
+            float: print_float,                                                \
+            double: print_long_double,                                         \
+            long double: print_long_double,                                    \
+            char *: print_string,                                              \
+            const char *: print_const_string,                                  \
+            void *: print_void_ptr,                                            \
+            _Bool *: print_bool_ptr,                                           \
+            unsigned char *: print_u8_ptr,                                     \
+            unsigned short int *: print_u16_ptr,                               \
+            unsigned int *: print_u32_ptr,                                     \
+            unsigned long int *: print_usize_ptr,                              \
+            unsigned long long int *: print_u64_ptr,                           \
+            signed char *: print_i8_ptr,                                       \
+            short int *: print_i16_ptr,                                        \
+            int *: print_i32_ptr,                                              \
+            long int *: print_i64_ptr,                                         \
+            long long int *: print_i64_ptr,                                    \
+            float *: print_float_ptr,                                          \
+            double *: print_double_ptr,                                        \
+            long double *: print_long_double_ptr,                              \
+            default: print_const_string)(#V, (V))
 
 #else
 
-/** Define as nothing when `ENABLE_DEBUG_LOG` is undefined!!! **/
-#define LOG_VAR(V)
+    /** Define as nothing when `ENABLE_DEBUG_LOG` is undefined!!! **/
+    #define LOG_VAR(V)
 
 #endif
 
 /**
  * Debug log
  */
-#define DEBUG_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...) \
+#define DEBUG_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)                 \
     __log__(LL_DEBUG, #MODULE_NAME, #FUNCTION_NAME, format_str, __VA_ARGS__)
 
 /**
  * Info log
  */
-#define INFO_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...) \
+#define INFO_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)                  \
     __log__(LL_INFO, #MODULE_NAME, #FUNCTION_NAME, format_str, __VA_ARGS__)
 
 /**
  * Warn log
  */
-#define WARN_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...) \
+#define WARN_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)                  \
     __log__(LL_WARN, #MODULE_NAME, #FUNCTION_NAME, format_str, __VA_ARGS__)
 
 /**
  * Error log
  */
-#define ERROR_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...) \
+#define ERROR_LOG(MODULE_NAME, FUNCTION_NAME, format_str, ...)                 \
     __log__(LL_ERROR, #MODULE_NAME, #FUNCTION_NAME, format_str, __VA_ARGS__)
 
 #endif

@@ -18,4 +18,6 @@ float get_random_float(float max_float) {
 ///
 ///
 ///
-u32 get_random_uint(u32 max_uint) { return arc4random_uniform(max_uint); }
+u32 get_random_uint(u32 max_uint) {
+    return arc4random_uniform(max_uint);
+}

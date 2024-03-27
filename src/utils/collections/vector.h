@@ -37,9 +37,9 @@ void auto_free_vector(Vector *ptr);
  * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
- * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
- * `String` instance anymore.
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * in `String` instance anymore.
  *
  * Plz check the [`Use
  * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
@@ -62,16 +62,20 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
  * ```
  */
-#define SMART_VECTOR(v_name, element_type, element_destructor) \
-    __attribute__((cleanup(auto_free_vector))) Vector v_name = \
-        Vec_new(TYPE_SIZE_FROM_TYPE(element_type),             \
-                TYPE_NAME_TO_STRING(element_type), element_destructor)
+#define SMART_VECTOR(v_name, element_type, element_destructor)                 \
+    __attribute__((cleanup(auto_free_vector))) Vector v_name =                 \
+        Vec_new(TYPE_SIZE_FROM_TYPE(element_type),                             \
+                TYPE_NAME_TO_STRING(element_type),                             \
+                element_destructor)
 
-#define SMART_VECTOR_WITH_CAPACITY(v_name, element_type, capacity,     \
-                                   element_destructor)                 \
-    __attribute__((cleanup(auto_free_vector))) Vector v_name =         \
-        Vec_with_capacity(TYPE_SIZE_FROM_TYPE(element_type),           \
-                          TYPE_NAME_TO_STRING(element_type), capacity, \
+#define SMART_VECTOR_WITH_CAPACITY(v_name,                                     \
+                                   element_type,                               \
+                                   capacity,                                   \
+                                   element_destructor)                         \
+    __attribute__((cleanup(auto_free_vector))) Vector v_name =                 \
+        Vec_with_capacity(TYPE_SIZE_FROM_TYPE(element_type),                   \
+                          TYPE_NAME_TO_STRING(element_type),                   \
+                          capacity,                                            \
                           element_destructor)
 
 /*
@@ -90,15 +94,16 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
- * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
- * `String` instance anymore.
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * in `String` instance anymore.
  *
  * Plz check the [`Use
  * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
  * example for more details.
  */
-Vector Vec_new(usize element_type_size, char *element_type,
+Vector Vec_new(usize element_type_size,
+               char *element_type,
                ElementHeapMemberDestructor element_destructor);
 
 /*
@@ -118,15 +123,16 @@ Vector Vec_new(usize element_type_size, char *element_type,
  * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
- * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
- * `String` instance anymore.
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * in `String` instance anymore.
  *
  * Plz check the [`Use
  * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
  * example for more details.
  */
-Vector Vec_with_capacity(usize element_type_size, char *element_type,
+Vector Vec_with_capacity(usize element_type_size,
+                         char *element_type,
                          usize capacity,
                          ElementHeapMemberDestructor element_destructor);
 
@@ -147,9 +153,9 @@ Vector Vec_with_capacity(usize element_type_size, char *element_type,
  * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you don't
- * need to call `Str_reset_to_empty_without_freeing_buffer` on the passed in
- * `String` instance anymore.
+ * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * in `String` instance anymore.
  *
  * Plz check the [`Use
  * String`](https://github.com/wisonye/c-utils/blob/master/src/utils/collections/README.md#14-use-string)
@@ -180,8 +186,9 @@ const void *Vec_get(const Vector self, usize index);
 /*
  * Join all elements and return a string
  */
-String Vec_join(const Vector self, char *delemiter,
-                      String (*custom_struct_desc)(void *ptr));
+String Vec_join(const Vector self,
+                char *delemiter,
+                String (*custom_struct_desc)(void *ptr));
 
 /*
  * Free allocated memory

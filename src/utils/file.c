@@ -8,7 +8,7 @@
 #include "string.h"
 
 #ifdef ENABLE_DEBUG_LOG
-#include "log.h"
+    #include "log.h"
 #endif
 
 /*
@@ -39,22 +39,26 @@ void file_mode_to_string(FileMode *mode, char *out) {
  */
 File File_open(const char *filename, FileMode mode) {
     File open_file = malloc(sizeof(struct _File));
-    *open_file = (struct _File){
-        .inner = NULL,
-        .mode = mode,
-        .open_successfully = false,
-        .filename = Str_from_str(filename),
-        .error = NULL,
-        .data = NULL,
-        .size = 0,
+    *open_file     = (struct _File){
+            .inner             = NULL,
+            .mode              = mode,
+            .open_successfully = false,
+            .filename          = Str_from_str(filename),
+            .error             = NULL,
+            .data              = NULL,
+            .size              = 0,
     };
 
     char temp_mode[3] = {0};
     file_mode_to_string(&mode, temp_mode);
 
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(File, open, "self ptr: %p, filename: %s, open mode: %s",
-              open_file, filename, temp_mode);
+    DEBUG_LOG(File,
+              open,
+              "self ptr: %p, filename: %s, open mode: %s",
+              open_file,
+              filename,
+              temp_mode);
 #endif
 
     FILE *file_handle = fopen(filename, temp_mode);
@@ -65,12 +69,15 @@ File File_open(const char *filename, FileMode mode) {
         open_file->error = Str_from_str(strerror(errno));
 
 #ifdef ENABLE_DEBUG_LOG
-        DEBUG_LOG(File, open, "Open file failed - '%s': %s", filename,
+        DEBUG_LOG(File,
+                  open,
+                  "Open file failed - '%s': %s",
+                  filename,
                   Str_as_str(open_file->error));
 #endif
 
     } else {
-        open_file->inner = file_handle;
+        open_file->inner             = file_handle;
         open_file->open_successfully = true;
 
         //
@@ -109,9 +116,11 @@ usize File_load_into_buffer(File self) {
     //
     if (self->data != NULL) {
 #ifdef ENABLE_DEBUG_LOG
-        DEBUG_LOG(File, load_into_buffer,
+        DEBUG_LOG(File,
+                  load_into_buffer,
                   "free original self->data, len: %lu, value: %s",
-                  Str_length(self->data), Str_as_str(self->data));
+                  Str_length(self->data),
+                  Str_as_str(self->data));
 #endif
         Str_free(self->data);
         self->data = NULL;
@@ -121,7 +130,7 @@ usize File_load_into_buffer(File self) {
     // Create `struct Str *` buffer with enough capacity to hold the entire
     // file content
     //
-    usize file_str_size = self->size + 1;
+    usize file_str_size    = self->size + 1;
     struct Str *str_buffer = malloc(sizeof(struct Str));
     Str_init_with_capacity(str_buffer, file_str_size);
     memset(str_buffer->_buffer, 0, file_str_size);
@@ -136,7 +145,7 @@ usize File_load_into_buffer(File self) {
     //
     usize read_bytes = fread(str_buffer->_buffer, self->size, 1, self->inner);
     str_buffer->_buffer[self->size] = '\0';
-    str_buffer->_len = self->size;
+    str_buffer->_len                = self->size;
 
     //
     // Move `str_buffer` into `self->data`
@@ -144,9 +153,11 @@ usize File_load_into_buffer(File self) {
     self->data = Str_move_from(str_buffer);
 
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(File, load_into_buffer,
+    DEBUG_LOG(File,
+              load_into_buffer,
               "after read from file, self->data, len: %lu, value: %s",
-              Str_length(self->data), Str_as_str(self->data));
+              Str_length(self->data),
+              Str_as_str(self->data));
 #endif
 
     //
@@ -202,7 +213,9 @@ const char *File_get_data(File self) {
 /*
  * Get back file size
  */
-usize File_get_size(File self) { return (self != NULL) ? self->size : 0; }
+usize File_get_size(File self) {
+    return (self != NULL) ? self->size : 0;
+}
 
 /*
  * Print out file like `bat`
@@ -225,9 +238,9 @@ void File_print_out_file_like_bat(File self) {
     // So, that's why max buffer size to read should be `255 - 9`
     //
     u32 line_no_buffer_str_len = 9;
-    u32 line_no_buffer_size = line_no_buffer_str_len + 1;
+    u32 line_no_buffer_size    = line_no_buffer_str_len + 1;
 
-    u32 current_line_no = 1;
+    u32 current_line_no            = 1;
     usize max_line_buffer_to_write = line_buffer_size - line_no_buffer_str_len;
 
     while (fgets(line_buffer, max_line_buffer_to_write, self->inner) != NULL) {
@@ -249,7 +262,9 @@ void File_print_out_file_like_bat(File self) {
         //
         char line_no_buffer[line_no_buffer_size];
         memset(line_no_buffer, 0, line_no_buffer_size);
-        snprintf(line_no_buffer, line_no_buffer_size, " %5u | ",
+        snprintf(line_no_buffer,
+                 line_no_buffer_size,
+                 " %5u | ",
                  current_line_no);
         /* printf("\n>>> %s, len: %lu", line_no_buffer, */
         /*        strlen(line_no_buffer)); */
@@ -284,13 +299,19 @@ void File_print_debug_info(File self) {
     file_mode_to_string(&self->mode, file_mode);
 
     DEBUG_LOG(
-        File, print_debug_info,
+        File,
+        print_debug_info,
         "\n[ File, ptr: %p "
         "]\n----------------------------------------\ninner: %s\nmode: "
         "%s\nfilename: %s\nerror: "
         "%s\nsize: %lu\ndata: %s\n----------------------------------------",
-        self, file_handler, file_mode, Str_as_str(self->filename),
-        Str_as_str(self->error), self->size, Str_as_str(self->data));
+        self,
+        file_handler,
+        file_mode,
+        Str_as_str(self->filename),
+        Str_as_str(self->error),
+        self->size,
+        Str_as_str(self->data));
 }
 #endif
 
@@ -319,13 +340,19 @@ void File_free(File self) {
         int close_result = fclose(self->inner);
 
 #ifdef ENABLE_DEBUG_LOG
-        DEBUG_LOG(File, free, "Close file - '%s', result: %d",
-                  Str_as_str(self->filename), close_result);
+        DEBUG_LOG(File,
+                  free,
+                  "Close file - '%s', result: %d",
+                  Str_as_str(self->filename),
+                  close_result);
 #endif
         if (close_result != 0) {
 #ifdef ENABLE_DEBUG_LOG
-            ERROR_LOG(File, free, "Failed to close file - '%s': %s",
-                      Str_as_str(self->filename), strerror(errno));
+            ERROR_LOG(File,
+                      free,
+                      "Failed to close file - '%s': %s",
+                      Str_as_str(self->filename),
+                      strerror(errno));
 #endif
         }
         self->inner = NULL;
@@ -344,8 +371,10 @@ void File_free(File self) {
  */
 void auto_free_file(File *ptr) {
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(File, auto_free_file,
-              "out of scope with File ptr: %p, filename: %s", *ptr,
+    DEBUG_LOG(File,
+              auto_free_file,
+              "out of scope with File ptr: %p, filename: %s",
+              *ptr,
               File_get_filename(*ptr));
 
 #endif

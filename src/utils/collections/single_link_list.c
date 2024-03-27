@@ -1,9 +1,9 @@
 #include "single_link_list.h"
 
 #if ENABLE_DEBUG_LOG
-#include <stdio.h>
+    #include <stdio.h>
 
-#include "../log.h"
+    #include "../log.h"
 #endif
 
 #include <stddef.h>
@@ -25,12 +25,16 @@ struct LLNode {
 /*
  * Return node data pointer
  */
-void *LLNode_get_data(const LinkListNode self) { return self->_data; }
+void *LLNode_get_data(const LinkListNode self) {
+    return self->_data;
+}
 
 /*
  * Return next node pointer
  */
-LinkListNode LLNode_get_next(const LinkListNode self) { return self->_next; }
+LinkListNode LLNode_get_next(const LinkListNode self) {
+    return self->_next;
+}
 
 //----------------------------------------------------------------------------
 // LinkList
@@ -40,7 +44,7 @@ LinkListNode LLNode_get_next(const LinkListNode self) { return self->_next; }
  * Init empty list
  */
 void LL_init_empty(LinkList self) {
-    self->_len = 0;
+    self->_len  = 0;
     self->_head = NULL;
     self->_tail = NULL;
 }
@@ -54,7 +58,7 @@ LinkList LL_from_empty(void) {
     DEBUG_LOG(SingleLinkList, from_empty, "self ptr: %p", list);
 #endif
     *list = (struct LL){
-        ._len = 0,
+        ._len  = 0,
         ._head = NULL,
         ._tail = NULL,
     };
@@ -68,9 +72,9 @@ LinkList LL_from_empty(void) {
 LinkList LL_from_value(size_t item_size, void *value) {
     // Create first node
     LinkListNode node = malloc(sizeof(struct LLNode));
-    *node = (struct LLNode){
-        ._data = malloc(item_size),
-        ._next = NULL,
+    *node             = (struct LLNode){
+                    ._data = malloc(item_size),
+                    ._next = NULL,
     };
 
     // Copy data
@@ -91,11 +95,13 @@ LinkList LL_from_value(size_t item_size, void *value) {
     // Create list
     LinkList list = malloc(sizeof(struct LL));
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(SingleLinkList, from_value, "self ptr: %p, from node ptr: %",
+    DEBUG_LOG(SingleLinkList,
+              from_value,
+              "self ptr: %p, from node ptr: %",
               list);
 #endif
     *list = (struct LL){
-        ._len = 1,
+        ._len  = 1,
         ._head = node,
         ._tail = node,
     };
@@ -112,12 +118,16 @@ LinkList LL_from_value(size_t item_size, void *value) {
 /*
  * Return the link length
  */
-size_t LL_length(const LinkList self) { return self->_len; }
+size_t LL_length(const LinkList self) {
+    return self->_len;
+}
 
 /*
  * Return the header (first node) pointer
  */
-LinkListNode LL_get_head(const LinkList self) { return self->_head; }
+LinkListNode LL_get_head(const LinkList self) {
+    return self->_head;
+}
 
 /*
  * Return the header (first node) data pointer
@@ -129,7 +139,9 @@ const void *LL_get_head_data(const LinkList self) {
 /*
  * Return the tail (last node) pointer
  */
-LinkListNode LL_get_tail(const LinkList self) { return self->_tail; }
+LinkListNode LL_get_tail(const LinkList self) {
+    return self->_tail;
+}
 
 /*
  * Return the tail (last node) data pointer
@@ -161,9 +173,9 @@ const void *LL_get_tail_data(const LinkList self) {
 void LL_append_value(LinkList self, size_t item_size, void *value) {
     // Create append node
     LinkListNode node = malloc(sizeof(struct LLNode));
-    *node = (struct LLNode){
-        ._data = malloc(item_size),
-        ._next = NULL,
+    *node             = (struct LLNode){
+                    ._data = malloc(item_size),
+                    ._next = NULL,
     };
 
     // Copy data
@@ -230,7 +242,10 @@ LLIterator *LL_iter(const LinkList self) {
         LLIterator *iter = malloc(sizeof(LLIterator));
 
 #ifdef ENABLE_DEBUG_LOG
-        DEBUG_LOG(SingleLinkList, LL_iter, "self ptr: %p, iter ptr: %p", self,
+        DEBUG_LOG(SingleLinkList,
+                  LL_iter,
+                  "self ptr: %p, iter ptr: %p",
+                  self,
                   iter);
 #endif
         iter->length = 0;
@@ -241,7 +256,10 @@ LLIterator *LL_iter(const LinkList self) {
     LLIterator *iter = malloc(sizeof(LLIterator) + self->_len * sizeof(void *));
 
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(SingleLinkList, LL_iter, "self ptr: %p, iter ptr: %p", self,
+    DEBUG_LOG(SingleLinkList,
+              LL_iter,
+              "self ptr: %p, iter ptr: %p",
+              self,
               iter);
 #endif
 
@@ -281,8 +299,10 @@ void LL_free_iter(LLIterator *iter) {
  */
 void auto_free_linklist_iter(LLIterator **ptr) {
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(SingleLinkList, auto_free_linklist_iter,
-              "out of scope with LinkListIterator ptr: %p", *ptr);
+    DEBUG_LOG(SingleLinkList,
+              auto_free_linklist_iter,
+              "out of scope with LinkListIterator ptr: %p",
+              *ptr);
 #endif
     LL_free_iter(*ptr);
 }
@@ -306,7 +326,7 @@ void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func) {
 
 #ifdef ENABLE_DEBUG_LOG
     size_t free_node_data_amount = 0;
-    size_t free_node_amount = 0;
+    size_t free_node_amount      = 0;
 #endif
 
     // Current node
@@ -338,15 +358,18 @@ void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func) {
 #endif
     }
 
-    self->_len = 0;
+    self->_len  = 0;
     self->_head = NULL;
     self->_tail = NULL;
 
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(SingleLinkList, free,
+    DEBUG_LOG(SingleLinkList,
+              free,
               "self ptr: %p, total free node amount: %lu, total free node data "
               "amount: %lu",
-              self, free_node_amount, free_node_data_amount);
+              self,
+              free_node_amount,
+              free_node_data_amount);
 #endif
     if (need_to_free_myself == true) {
         free(self);
@@ -358,8 +381,10 @@ void LL_free(LinkList self, bool need_to_free_myself, FreeFunc free_func) {
  */
 void auto_free_linklist(LinkList *ptr) {
 #ifdef ENABLE_DEBUG_LOG
-    DEBUG_LOG(SingleLinkList, auto_free_linklist,
-              "out of scope with LinkList ptr: %p", *ptr);
+    DEBUG_LOG(SingleLinkList,
+              auto_free_linklist,
+              "out of scope with LinkList ptr: %p",
+              *ptr);
 #endif
     LL_free(*ptr, true, NULL);
 }

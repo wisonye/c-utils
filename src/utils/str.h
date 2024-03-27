@@ -147,8 +147,7 @@ long Str_index_of(const String self, const char *str_to_find);
 /*
  * Find the given `char *` (case sensitive) index, return `-1` if not found.
  */
-long Str_index_of_case_sensitive(const String self,
-                                       const char *str_to_find);
+long Str_index_of_case_sensitive(const String self, const char *str_to_find);
 
 /*
  * Check whether contain the given `char *` or not

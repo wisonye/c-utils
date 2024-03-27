@@ -77,8 +77,10 @@ long double Timer_get_current_time(TimeUnit time_unit) {
     static mach_timebase_info_data_t info;
     if (0 == is_init) {
     #ifdef ENABLE_DEBUG_LOG
-        DEBUG_LOG(
-            Timer, Timer_get_current_time, "Apple/Darwin Initialization", "");
+        DEBUG_LOG(Timer,
+                  Timer_get_current_time,
+                  "Apple/Darwin Initialization",
+                  "");
     #endif
         mach_timebase_info(&info);
         is_init = 1;

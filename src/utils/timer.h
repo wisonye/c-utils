@@ -1,16 +1,16 @@
 #ifndef __UTILS_TIMER__
-#define __UTILS_TIMER__
+    #define __UTILS_TIMER__
 
-#include <stdint.h>
+    #include <stdint.h>
 
 /*
  * Time unit
  */
 typedef enum TimeUnit {
-    TU_NANOSECONDS = 0x01,
+    TU_NANOSECONDS  = 0x01,
     TU_MICROSECONDS = 0x02,
     TU_MILLISECONDS = 0x03,
-    TU_SECONDS = 0x04,
+    TU_SECONDS      = 0x04,
 } TimeUnit;
 
 /*
