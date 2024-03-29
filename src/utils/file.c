@@ -43,7 +43,7 @@ File File_open(const char *filename, FileMode mode) {
             .inner             = NULL,
             .mode              = mode,
             .open_successfully = false,
-            .filename          = Str_from_str(filename),
+            .filename          = HS_from_str(filename),
             .error             = NULL,
             .data              = NULL,
             .size              = 0,
@@ -65,15 +65,15 @@ File File_open(const char *filename, FileMode mode) {
     if (file_handle == NULL) {
         // char error_buffer[100] = {0};
         // strerror_r(errno, error_buffer, sizeof(error_buffer));
-        // open_file->error = Str_from_str(error_buffer);
-        open_file->error = Str_from_str(strerror(errno));
+        // open_file->error = HS_from_str(error_buffer);
+        open_file->error = HS_from_str(strerror(errno));
 
 #ifdef ENABLE_DEBUG_LOG
         DEBUG_LOG(File,
                   open,
                   "Open file failed - '%s': %s",
                   filename,
-                  Str_as_str(open_file->error));
+                  HS_as_str(open_file->error));
 #endif
 
     } else {
@@ -119,10 +119,10 @@ usize File_load_into_buffer(File self) {
         DEBUG_LOG(File,
                   load_into_buffer,
                   "free original self->data, len: %lu, value: %s",
-                  Str_length(self->data),
-                  Str_as_str(self->data));
+                  HS_length(self->data),
+                  HS_as_str(self->data));
 #endif
-        Str_free(self->data);
+        HS_free(self->data);
         self->data = NULL;
     }
 
@@ -131,8 +131,8 @@ usize File_load_into_buffer(File self) {
     // file content
     //
     usize file_str_size    = self->size + 1;
-    struct Str *str_buffer = malloc(sizeof(struct Str));
-    Str_init_with_capacity(str_buffer, file_str_size);
+    struct HeapString *str_buffer = malloc(sizeof(struct HeapString));
+    HS_init_with_capacity(str_buffer, file_str_size);
     memset(str_buffer->_buffer, 0, file_str_size);
 
     //
@@ -150,20 +150,20 @@ usize File_load_into_buffer(File self) {
     //
     // Move `str_buffer` into `self->data`
     //
-    self->data = Str_move_from(str_buffer);
+    self->data = HS_move_from(str_buffer);
 
 #ifdef ENABLE_DEBUG_LOG
     DEBUG_LOG(File,
               load_into_buffer,
               "after read from file, self->data, len: %lu, value: %s",
-              Str_length(self->data),
-              Str_as_str(self->data));
+              HS_length(self->data),
+              HS_as_str(self->data));
 #endif
 
     //
     // Free the `str_buffer`
     //
-    Str_free(str_buffer);
+    HS_free(str_buffer);
 
     // `number of object has been read` * object size
     return read_bytes * self->size;
@@ -183,7 +183,7 @@ void File_append(File self, char *content);
  * Get back filename
  */
 const char *File_get_filename(File self) {
-    return (self != NULL && self->filename != NULL) ? Str_as_str(self->filename)
+    return (self != NULL && self->filename != NULL) ? HS_as_str(self->filename)
                                                     : NULL;
 }
 
@@ -198,7 +198,7 @@ bool File_is_open_successfully(File self) {
  * Get back error
  */
 const char *File_get_error(File self) {
-    return (self != NULL && self->error != NULL) ? Str_as_str(self->error)
+    return (self != NULL && self->error != NULL) ? HS_as_str(self->error)
                                                  : (char *)NULL;
 }
 
@@ -206,7 +206,7 @@ const char *File_get_error(File self) {
  * Get back internal buffer data
  */
 const char *File_get_data(File self) {
-    return (self != NULL && self->data != NULL) ? Str_as_str(self->data)
+    return (self != NULL && self->data != NULL) ? HS_as_str(self->data)
                                                 : (char *)NULL;
 }
 
@@ -253,8 +253,8 @@ void File_print_out_file_like_bat(File self) {
 
         usize line_str_len = strlen(line_buffer);
 
-        struct Str line_str_added_line_no;
-        Str_init_with_capacity(&line_str_added_line_no,
+        struct HeapString line_str_added_line_no;
+        HS_init_with_capacity(&line_str_added_line_no,
                                line_no_buffer_str_len + line_str_len + 1);
 
         //
@@ -269,19 +269,19 @@ void File_print_out_file_like_bat(File self) {
         /* printf("\n>>> %s, len: %lu", line_no_buffer, */
         /*        strlen(line_no_buffer)); */
 
-        Str_push_str(&line_str_added_line_no, line_no_buffer);
+        HS_push_str(&line_str_added_line_no, line_no_buffer);
 
         //
         // Orignal line content
         //
-        Str_push_str(&line_str_added_line_no, line_buffer);
+        HS_push_str(&line_str_added_line_no, line_buffer);
 
         current_line_no++;
 
         // Print out
-        printf("%s", Str_as_str(&line_str_added_line_no));
+        printf("%s", HS_as_str(&line_str_added_line_no));
 
-        Str_free_buffer_only(&line_str_added_line_no);
+        HS_free_buffer_only(&line_str_added_line_no);
     }
 }
 
@@ -290,7 +290,7 @@ void File_print_out_file_like_bat(File self) {
  * Print out self for debugging purpose
  */
 void File_print_debug_info(File self) {
-    // SMART_STRING(debug_info) = Str_from_empty_with_capacity(100);
+    // SMART_STRING(debug_info) = HS_from_empty_with_capacity(100);
 
     char file_handler[20] = {0};
     snprintf(file_handler, sizeof(file_handler), "%p", (void *)self->inner);
@@ -308,10 +308,10 @@ void File_print_debug_info(File self) {
         self,
         file_handler,
         file_mode,
-        Str_as_str(self->filename),
-        Str_as_str(self->error),
+        HS_as_str(self->filename),
+        HS_as_str(self->error),
         self->size,
-        Str_as_str(self->data));
+        HS_as_str(self->data));
 }
 #endif
 
@@ -322,12 +322,12 @@ void File_free(File self) {
     if (self == NULL) return;
 
     if (self->error != NULL) {
-        Str_free(self->error);
+        HS_free(self->error);
         self->error = NULL;
     }
 
     if (self->data != NULL) {
-        Str_free(self->data);
+        HS_free(self->data);
         self->data = NULL;
     }
 
@@ -343,7 +343,7 @@ void File_free(File self) {
         DEBUG_LOG(File,
                   free,
                   "Close file - '%s', result: %d",
-                  Str_as_str(self->filename),
+                  HS_as_str(self->filename),
                   close_result);
 #endif
         if (close_result != 0) {
@@ -351,7 +351,7 @@ void File_free(File self) {
             ERROR_LOG(File,
                       free,
                       "Failed to close file - '%s': %s",
-                      Str_as_str(self->filename),
+                      HS_as_str(self->filename),
                       strerror(errno));
 #endif
         }
@@ -359,7 +359,7 @@ void File_free(File self) {
     }
 
     if (self->filename != NULL) {
-        Str_free(self->filename);
+        HS_free(self->filename);
         self->filename = NULL;
     }
 

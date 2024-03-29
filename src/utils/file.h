@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "str.h"
+#include "heap_string.h"
 
 //
 //
@@ -49,10 +49,10 @@ void auto_free_file(File *ptr);
  * variable is out of the scope
  *
  * ```c
- * SMART_FILE(my_profile) = Str_open("my_profile")
+ * defer_file(my_profile) = Str_open("my_profile")
  * ```
  */
-#define SMART_FILE(x) __attribute__((cleanup(auto_free_file))) File x
+#define defer_file(x) __attribute__((cleanup(auto_free_file))) File x
 
 /*
  * Open a file with the given mode

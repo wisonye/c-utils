@@ -2,7 +2,7 @@
 #define __UTILS_VECTOR_H__
 
 #include "../data_types.h"
-#include "../str.h"
+#include "../heap_string.h"
 
 /*
  * Vector: Heap allocated dynamic array
@@ -31,14 +31,14 @@ void auto_free_vector(Vector *ptr);
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
  *
- * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * The exception is for `struct HeapString*` or `String`, as `Vector` does the
  * following efforts for `String` type:
  *
- * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * - Set `HS_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
- * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * - Call `HS_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `HS_reset_to_empty_without_freeing_buffer` on the passed
  * in `String` instance anymore.
  *
  * Plz check the [`Use
@@ -88,14 +88,14 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
  *
- * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * The exception is for `struct HeapString*` or `String`, as `Vector` does the
  * following efforts for `String` type:
  *
- * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * - Set `HS_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
- * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * - Call `HS_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `HS_reset_to_empty_without_freeing_buffer` on the passed
  * in `String` instance anymore.
  *
  * Plz check the [`Use
@@ -117,14 +117,14 @@ Vector Vec_new(usize element_type_size,
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
  *
- * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * The exception is for `struct HeapString*` or `String`, as `Vector` does the
  * following efforts for `String` type:
  *
- * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * - Set `HS_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
- * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * - Call `HS_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `HS_reset_to_empty_without_freeing_buffer` on the passed
  * in `String` instance anymore.
  *
  * Plz check the [`Use
@@ -147,14 +147,14 @@ Vector Vec_with_capacity(usize element_type_size,
  * to `NULL` and pass an "Element heap-allocated destructor function pointer"
  * when creating a new "Vector".
  *
- * The exception is for `struct Str*` or `String`, as `Vector` does the
+ * The exception is for `struct HeapString*` or `String`, as `Vector` does the
  * following efforts for `String` type:
  *
- * - Set `Str_free_buffer_only` to `self->element_destructor` as default element
+ * - Set `HS_free_buffer_only` to `self->element_destructor` as default element
  * destructor.
  *
- * - Call `Str_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
- * don't need to call `Str_reset_to_empty_without_freeing_buffer` on the passed
+ * - Call `HS_reset_to_empty_without_freeing_buffer` in `Vec_push`, so you
+ * don't need to call `HS_reset_to_empty_without_freeing_buffer` on the passed
  * in `String` instance anymore.
  *
  * Plz check the [`Use

@@ -35,7 +35,7 @@ add_executable("${PROJECT_NAME}"
     "../src/utils/log.c"
     "../src/utils/collections/single_link_list.c"
     "../src/utils/collections/vector.c"
-    "../src/utils/str.c"
+    "../src/utils/heap_string.c"
     "../src/utils/hex_buffer.c"
     "../src/utils/memory.c"
     "../src/utils/timer.c"
@@ -72,7 +72,7 @@ set(UTILS_LIBRARY_SOURCE_FILE
     "../src/utils/log.c"
     "../src/utils/memory.c"
     "../src/utils/random.c"
-    "../src/utils/str.c"
+    "../src/utils/heap_string.c"
     "../src/utils/timer.c"
 )
 set(UTILS_LIBRARY_HEADER_FILE
@@ -84,7 +84,7 @@ set(UTILS_LIBRARY_HEADER_FILE
     "../src/utils/memory.h"
     "../src/utils/random.h"
     "../src/utils/smart_ptr.h"
-    "../src/utils/str.h"
+    "../src/utils/heap_string.h"
     "../src/utils/timer.h"
 )
 add_library("${UTILS_LIBRARY_NAME}" SHARED ${UTILS_LIBRARY_SOURCE_FILE})
@@ -141,7 +141,7 @@ install(FILES "../src/utils/log.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
 install(FILES "../src/utils/memory.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
 install(FILES "../src/utils/random.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
 install(FILES "../src/utils/smart_ptr.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
-install(FILES "../src/utils/str.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
+install(FILES "../src/utils/heap_string.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
 install(FILES "../src/utils/timer.h" DESTINATION "include/${UTILS_LIBRARY_NAME}")
 
 #

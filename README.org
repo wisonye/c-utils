@@ -2,20 +2,20 @@
 
 This is my personal =C= utilities which contain the following modules:
 
-** 1. String
+** 1. Heap-allocated String
 
 Wrap and hide all =null-terminated= C-style string in =struct=, hide the =null-terminated= detail and pointer, just deal with normal function call.
 
-The ~SMART_STRING~ and ~SMART_STRING_WITH_CAPACITY~ macro ensures the heap-allocated instance auto-free when it goes out of its scope.
+The ~defer_string~ macro ensures the heap-allocated instance auto-free when it goes out of its scope.
 
 Examples:
 
 *** 1.1 Create empty string
 
 #+BEGIN_SRC c
-  // `SMART_STRING(variable_name);`
-  SMART_STRING(empty_str) = Str_from_empty();
-  SMART_STRING(empty_str_2) = Str_from_str(NULL);
+  // `defer_string(variable_name);`
+  defer_string(empty_str) = Str_from_empty();
+  defer_string(empty_str_2) = Str_from_str(NULL);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d0, as_str: (null)
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b0, as_str: (null)
@@ -26,7 +26,7 @@ Examples:
 
 #+BEGIN_SRC c
   char arr[] = "Unit Test:)";
-  SMART_STRING(str) = Str_from_arr(arr);
+  defer_string(str) = Str_from_arr(arr);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000002f0, as_str: Unit Test:)
 #+END_SRC
@@ -37,8 +37,8 @@ Examples:
 Clone from the given ~String~ instance but don't touch the heap-allocated memory it owned
 
 #+BEGIN_SRC c
-  SMART_STRING(original_str) = Str_from_str("I'm original:)");
-  SMART_STRING(clone_from_other_str) = Str_clone_from(original_str);
+  defer_string(original_str) = Str_from_str("I'm original:)");
+  defer_string(clone_from_other_str) = Str_clone_from(original_str);
 
   // `clone_from_other_str` is a deep clone, so `original_str` doesn't changes
   assert(Str_length(original_str) == 12);
@@ -53,8 +53,8 @@ Clone from the given ~String~ instance but don't touch the heap-allocated memory
 Move from the given ~String~ instance and move ownership of the heap-allocated memory to the newly created ~String~ instance. The original ~String~ becomes an empty string, as it points to nothing!!!
 
 #+BEGIN_SRC c
-  SMART_STRING(original_str) = Str_from_str("I'm original:)");
-  SMART_STRING(move_from_other_str) = Str_move_from(original_str);
+  defer_string(original_str) = Str_from_str("I'm original:)");
+  defer_string(move_from_other_str) = Str_move_from(original_str);
 
   // After that, `original_str` becomes an empty string
   assert(Str_length(original_str) == 0);
@@ -68,8 +68,8 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.5 Push to the end, get back length and get back ~char *~
 
 #+BEGIN_SRC c
-  SMART_STRING(original_str) = Str_from_str("I'm original:)");
-  SMART_STRING(empty_str) = Str_from_empty();
+  defer_string(original_str) = Str_from_str("I'm original:)");
+  defer_string(empty_str) = Str_from_empty();
 
   // Push from `char *`
   Str_push_str(empty_str, "123_");
@@ -91,8 +91,8 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.6 Insert at beginning
 
 #+BEGIN_SRC c
-  SMART_STRING(original_str) = Str_from_str("I'm original:)");
-  SMART_STRING(empty_str) = Str_from_empty();
+  defer_string(original_str) = Str_from_str("I'm original:)");
+  defer_string(empty_str) = Str_from_empty();
 
   // Insert other `String` to the beginning
   Str_push_other(empty_str, original_str);
@@ -114,8 +114,8 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.7 Find substring
 
 #+BEGIN_SRC c
-  SMART_STRING(original_str) = Str_from_str("I'm original:)");
-  SMART_STRING(empty_str) = Str_move_from(original_str);
+  defer_string(original_str) = Str_from_str("I'm original:)");
+  defer_string(empty_str) = Str_move_from(original_str);
 
   //
   // Find the given `char *` index, return `-1` if not found
@@ -142,7 +142,7 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.8 Reset to empty
 
 #+BEGIN_SRC c
-  SMART_STRING(str) = Str_from_str("Hello");
+  defer_string(str) = Str_from_str("Hello");
   Str_reset_to_empty(str);
 
   assert(Str_length(str) == 0);
@@ -154,9 +154,9 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 
 *** 1.9 Create ~String~ on the stack and free it manually
 
-Usually, it's convenient to use ~SMART_STRING~ to create a ~String~ instance,  it's an opaque pointer to ~struct Str~. The variable created via ~SMART_STRING~ will be freed automatically when the variable goes out of scope.
+Usually, it's convenient to use ~defer_string~ to create a ~String~ instance,  it's an opaque pointer to ~struct Str~. The variable created via ~defer_string~ will be freed automatically when the variable goes out of scope.
 
-Here is what ~SMART_STRING(abc) = Str_from_empty();~ does under the hood:
+Here is what ~defer_string(abc) = Str_from_empty();~ does under the hood:
 
 1. Create ~struct Str~ instance on the heap, attach the ~cleanup~ attribute to that variable, then the ~auto_free_string~ function gets call when it out of scope.
 
@@ -479,7 +479,7 @@ It works like the same with the ~PRINT_MEMORY_BLOCK~ macro but focuses on the ~S
 **** Example:
 
 #+BEGIN_SRC c
-  SMART_STRING(str1) = Str_from_str("String in vector");
+  defer_string(str1) = Str_from_str("String in vector");
   PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
 
   // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
@@ -810,16 +810,16 @@ Check whether the given bit is 1 or not
 
 Wrap the =C-style file= APIs.
 
-The ~SMART_FILE~ macro ensures the heap-allocated instance auto-free when it goes out of its scope.
+The ~defer_file~ macro ensures the heap-allocated instance auto-free when it goes out of its scope.
 
 Examples:
 
 *** 8.1 Open existing file and read all data into internal buffer
 
 #+BEGIN_SRC c
-  // `SMART_FILE(variable_name);`
+  // `defer_file(variable_name);`
   char *filename = "/home/wison/temp/test.log";
-  SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
+  defer_file(my_file) = File_open(filename, FM_READ_ONLY);
   if (File_is_open_successfully(my_file)) {
       usize read_bytes = File_load_into_buffer(my_file);
       const char *file_content = File_get_data(my_file);
@@ -861,9 +861,9 @@ Examples:
 *** 8.2 Open non-existing file
 
 #+BEGIN_SRC c
-  // `SMART_FILE(variable_name);`
+  // `defer_file(variable_name);`
   char *filename = "/home/wison/temp/non-exists.log";
-  SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
+  defer_file(my_file) = File_open(filename, FM_READ_ONLY);
 
   #ifdef ENABLE_DEBUG_LOG
   File_print_debug_info(my_file);

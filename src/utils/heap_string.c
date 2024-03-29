@@ -1,4 +1,4 @@
-#include "str.h"
+#include "heap_string.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -14,20 +14,20 @@
 #endif
 
 //
-// `String` is an opaque pointer which uses to hide the `struct Str` detail,
-// which means `struct Str` doesn't exists in the outside world. If you want
-// to get back `sizeof(struct Str)` for some reasons, this function is the
+// `String` is an opaque pointer which uses to hide the `struct HeapString` detail,
+// which means `struct HeapString` doesn't exists in the outside world. If you want
+// to get back `sizeof(struct HeapString)` for some reasons, this function is the
 // anwser.
 //
-usize Str_struct_size(void) {
-    return sizeof(struct Str);
+usize HS_struct_size(void) {
+    return sizeof(struct HeapString);
 }
 
 /*
- * Init empty `struct Str`
+ * Init empty `struct HeapString`
  */
-void Str_init(String self) {
-    *self = (struct Str){
+void HS_init(String self) {
+    *self = (struct HeapString){
         ._capacity = 0,
         ._len      = 0,
         ._buffer   = NULL,
@@ -43,10 +43,10 @@ void Str_init(String self) {
 }
 
 /*
- * Init empty `struct Str` that ability to hold `capacity` characters
+ * Init empty `struct HeapString` that ability to hold `capacity` characters
  */
-void Str_init_with_capacity(String self, usize capacity) {
-    *self = (struct Str){
+void HS_init_with_capacity(String self, usize capacity) {
+    *self = (struct HeapString){
         ._capacity = capacity,
         ._len      = 0,
         ._buffer   = calloc(capacity, 1),
@@ -65,10 +65,10 @@ void Str_init_with_capacity(String self, usize capacity) {
 /*
  * Create from empty
  */
-String Str_from_empty(void) {
-    String string = malloc(sizeof(struct Str));
+String HS_from_empty(void) {
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = 0,
         ._len      = 0,
         ._buffer   = NULL,
@@ -88,10 +88,10 @@ String Str_from_empty(void) {
 /*
  * Create from empty that ability to hold `capacity` characters
  */
-String Str_from_empty_with_capacity(usize capacity) {
-    String string = malloc(sizeof(struct Str));
+String HS_from_empty_with_capacity(usize capacity) {
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = capacity,
         ._len      = 0,
         ._buffer   = calloc(capacity, 1),
@@ -112,12 +112,12 @@ String Str_from_empty_with_capacity(usize capacity) {
 /*
  * Create from `char[]`
  */
-String Str_from_arr(const char arr[]) {
+String HS_from_arr(const char arr[]) {
     usize temp_len = (arr != NULL) ? strlen(arr) : 0;
 
-    String string = malloc(sizeof(struct Str));
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = temp_len > 0 ? temp_len + 1 : 0,
         ._len      = temp_len > 0 ? temp_len : 0,
         ._buffer   = NULL,
@@ -144,12 +144,12 @@ String Str_from_arr(const char arr[]) {
 /*
  * Create from `char*`
  */
-String Str_from_str(const char *str) {
+String HS_from_str(const char *str) {
     usize temp_len = (str != NULL) ? strlen(str) : 0;
 
-    String string = malloc(sizeof(struct Str));
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = temp_len > 0 ? temp_len + 1 : 0,
         ._len      = temp_len > 0 ? temp_len : 0,
         ._buffer   = NULL,
@@ -177,7 +177,7 @@ String Str_from_str(const char *str) {
 /*
  * Create from `char*` with give position and count
  */
-String Str_from_str_with_pos(const char *str, int start_pos, int count) {
+String HS_from_str_with_pos(const char *str, int start_pos, int count) {
     int temp_str_len = (str != NULL) ? strlen(str) : 0;
     usize temp_len   = ((start_pos >= 0) && (count >= 1) &&
                       (start_pos + count - 1 <= temp_str_len - 1))
@@ -186,9 +186,9 @@ String Str_from_str_with_pos(const char *str, int start_pos, int count) {
     /* printf("\n>>> temp_str_len: %lu\n", temp_str_len); */
     /* printf("\n>>> temp_len: %lu\n", temp_len); */
 
-    String string = malloc(sizeof(struct Str));
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = temp_len > 0 ? temp_len + 1 : 0,
         ._len      = temp_len > 0 ? temp_len : 0,
         ._buffer   = NULL,
@@ -220,10 +220,10 @@ String Str_from_str_with_pos(const char *str, int start_pos, int count) {
  * Clone from the given `String` instance but don't touch the heap-allocated
  * memory it owned
  */
-String Str_clone_from(const String other) {
-    String string = malloc(sizeof(struct Str));
+String HS_clone_from(const String other) {
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = 0,
         ._len      = 0,
         ._buffer   = NULL,
@@ -243,7 +243,7 @@ String Str_clone_from(const String other) {
                   string,
                   string->_capacity,
                   string->_buffer,
-                  Str_as_str(other));
+                  HS_as_str(other));
 #endif
     } else {
 #if ENABLE_DEBUG_LOG
@@ -252,7 +252,7 @@ String Str_clone_from(const String other) {
                   "self ptr: %p, capacity: %lu, other: %s",
                   string,
                   string->_capacity,
-                  Str_as_str(other));
+                  HS_as_str(other));
 #endif
     }
 
@@ -263,10 +263,10 @@ String Str_clone_from(const String other) {
  * Move from the given `String` instance and move ownership of the
  * heap-allocated memory to the newly created `String` instance
  */
-String Str_move_from(String other) {
-    String string = malloc(sizeof(struct Str));
+String HS_move_from(String other) {
+    String string = malloc(sizeof(struct HeapString));
 
-    *string = (struct Str){
+    *string = (struct HeapString){
         ._capacity = 0,
         ._len      = 0,
         ._buffer   = NULL,
@@ -289,7 +289,7 @@ String Str_move_from(String other) {
                   string,
                   string->_capacity,
                   string->_buffer,
-                  Str_as_str(other));
+                  HS_as_str(other));
 #endif
     } else {
 #if ENABLE_DEBUG_LOG
@@ -298,7 +298,7 @@ String Str_move_from(String other) {
                   "self ptr: %p, capacity: %lu, other: %s",
                   string,
                   string->_capacity,
-                  Str_as_str(other));
+                  HS_as_str(other));
 #endif
     }
 
@@ -317,18 +317,18 @@ String Str_move_from(String other) {
 /*
  * Push other `String *` at the end
  */
-void Str_push_other(String self, const String other) {
+void HS_push_other(String self, const String other) {
     if (self == NULL || other == NULL) {
         return;
     }
 
-    Str_push_str(self, Str_as_str(other));
+    HS_push_str(self, HS_as_str(other));
 }
 
 /*
  * Push the given `char *` at the end
  */
-void Str_push_str(String self, const char *str_to_push) {
+void HS_push_str(String self, const char *str_to_push) {
     if (self == NULL || str_to_push == NULL) {
         return;
     }
@@ -357,7 +357,7 @@ void Str_push_str(String self, const char *str_to_push) {
 #ifdef ENABLE_DEBUG_LOG
         usize old_capacity = self->_capacity;
         DEBUG_LOG(String,
-                  Str_push_str,
+                  HS_push_str,
                   "Realloc needed, current capacity: %lu, new capacity: %lu, "
                   "self->_buffer: %p",
                   old_capacity,
@@ -403,18 +403,18 @@ void Str_push_str(String self, const char *str_to_push) {
 /*
  * Insert `String *` to the beginning
  */
-void Str_insert_other_to_begin(String self, const String other) {
+void HS_insert_other_to_begin(String self, const String other) {
     if (self == NULL || other == NULL) {
         return;
     }
 
-    Str_insert_str_to_begin(self, Str_as_str(other));
+    HS_insert_str_to_begin(self, HS_as_str(other));
 }
 
 /*
  * Insert `char *` to the beginning
  */
-void Str_insert_str_to_begin(String self, const char *str_to_insert) {
+void HS_insert_str_to_begin(String self, const char *str_to_insert) {
     if (self == NULL || str_to_insert == NULL) {
         return;
     }
@@ -439,7 +439,7 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
 #ifdef ENABLE_DEBUG_LOG
         usize old_capacity = self->_capacity;
         DEBUG_LOG(String,
-                  Str_push_str,
+                  HS_push_str,
                   "Realloc needed, current capacity: %lu, new capacity: %lu, "
                   "self->_buffer: %p",
                   old_capacity,
@@ -485,40 +485,40 @@ void Str_insert_str_to_begin(String self, const char *str_to_insert) {
 /*
  * Insert `char *` at the given index
  */
-// void Str_insert_at_index(String self, const char *str_to_insert,
+// void HS_insert_at_index(String self, const char *str_to_insert,
 //                          usize index_to_insert) {}
 
 /*
  * Get back string length
  */
-usize Str_length(const String self) {
+usize HS_length(const String self) {
     return (self != NULL) ? self->_len : 0;
 }
 
 /*
  * Get back capacity
  */
-usize Str_capacity(const String self) {
+usize HS_capacity(const String self) {
     return (self != NULL) ? self->_capacity : 0;
 }
 
 /*
  * Get back `char *`
  */
-const char *Str_as_str(const String self) {
+const char *HS_as_str(const String self) {
     return (self != NULL && self->_buffer != NULL) ? self->_buffer : NULL;
 }
 
 /*
  * Find implementation (not public)
  */
-long Str_find_substring(const String self,
+long HS_find_substring(const String self,
                         const char *str_to_find,
                         bool case_sensitive) {
     if (self == NULL || self->_buffer == NULL || str_to_find == NULL ||
         strlen(str_to_find) <= 0) {
 #if ENABLE_LINK_LIST_DEBUG
-        printf("\n>>> Str_find_substring - NULL, ignore the search.");
+        printf("\n>>> HS_find_substring - NULL, ignore the search.");
 #endif
         return -1;
     }
@@ -533,7 +533,7 @@ long Str_find_substring(const String self,
 
 #if ENABLE_LINK_LIST_DEBUG
     printf(
-        "\n>>> Str_find_substring - temp_ptr: %p, buffer_ptr: %p, index: %li, "
+        "\n>>> HS_find_substring - temp_ptr: %p, buffer_ptr: %p, index: %li, "
         "temp_ptr == 0: %d",
         temp_ptr,
         self->_buffer,
@@ -547,28 +547,28 @@ long Str_find_substring(const String self,
 /*
  * Find the given `char *` index, return `-1` if not found.
  */
-long Str_index_of(const String self, const char *str_to_find) {
-    return Str_find_substring(self, str_to_find, false);
+long HS_index_of(const String self, const char *str_to_find) {
+    return HS_find_substring(self, str_to_find, false);
 }
 
 /*
  * Find the given `char *` (case sensitive) index, return `-1` if not found.
  */
-long Str_index_of_case_sensitive(const String self, const char *str_to_find) {
-    return Str_find_substring(self, str_to_find, true);
+long HS_index_of_case_sensitive(const String self, const char *str_to_find) {
+    return HS_find_substring(self, str_to_find, true);
 }
 
 /*
  * Check whether contain the given `char *` or not
  */
-bool Str_contains(const String self, char *str_to_check) {
-    return Str_find_substring(self, str_to_check, false) != -1;
+bool HS_contains(const String self, char *str_to_check) {
+    return HS_find_substring(self, str_to_check, false) != -1;
 }
 
 /*
  * Reset  to empty string
  */
-void Str_reset_to_empty(String self) {
+void HS_reset_to_empty(String self) {
     if (self != NULL && self->_buffer != NULL) {
         self->_len      = 0;
         self->_capacity = 0;
@@ -586,7 +586,7 @@ void Str_reset_to_empty(String self) {
  * Someone calls `memcpy` to do a shallow copy which means the `self->buffer`
  * ownership has moved away.
  */
-void Str_reset_to_empty_without_freeing_buffer(String self) {
+void HS_reset_to_empty_without_freeing_buffer(String self) {
     if (self != NULL) {
         self->_len      = 0;
         self->_capacity = 0;
@@ -597,7 +597,7 @@ void Str_reset_to_empty_without_freeing_buffer(String self) {
 /*
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`
  */
-void Str_free(String self) {
+void HS_free(String self) {
     if (self == NULL) return;
 
     if (self->_buffer != NULL) {
@@ -615,7 +615,7 @@ void Str_free(String self) {
  * Free allocated memory, reset length to 0 and internal buffer to `NULL`
  * But NOT free `self`. Usually, use this on stack-allocated variable
  */
-void Str_free_buffer_only(String self) {
+void HS_free_buffer_only(String self) {
     if (self == NULL) return;
 
     if (self->_buffer != NULL) {
@@ -637,7 +637,7 @@ void auto_free_string(String *ptr) {
               auto_free_string,
               "out of scope with string ptr: %p, as_str: %s",
               *ptr,
-              Str_as_str(*ptr));
+              HS_as_str(*ptr));
 #endif
-    Str_free(*ptr);
+    HS_free(*ptr);
 }

@@ -16,7 +16,7 @@
 #include "utils/memory.h"
 #include "utils/random.h"
 #include "utils/smart_ptr.h"
-#include "utils/str.h"
+#include "utils/heap_string.h"
 #include "utils/timer.h"
 
 //
@@ -43,18 +43,18 @@ struct LL create_integer_list_on_stack(usize init_value) {
 //
 //
 String create_string(const char str[]) {
-    String temp_str = Str_from_arr(str);
+    String temp_str = HS_from_arr(str);
     printf("\n>>> create_string - temp_str len: %lu, value: %s",
-           Str_length(temp_str),
-           Str_as_str(temp_str));
+           HS_length(temp_str),
+           HS_as_str(temp_str));
 
-    SMART_STRING(temp_str_2) = Str_from_str("Hey Hey Hey!");
-    Str_length(temp_str_2);
+    defer_string(temp_str_2) = HS_from_str("Hey Hey Hey!");
+    HS_length(temp_str_2);
     return temp_str;
 }
 
 String clone_string(const String original) {
-    return Str_clone_from(original);
+    return HS_clone_from(original);
 }
 
 //
@@ -140,159 +140,159 @@ void test_string(void) {
     //
     // String
     //
-    SMART_STRING(my_name) = Str_from_str("Wison Ye:)");
-    Str_length(my_name);
+    defer_string(my_name) = HS_from_str("Wison Ye:)");
+    HS_length(my_name);
 
-    SMART_STRING(empty_str_1) = Str_from_str(NULL);
-    SMART_STRING(empty_str_2) = Str_from_str("");
+    defer_string(empty_str_1) = HS_from_str(NULL);
+    defer_string(empty_str_2) = HS_from_str("");
     printf("\n>> empty_str_1 len: %lu, value: %s",
-           Str_length(empty_str_1),
-           Str_as_str(empty_str_1) == NULL ? "NULL" : Str_as_str(empty_str_1));
+           HS_length(empty_str_1),
+           HS_as_str(empty_str_1) == NULL ? "NULL" : HS_as_str(empty_str_1));
     printf("\n>> empty_str_2 len: %lu, value: '%s'",
-           Str_length(empty_str_2),
-           Str_as_str(empty_str_2) == NULL ? "NULL" : Str_as_str(empty_str_2));
+           HS_length(empty_str_2),
+           HS_as_str(empty_str_2) == NULL ? "NULL" : HS_as_str(empty_str_2));
 
-    SMART_STRING(clone_from_empty_str) = Str_clone_from(empty_str_2);
+    defer_string(clone_from_empty_str) = HS_clone_from(empty_str_2);
     printf("\n>> clone_from_empty_str len: %lu, value: '%s'",
-           Str_length(clone_from_empty_str),
-           Str_as_str(clone_from_empty_str) == NULL
+           HS_length(clone_from_empty_str),
+           HS_as_str(clone_from_empty_str) == NULL
                ? "NULL"
-               : Str_as_str(clone_from_empty_str));
+               : HS_as_str(clone_from_empty_str));
 
     char temp_id[]   = "123456789";
     char temp_id_2[] = {'A', 'B', 'C', 'D', '\0'};
     printf("\n>>> temp_id: %s", temp_id);
     printf("\n>>> temp_id_2: %s", temp_id_2);
 
-    SMART_STRING(str_1) = Str_from_arr(temp_id);
-    SMART_STRING(str_2) = Str_from_arr(temp_id_2);
+    defer_string(str_1) = HS_from_arr(temp_id);
+    defer_string(str_2) = HS_from_arr(temp_id_2);
 
     printf("\n>> str_1 len: %lu, value: %s",
-           Str_length(str_1),
-           Str_as_str(str_1));
+           HS_length(str_1),
+           HS_as_str(str_1));
     printf("\n>> str_2 len: %lu, value: %s",
-           Str_length(str_2),
-           Str_as_str(str_2));
+           HS_length(str_2),
+           HS_as_str(str_2));
 
     char order[]        = "MyOrder-ZXCVB";
-    SMART_STRING(str_3) = create_string(order);
+    defer_string(str_3) = create_string(order);
     printf("\n>> str_3 len: %lu, value: %s",
-           Str_length(str_3),
-           Str_as_str(str_3));
+           HS_length(str_3),
+           HS_as_str(str_3));
 
-    SMART_STRING(clone_from_order_str) = Str_clone_from(str_3);
+    defer_string(clone_from_order_str) = HS_clone_from(str_3);
     printf("\n>> clone_from_order_str len: %lu, value: %s",
-           Str_length(clone_from_order_str),
-           Str_as_str(clone_from_order_str) == NULL
+           HS_length(clone_from_order_str),
+           HS_as_str(clone_from_order_str) == NULL
                ? "NULL"
-               : Str_as_str(clone_from_order_str));
+               : HS_as_str(clone_from_order_str));
 
-    SMART_STRING(original_str) = Str_from_str("Wison Ye:)");
+    defer_string(original_str) = HS_from_str("Wison Ye:)");
     printf("\n>>> Search '' in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, ""));
+           HS_as_str(original_str),
+           HS_index_of(original_str, ""));
     printf("\n>>> Search NULL in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, NULL));
+           HS_as_str(original_str),
+           HS_index_of(original_str, NULL));
     printf("\n>>> Search ' ' in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, " "));
+           HS_as_str(original_str),
+           HS_index_of(original_str, " "));
     printf("\n>>> Search 'w' in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, "w"));
+           HS_as_str(original_str),
+           HS_index_of(original_str, "w"));
     printf("\n>>> Search 'W' in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, "W"));
+           HS_as_str(original_str),
+           HS_index_of(original_str, "W"));
     printf("\n>>> Search ':)' in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, ":)"));
+           HS_as_str(original_str),
+           HS_index_of(original_str, ":)"));
     printf("\n>>> Search 'a' in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of(original_str, "a"));
+           HS_as_str(original_str),
+           HS_index_of(original_str, "a"));
     printf("\n>>> Search 'w' (case-sensitive) in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of_case_sensitive(original_str, "w"));
+           HS_as_str(original_str),
+           HS_index_of_case_sensitive(original_str, "w"));
     printf("\n>>> Search 'Y' (case-sensitive) in '%s', index: %li",
-           Str_as_str(original_str),
-           Str_index_of_case_sensitive(original_str, "Y"));
+           HS_as_str(original_str),
+           HS_index_of_case_sensitive(original_str, "Y"));
     printf("\n>>> Check whether contains ':)' in '%s', containers: %s",
-           Str_as_str(original_str),
-           Str_contains(original_str, ":)") ? "TRUE" : "FALSE");
+           HS_as_str(original_str),
+           HS_contains(original_str, ":)") ? "TRUE" : "FALSE");
     printf("\n>>> Check whether contains 'on' in '%s', containers: %s",
-           Str_as_str(original_str),
-           Str_contains(original_str, "fi") ? "TRUE" : "FALSE");
+           HS_as_str(original_str),
+           HS_contains(original_str, "fi") ? "TRUE" : "FALSE");
 
-    SMART_STRING(src_str)    = Str_from_str("Hey:)");
-    SMART_STRING(cloned_str) = clone_string(src_str);
+    defer_string(src_str)    = HS_from_str("Hey:)");
+    defer_string(cloned_str) = clone_string(src_str);
 
     printf("\n>> cloned_str len: %lu, value: %s",
-           Str_length(cloned_str),
-           Str_as_str(cloned_str));
+           HS_length(cloned_str),
+           HS_as_str(cloned_str));
 
     // String push to the end
-    SMART_STRING(temp_str)              = Str_from_str("Hey-->");
-    SMART_STRING(empty_str_before_push) = Str_from_empty();
-    Str_push_str(empty_str_before_push, "");
-    Str_push_str(empty_str_before_push, NULL);
-    Str_push_str(empty_str_before_push, "My name is: ");
-    Str_push_str(empty_str_before_push, "Wison Ye");
-    Str_push_str(empty_str_before_push, ":)");
+    defer_string(temp_str)              = HS_from_str("Hey-->");
+    defer_string(empty_str_before_push) = HS_from_empty();
+    HS_push_str(empty_str_before_push, "");
+    HS_push_str(empty_str_before_push, NULL);
+    HS_push_str(empty_str_before_push, "My name is: ");
+    HS_push_str(empty_str_before_push, "Wison Ye");
+    HS_push_str(empty_str_before_push, ":)");
     printf("\n>> empty_str_before_push len: %lu, value: %s",
-           Str_length(empty_str_before_push),
-           Str_as_str(empty_str_before_push));
+           HS_length(empty_str_before_push),
+           HS_as_str(empty_str_before_push));
 
-    Str_push_str(empty_str_before_push, Str_as_str(temp_str));
+    HS_push_str(empty_str_before_push, HS_as_str(temp_str));
     printf("\n>> empty_str_before_push len: %lu, value: %s",
-           Str_length(empty_str_before_push),
-           Str_as_str(empty_str_before_push));
+           HS_length(empty_str_before_push),
+           HS_as_str(empty_str_before_push));
 
-    Str_reset_to_empty(empty_str_before_push);
+    HS_reset_to_empty(empty_str_before_push);
     printf("\n>> empty_str_before_push len: %lu, value: %s",
-           Str_length(empty_str_before_push),
-           Str_as_str(empty_str_before_push));
+           HS_length(empty_str_before_push),
+           HS_as_str(empty_str_before_push));
 
     // String insert to the beginning
-    SMART_STRING(empty_str_before_insert) = Str_from_empty();
-    Str_insert_str_to_begin(empty_str_before_insert, "");
-    Str_insert_str_to_begin(empty_str_before_insert, NULL);
-    Str_insert_str_to_begin(empty_str_before_insert, "My name is: ");
-    Str_insert_str_to_begin(empty_str_before_insert, "Wison Ye");
-    Str_insert_str_to_begin(empty_str_before_insert, ":)");
+    defer_string(empty_str_before_insert) = HS_from_empty();
+    HS_insert_str_to_begin(empty_str_before_insert, "");
+    HS_insert_str_to_begin(empty_str_before_insert, NULL);
+    HS_insert_str_to_begin(empty_str_before_insert, "My name is: ");
+    HS_insert_str_to_begin(empty_str_before_insert, "Wison Ye");
+    HS_insert_str_to_begin(empty_str_before_insert, ":)");
     printf("\n>> empty_str_before_insert len: %lu, value: %s",
-           Str_length(empty_str_before_insert),
-           Str_as_str(empty_str_before_insert));
+           HS_length(empty_str_before_insert),
+           HS_as_str(empty_str_before_insert));
 
-    Str_reset_to_empty(empty_str_before_insert);
+    HS_reset_to_empty(empty_str_before_insert);
     printf("\n>> empty_str_before_insert len: %lu, value: %s",
-           Str_length(empty_str_before_insert),
-           Str_as_str(empty_str_before_insert));
+           HS_length(empty_str_before_insert),
+           HS_as_str(empty_str_before_insert));
 
-    SMART_STRING(other_str) = Str_from_str("I'm other str.");
-    Str_insert_str_to_begin(empty_str_before_insert, "Hey:)");
-    Str_insert_other_to_begin(empty_str_before_insert, other_str);
+    defer_string(other_str) = HS_from_str("I'm other str.");
+    HS_insert_str_to_begin(empty_str_before_insert, "Hey:)");
+    HS_insert_other_to_begin(empty_str_before_insert, other_str);
     printf("\n>> empty_str_before_insert len: %lu, value: %s",
-           Str_length(empty_str_before_insert),
-           Str_as_str(empty_str_before_insert));
+           HS_length(empty_str_before_insert),
+           HS_as_str(empty_str_before_insert));
 
-    SMART_STRING(s1) = Str_from_str("123456");
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, s1, Str_struct_size());
+    defer_string(s1) = HS_from_str("123456");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, s1, HS_struct_size());
 
-    SMART_STRING(clone_from_s1) = Str_clone_from(s1);
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, Str_struct_size());
+    defer_string(clone_from_s1) = HS_clone_from(s1);
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, HS_struct_size());
 
-    SMART_STRING(move_from_clone_s1) = Str_move_from(clone_from_s1);
+    defer_string(move_from_clone_s1) = HS_move_from(clone_from_s1);
 
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, Str_struct_size());
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String, clone_from_s1, HS_struct_size());
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(String,
                                       move_from_clone_s1,
-                                      Str_struct_size());
+                                      HS_struct_size());
 
     printf("\n>>> clone_from_1 - len: %lu, value: %s",
-           Str_length(clone_from_s1),
-           Str_as_str(clone_from_s1));
+           HS_length(clone_from_s1),
+           HS_as_str(clone_from_s1));
     printf("\n>>> move_from_clone_s1 - len: %lu, value: %s",
-           Str_length(move_from_clone_s1),
-           Str_as_str(move_from_clone_s1));
+           HS_length(move_from_clone_s1),
+           HS_as_str(move_from_clone_s1));
 }
 
 //
@@ -488,7 +488,7 @@ String get_person_desc(Person *self) {
              self->first_name,
              self->last_name,
              self->age);
-    String desc = Str_from_str(buffer);
+    String desc = HS_from_str(buffer);
     return desc;
 }
 
@@ -505,8 +505,8 @@ void test_vector(void) {
     Vec_push(bool_vec, &false_value);
     Vec_push(bool_vec, &true_value);
     String bool_vec_desc = Vec_join(bool_vec, " , ", NULL);
-    printf("\n>>> bool_vec_desc: %s\n", Str_as_str(bool_vec_desc));
-    Str_free(bool_vec_desc);
+    printf("\n>>> bool_vec_desc: %s\n", HS_as_str(bool_vec_desc));
+    HS_free(bool_vec_desc);
 
     //
     // Empty vec
@@ -547,8 +547,8 @@ void test_vector(void) {
                   temp_short_arr[sa_index]);
     }
     String u16_vec_desc = Vec_join(u16_vec, " , ", NULL);
-    printf("\n>>> u16_vec_desc: %s\n", Str_as_str(u16_vec_desc));
-    Str_free(u16_vec_desc);
+    printf("\n>>> u16_vec_desc: %s\n", HS_as_str(u16_vec_desc));
+    HS_free(u16_vec_desc);
 
     //
     // int vec
@@ -569,25 +569,25 @@ void test_vector(void) {
                   temp_int_arr[index]);
     }
     String int_vec_desc = Vec_join(int_vec, " , ", NULL);
-    printf("\n>>> int_vec_desc: %s\n", Str_as_str(int_vec_desc));
-    Str_free(int_vec_desc);
+    printf("\n>>> int_vec_desc: %s\n", HS_as_str(int_vec_desc));
+    HS_free(int_vec_desc);
 
     //
     // String vec
     //
-    SMART_STRING(temp_str_1) = Str_from_str("Vector works:)");
-    SMART_STRING(temp_str_2) = Str_from_str("Generic vector works:)");
-    SMART_STRING(temp_str_3) =
-        Str_from_str("My Generic vector works, yeah!!!:)>>>>:(");
+    defer_string(temp_str_1) = HS_from_str("Vector works:)");
+    defer_string(temp_str_2) = HS_from_str("Generic vector works:)");
+    defer_string(temp_str_3) =
+        HS_from_str("My Generic vector works, yeah!!!:)>>>>:(");
 
-    SMART_VECTOR_WITH_CAPACITY(string_vec, struct Str, 3, NULL);
+    SMART_VECTOR_WITH_CAPACITY(string_vec, struct HeapString, 3, NULL);
     Vec_push(string_vec, temp_str_1);
     Vec_push(string_vec, temp_str_2);
     Vec_push(string_vec, temp_str_3);
 
     String string_vec_desc = Vec_join(string_vec, " , ", NULL);
-    printf("\n>>> string_vec: %s\n", Str_as_str(string_vec_desc));
-    Str_free(string_vec_desc);
+    printf("\n>>> string_vec: %s\n", HS_as_str(string_vec_desc));
+    HS_free(string_vec_desc);
 
     //
     // Person list
@@ -624,9 +624,9 @@ void test_vector(void) {
     String person_vec_desc =
         Vec_join(person_list,
                  " , ",
-                 (struct Str * (*)(void *)) get_person_desc);
-    printf("\n>>> person_vec: %s\n", Str_as_str(person_vec_desc));
-    Str_free(person_vec_desc);
+                 (struct HeapString * (*)(void *)) get_person_desc);
+    printf("\n>>> person_vec: %s\n", HS_as_str(person_vec_desc));
+    HS_free(person_vec_desc);
 
     // Double list
     double double_arr[]  = {11.11, 22.22, 33.33};
@@ -649,28 +649,28 @@ void test_vector(void) {
 void test_vector_element_destructor(void) {
     SMART_VECTOR_WITH_CAPACITY(vec, String, 2, NULL);
 
-    String str1 = Str_from_str("String in vector");
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
-    String str2 = Str_from_str("Second string in vector");
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str2, Str_struct_size());
+    String str1 = HS_from_str("String in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct HeapString, str1, HS_struct_size());
+    String str2 = HS_from_str("Second string in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct HeapString, str2, HS_struct_size());
 
     Vec_push(vec, str1);
     Vec_push(vec, str2);
-    printf("\n>>> Str_struct_size(): %lu", Str_struct_size());
+    printf("\n>>> HS_struct_size(): %lu", HS_struct_size());
 
-    /* const String ele1 = (const String)Vec_get(vec, 0, Str_struct_size()); */
-    /* const String ele2 = (const String)Vec_get(vec, 1, Str_struct_size()); */
-    /* printf("\n>>> ele1 ptr: %p, value: %s", ele1, Str_as_str(ele1)); */
-    /* printf("\n>>> ele2 ptr: %p, value: %s", ele2, Str_as_str(ele2)); */
+    /* const String ele1 = (const String)Vec_get(vec, 0, HS_struct_size()); */
+    /* const String ele2 = (const String)Vec_get(vec, 1, HS_struct_size()); */
+    /* printf("\n>>> ele1 ptr: %p, value: %s", ele1, HS_as_str(ele1)); */
+    /* printf("\n>>> ele2 ptr: %p, value: %s", ele2, HS_as_str(ele2)); */
 
     /* const VectorIteractor vec_it = Vec_iter(vec); */
     /* void *it_string_item = vec_it.items; */
     /* for (usize i = 0; i < vec_it.length; i++) { */
-    /*     String temp_str = (String)(it_string_item + i * Str_struct_size());
+    /*     String temp_str = (String)(it_string_item + i * HS_struct_size());
      */
     /*     DEBUG_LOG(Main, test_vector_element_destructor, */
     /*               "vec element ptr: %p, string value: %s", temp_str, */
-    /*               Str_as_str(temp_str)); */
+    /*               HS_as_str(temp_str)); */
     /* } */
 
     DEBUG_LOG(Main,
@@ -711,13 +711,13 @@ void test_memory(void) {
     PRINT_MEMORY_BLOCK(int, data);
     PRINT_MEMORY_BLOCK(struct Person, me)
 
-    SMART_STRING(str1) = Str_from_str("String in vector");
-    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+    defer_string(str1) = HS_from_str("String in vector");
+    PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct HeapString, str1, HS_struct_size());
     printf("\n>>>\n");
 }
 
 String return_string_on_the_heap(void) {
-    String str_on_the_heap = Str_from_str("String allocated on the heap:)");
+    String str_on_the_heap = HS_from_str("String allocated on the heap:)");
     return str_on_the_heap;
 }
 
@@ -747,7 +747,7 @@ void test_smart_ptr(void) {
               test_smart_ptr,
               "return_str: %p, value: %s",
               return_str,
-              Str_as_str(return_str));
+              HS_as_str(return_str));
     DEBUG_LOG(Main,
               test_smart_ptr,
               "return_vec: %p, len: %lu, first elemnt: %f",
@@ -847,7 +847,7 @@ void test_file(void) {
     // filename = "/home/wison/temp/test.logaaa";
 #endif
 
-    SMART_FILE(my_file) = File_open(filename, FM_READ_ONLY);
+    defer_file(my_file) = File_open(filename, FM_READ_ONLY);
     if (File_is_open_successfully(my_file)) {
         usize read_bytes         = File_load_into_buffer(my_file);
         const char *file_content = File_get_data(my_file);
@@ -903,7 +903,7 @@ int main(void) {
     /* test_file(); */
 
     /* test_link_list(); */
-    /* test_string(); */
+    test_string();
     /* test_log_macro(); */
     /* test_vector(); */
     /* test_vector_element_destructor(); */
@@ -918,23 +918,23 @@ int main(void) {
 
     // unimplemented_function();
 
-    /* SMART_STRING(my_str) = Str_from_str("My name is Wison Ye"); */
+    /* defer_string(my_str) = HS_from_str("My name is Wison Ye"); */
     /* DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3)); */
     /* DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2); */
-    /* DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
-    /* INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
-    /* WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
-    /* ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str)); */
+    /* DEBUG_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str)); */
+    /* INFO_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str)); */
+    /* WARN_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str)); */
+    /* ERROR_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str)); */
 
-    // String my_name_str = Str_from_str("Wison Ye");
-    // String clone_from_empty_str = Str_clone(&my_name_str);
+    // String my_name_str = HS_from_str("Wison Ye");
+    // String clone_from_empty_str = HS_clone(&my_name_str);
     // DEBUG_LOG(Main, StringTest, "clone_from_empty_str len: %lu, value: %s",
-    //           Str_length(&clone_from_empty_str),
-    //           Str_as_str(&clone_from_empty_str) == NULL
+    //           HS_length(&clone_from_empty_str),
+    //           HS_as_str(&clone_from_empty_str) == NULL
     //               ? "NULL"
-    //               : Str_as_str(&clone_from_empty_str));
-    // Str_free(&my_name_str);
-    // Str_free(&clone_from_empty_str);
+    //               : HS_as_str(&clone_from_empty_str));
+    // HS_free(&my_name_str);
+    // HS_free(&clone_from_empty_str);
 
     /* test_hex_buffer(); */
     /* test_memory(); */
@@ -942,7 +942,7 @@ int main(void) {
     /* test_smart_ptr(); */
     /* test_bits(); */
 
-    test_random_numbers();
+    /* test_random_numbers(); */
 
     return 0;
 }

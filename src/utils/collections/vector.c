@@ -9,7 +9,7 @@
 
     #include "../log.h"
     #include "../memory.h"
-    #include "../str.h"
+    #include "../heap_string.h"
 #endif
 
 /*
@@ -28,7 +28,7 @@ struct Vec {
  *
  */
 bool is_string_type(const char *type) {
-    return ((strcmp(type, "struct Str") == 0) || (strcmp(type, "String") == 0));
+    return ((strcmp(type, "struct HeapString") == 0) || (strcmp(type, "String") == 0));
 }
 
 /*
@@ -55,7 +55,7 @@ Vector Vec_new(usize element_type_size,
         ._element_type      = element_type,
         ._items             = NULL,
         .element_destructor = is_string_type(element_type)
-                                  ? (void (*)(void *))Str_free_buffer_only
+                                  ? (void (*)(void *))HS_free_buffer_only
                                   : element_destructor,
     };
     return vec;
@@ -77,7 +77,7 @@ Vector Vec_with_capacity(usize element_type_size,
         ._element_type      = element_type,
         ._items             = malloc(element_type_size * capacity),
         .element_destructor = is_string_type(element_type)
-                                  ? (void (*)(void *))Str_free_buffer_only
+                                  ? (void (*)(void *))HS_free_buffer_only
                                   : element_destructor,
     };
 
@@ -152,12 +152,12 @@ void Vec_push(Vector self, void *element) {
     // Handly reset for `String` instance:
     //
     // Reset the `String` to empty, then you don't need to call
-    // `Str_reset_to_empty_without_freeing_buffer` manually!!!
+    // `HS_reset_to_empty_without_freeing_buffer` manually!!!
     //
     if (is_string_type(self->_element_type)) {
-        ((struct Str *)element)->_len      = 0;
-        ((struct Str *)element)->_capacity = 0;
-        ((struct Str *)element)->_buffer   = 0;
+        ((struct HeapString *)element)->_len      = 0;
+        ((struct HeapString *)element)->_capacity = 0;
+        ((struct HeapString *)element)->_buffer   = 0;
     }
 }
 
@@ -199,7 +199,7 @@ const void *Vec_get(const Vector self, usize index) {
 String Vec_join(const Vector self,
                 char *delemiter,
                 String (*custom_struct_desc)(void *ptr)) {
-    if (self == NULL || self->_length <= 0) return Str_from_empty();
+    if (self == NULL || self->_length <= 0) return HS_from_empty();
 
     //
     // Calaculte the pre-allocated memory to hold all element + delemiter
@@ -233,7 +233,7 @@ String Vec_join(const Vector self,
               capacity);
 #endif
 
-    String result = Str_from_empty_with_capacity(capacity);
+    String result = HS_from_empty_with_capacity(capacity);
 
     for (usize index = 0; index < self->_length; index++) {
         // printf("\n>>> JOIN, element_type: %s", self->_element_type);
@@ -241,7 +241,7 @@ String Vec_join(const Vector self,
         if (strcmp("_Bool", self->_element_type) == 0) {
             bool *ptr         = self->_items;
             bool *current_ptr = ptr + index;
-            Str_push_str(result, *current_ptr == true ? "True" : "False");
+            HS_push_str(result, *current_ptr == true ? "True" : "False");
         } else if (strcmp("u8", self->_element_type) == 0 ||
                    strcmp("uint8_t", self->_element_type) == 0 ||
                    strcmp("unsigned char", self->_element_type) == 0) {
@@ -251,7 +251,7 @@ String Vec_join(const Vector self,
                      4,
                      "%u",
                      *((unsigned char *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("u16", self->_element_type) == 0 ||
                    strcmp("uint16_t", self->_element_type) == 0 ||
                    strcmp("unsigned short int", self->_element_type) == 0) {
@@ -261,7 +261,7 @@ String Vec_join(const Vector self,
                      6,
                      "%u",
                      *((unsigned short int *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("u32", self->_element_type) == 0 ||
                    strcmp("uint32_t", self->_element_type) == 0 ||
                    strcmp("unsigned int", self->_element_type) == 0) {
@@ -271,7 +271,7 @@ String Vec_join(const Vector self,
                      11,
                      "%u",
                      *((unsigned int *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("u64", self->_element_type) == 0 ||
                    strcmp("usize", self->_element_type) == 0 ||
                    strcmp("size_t", self->_element_type) == 0 ||
@@ -284,7 +284,7 @@ String Vec_join(const Vector self,
                      21,
                      "%llu",
                      *((unsigned long long int *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("i8", self->_element_type) == 0 ||
                    strcmp("int8_t", self->_element_type) == 0 ||
                    strcmp("signed char", self->_element_type) == 0 ||
@@ -295,7 +295,7 @@ String Vec_join(const Vector self,
                      5,
                      "%i",
                      *((signed char *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("i16", self->_element_type) == 0 ||
                    strcmp("int16_t", self->_element_type) == 0 ||
                    strcmp("signed short int", self->_element_type) == 0 ||
@@ -303,7 +303,7 @@ String Vec_join(const Vector self,
             // Range: −32768 ~ +32767
             char str_buffer[7] = {0};
             snprintf(str_buffer, 7, "%i", *((short int *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("i32", self->_element_type) == 0 ||
                    strcmp("int32_t", self->_element_type) == 0 ||
                    strcmp("int", self->_element_type) == 0 ||
@@ -311,7 +311,7 @@ String Vec_join(const Vector self,
             // Range: −2147483648 ~ +2147483647
             char str_buffer[12] = {0};
             snprintf(str_buffer, 12, "%i", *((int *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("i64", self->_element_type) == 0 ||
                    strcmp("int64_t", self->_element_type) == 0 ||
                    strcmp("long", self->_element_type) == 0 ||
@@ -325,39 +325,39 @@ String Vec_join(const Vector self,
                      21,
                      "%lli",
                      *((long long int *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("double", self->_element_type) == 0) {
             char str_buffer[25] = {0};
             snprintf(str_buffer, 25, "%f", *((double *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("float", self->_element_type) == 0) {
             char str_buffer[25] = {0};
             snprintf(str_buffer, 25, "%f", *((float *)self->_items + index));
-            Str_push_str(result, str_buffer);
+            HS_push_str(result, str_buffer);
         } else if (strcmp("long double", self->_element_type) == 0) {
             char str_buffer[25] = {0};
             snprintf(str_buffer,
                      25,
                      "%Lf",
                      *((long double *)self->_items + index));
-            Str_push_str(result, str_buffer);
-        } else if ((strcmp("struct Str", self->_element_type) == 0) ||
+            HS_push_str(result, str_buffer);
+        } else if ((strcmp("struct HeapString", self->_element_type) == 0) ||
                    (strcmp("String", self->_element_type) == 0)) {
             // String
             String temp_str =
-                (String)((u8 *)self->_items + index * Str_struct_size());
-            Str_push_str(result, Str_as_str(temp_str));
+                (String)((u8 *)self->_items + index * HS_struct_size());
+            HS_push_str(result, HS_as_str(temp_str));
         } else {
             // Custom struct: Use provided callback to get back `String`
             if (custom_struct_desc != NULL) {
-                SMART_STRING(temp_str) = custom_struct_desc(
+                defer_string(temp_str) = custom_struct_desc(
                     (u8 *)self->_items + index * self->_element_type_size);
-                Str_push_other(result, temp_str);
+                HS_push_other(result, temp_str);
             }
         }
 
         if (delemiter != NULL && index + 1 < self->_length) {
-            Str_push_str(result, delemiter);
+            HS_push_str(result, delemiter);
         }
     }
 
