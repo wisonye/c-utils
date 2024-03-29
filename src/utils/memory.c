@@ -67,7 +67,8 @@ void print_memory_block(char *type_name, usize type_size, void *value) {
             //
             // That's what it complains about, you can totally just ignore it:)
             //
-            sprintf(memory_bytes + (index * 2), "%02X", memory_byte);
+            // sprintf(memory_bytes + (index * 2), "%02X", memory_byte);
+            snprintf(memory_bytes + (index * 2), 3, "%02X", memory_byte);
         }
         memory_bytes[hex_len_in_char] = '\0';
         DEBUG_LOG(Memory, print_memory_block, "%s", memory_bytes);

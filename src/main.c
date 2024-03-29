@@ -711,7 +711,7 @@ void test_memory(void) {
     PRINT_MEMORY_BLOCK(int, data);
     PRINT_MEMORY_BLOCK(struct Person, me)
 
-    defer_string(str1) = HS_from_str("String in vector");
+    defer_string(str1) = HS_from_str("12345");
     PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct HeapString, str1, HS_struct_size());
     printf("\n>>>\n");
 }
@@ -903,7 +903,7 @@ int main(void) {
     /* test_file(); */
 
     /* test_link_list(); */
-    test_string();
+    /* test_string(); */
     /* test_log_macro(); */
     /* test_vector(); */
     /* test_vector_element_destructor(); */
@@ -937,7 +937,7 @@ int main(void) {
     // HS_free(&clone_from_empty_str);
 
     /* test_hex_buffer(); */
-    /* test_memory(); */
+    test_memory();
     /* test_timer(); */
     /* test_smart_ptr(); */
     /* test_bits(); */
