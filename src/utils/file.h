@@ -49,7 +49,7 @@ void auto_free_file(File *ptr);
  * variable is out of the scope
  *
  * ```c
- * defer_file(my_profile) = Str_open("my_profile")
+ * defer_file(my_profile) = File_open("my_profile")
  * ```
  */
 #define defer_file(x) __attribute__((cleanup(auto_free_file))) File x

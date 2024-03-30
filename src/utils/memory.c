@@ -50,12 +50,12 @@ void print_memory_block(char *type_name, usize type_size, void *value) {
             // ==80526==    by 0x497BACC: sprintf (in /lib/libc.so.7)
             // ==80526==    by 0x2081A8: print_memory_block
             // (src/utils/memory.c:44)
-            // ==80526==    by 0x20744F: Str_push_str (src/utils/string.c:290)
+            // ==80526==    by 0x20744F: HS_push_str (src/utils/string.c:290)
             // ==80526==    by 0x20C913: main (src/main.c:758)
             // ==80526==  Uninitialised value was created by a heap allocation
             // ==80526==    at 0x484C984: malloc (in
             // /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so)
-            // ==80526==    by 0x2073EE: Str_push_str (src/utils/string.c:278)
+            // ==80526==    by 0x2073EE: HS_push_str (src/utils/string.c:278)
             // ==80526==    by 0x20C913: main (src/main.c:758)
             //
             //

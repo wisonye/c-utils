@@ -8,6 +8,7 @@ extern "C" {
 #include <unistd.h>
 
 #include "../../../utils/file.h"
+#include "../../../utils/heap_string.h"
 #include "string.h"
 }
 
@@ -42,15 +43,15 @@ TEST(File, ReadShouldSuccess) {
     char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         // printf("Current working dir: %s\n", cwd);
-        SMART_STRING(test_filename_str) = Str_from_str(cwd);
-        Str_push_str(test_filename_str, "/CTestTestfile.cmake");
+        SMART_STRING(test_filename_str) = HS_from_str(cwd);
+        HS_push_str(test_filename_str, "/CTestTestfile.cmake");
 
         SMART_FILE(test_file) =
-            File_open(Str_as_str(test_filename_str), FM_READ_ONLY);
+            File_open(HS_as_str(test_filename_str), FM_READ_ONLY);
         File_load_into_buffer(test_file);
 
         ASSERT_EQ(
-            strcmp(File_get_filename(test_file), Str_as_str(test_filename_str)),
+            strcmp(File_get_filename(test_file), HS_as_str(test_filename_str)),
             0);
         ASSERT_EQ(File_is_open_successfully(test_file), true);
 

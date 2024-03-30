@@ -14,8 +14,8 @@ Examples:
 
 #+BEGIN_SRC c
   // `defer_string(variable_name);`
-  defer_string(empty_str) = Str_from_empty();
-  defer_string(empty_str_2) = Str_from_str(NULL);
+  defer_string(empty_str) = HS_from_empty();
+  defer_string(empty_str_2) = HS_from_str(NULL);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d0, as_str: (null)
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b0, as_str: (null)
@@ -26,7 +26,7 @@ Examples:
 
 #+BEGIN_SRC c
   char arr[] = "Unit Test:)";
-  defer_string(str) = Str_from_arr(arr);
+  defer_string(str) = HS_from_arr(arr);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000002f0, as_str: Unit Test:)
 #+END_SRC
@@ -37,11 +37,11 @@ Examples:
 Clone from the given ~String~ instance but don't touch the heap-allocated memory it owned
 
 #+BEGIN_SRC c
-  defer_string(original_str) = Str_from_str("I'm original:)");
-  defer_string(clone_from_other_str) = Str_clone_from(original_str);
+  defer_string(original_str) = HS_from_str("I'm original:)");
+  defer_string(clone_from_other_str) = HS_clone_from(original_str);
 
   // `clone_from_other_str` is a deep clone, so `original_str` doesn't changes
-  assert(Str_length(original_str) == 12);
+  assert(HS_length(original_str) == 12);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d2, as_str: I'm original:)
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b1, as_str: I'm original:)
@@ -53,12 +53,12 @@ Clone from the given ~String~ instance but don't touch the heap-allocated memory
 Move from the given ~String~ instance and move ownership of the heap-allocated memory to the newly created ~String~ instance. The original ~String~ becomes an empty string, as it points to nothing!!!
 
 #+BEGIN_SRC c
-  defer_string(original_str) = Str_from_str("I'm original:)");
-  defer_string(move_from_other_str) = Str_move_from(original_str);
+  defer_string(original_str) = HS_from_str("I'm original:)");
+  defer_string(move_from_other_str) = HS_move_from(original_str);
 
   // After that, `original_str` becomes an empty string
-  assert(Str_length(original_str) == 0);
-  assert(Str_as_str(original_str) == NULL);
+  assert(HS_length(original_str) == 0);
+  assert(HS_as_str(original_str) == NULL);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000004d8, as_str: (null)
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000003b9, as_str: I'm original:)
@@ -68,20 +68,20 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.5 Push to the end, get back length and get back ~char *~
 
 #+BEGIN_SRC c
-  defer_string(original_str) = Str_from_str("I'm original:)");
-  defer_string(empty_str) = Str_from_empty();
+  defer_string(original_str) = HS_from_str("I'm original:)");
+  defer_string(empty_str) = HS_from_empty();
 
   // Push from `char *`
-  Str_push_str(empty_str, "123_");
+  HS_push_str(empty_str, "123_");
 
   // Push from other `String`
-  Str_push_other(empty_str, original_str);
+  HS_push_other(empty_str, original_str);
 
   // Get back length
-  assert(Str_length(empty_str) == strlen("123_I'm original:)"));
+  assert(HS_length(empty_str) == strlen("123_I'm original:)"));
 
   // Get back `char *`
-  assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
+  assert(strcmp(HS_as_str(empty_str), "123_I'm original:)") == 0);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
@@ -91,20 +91,20 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.6 Insert at beginning
 
 #+BEGIN_SRC c
-  defer_string(original_str) = Str_from_str("I'm original:)");
-  defer_string(empty_str) = Str_from_empty();
+  defer_string(original_str) = HS_from_str("I'm original:)");
+  defer_string(empty_str) = HS_from_empty();
 
   // Insert other `String` to the beginning
-  Str_push_other(empty_str, original_str);
+  HS_push_other(empty_str, original_str);
 
   // Insert `char *` to the beginning
-  Str_insert_str_to_begin(empty_str, "123_");
+  HS_insert_str_to_begin(empty_str, "123_");
 
   // Get back length
-  assert(Str_length(empty_str) == strlen("123_I'm original:)"));
+  assert(HS_length(empty_str) == strlen("123_I'm original:)"));
 
   // Get back `char *`
-  assert(strcmp(Str_as_str(empty_str), "123_I'm original:)") == 0);
+  assert(strcmp(HS_as_str(empty_str), "123_I'm original:)") == 0);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x602000000110, as_str: 123_I'm original:)
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: I'm original:)⏎
@@ -114,39 +114,39 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 *** 1.7 Find substring
 
 #+BEGIN_SRC c
-  defer_string(original_str) = Str_from_str("I'm original:)");
-  defer_string(empty_str) = Str_move_from(original_str);
+  defer_string(original_str) = HS_from_str("I'm original:)");
+  defer_string(empty_str) = HS_move_from(original_str);
 
   //
   // Find the given `char *` index, return `-1` if not found
   //
-  assert(Str_index_of(empty_str, "I'm") == 0);
-  assert(Str_index_of(empty_str, "nal") == 9);
-  assert(Str_index_of(empty_str, "RIG") == 5);
-  assert(Str_index_of(empty_str, "ABC") == -1);
+  assert(HS_index_of(empty_str, "I'm") == 0);
+  assert(HS_index_of(empty_str, "nal") == 9);
+  assert(HS_index_of(empty_str, "RIG") == 5);
+  assert(HS_index_of(empty_str, "ABC") == -1);
 
   //
   // Find the given `char *`(case-sensitive) index, return `-1` if not found
   //
-  assert(Str_index_of_case_sensitive(empty_str, "RIG") == -1);
+  assert(HS_index_of_case_sensitive(empty_str, "RIG") == -1);
 
   //
   // Check whether contain the given `char *` or not
   //
-  assert(Str_contains(empty_str, "rig") == true);
-  assert(Str_contains(empty_str, "RIG") == true);
-  assert(Str_contains(empty_str, "ABC") == false);
+  assert(HS_contains(empty_str, "rig") == true);
+  assert(HS_contains(empty_str, "RIG") == true);
+  assert(HS_contains(empty_str, "ABC") == false);
 #+END_SRC
 
 
 *** 1.8 Reset to empty
 
 #+BEGIN_SRC c
-  defer_string(str) = Str_from_str("Hello");
-  Str_reset_to_empty(str);
+  defer_string(str) = HS_from_str("Hello");
+  HS_reset_to_empty(str);
 
-  assert(Str_length(str) == 0);
-  assert(Str_as_str(str) == NULL);
+  assert(HS_length(str) == 0);
+  assert(HS_as_str(str) == NULL);
 
   // (D) [ String ] > auto_free_string - out of scope with string ptr: 0x6020000000d0, as_str: (null)⏎
 #+END_SRC
@@ -156,12 +156,12 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 
 Usually, it's convenient to use ~defer_string~ to create a ~String~ instance,  it's an opaque pointer to ~struct Str~. The variable created via ~defer_string~ will be freed automatically when the variable goes out of scope.
 
-Here is what ~defer_string(abc) = Str_from_empty();~ does under the hood:
+Here is what ~defer_string(abc) = HS_from_empty();~ does under the hood:
 
 1. Create ~struct Str~ instance on the heap, attach the ~cleanup~ attribute to that variable, then the ~auto_free_string~ function gets call when it out of scope.
 
    #+BEGIN_SRC c
-     __attribute__((cleanup(auto_free_string))) String abc = Str_from_empty();
+     __attribute__((cleanup(auto_free_string))) String abc = HS_from_empty();
    #+END_SRC
 
 
@@ -179,27 +179,27 @@ You need to create 1000 ~struct Str~ to handle a complicated logic in a loop. By
   for (usize index = 0; index < 1000; index++) {
       // Create on stack and init
       struct Str temp_str;
-      Str_init(&temp_str);
+      HS_init(&temp_str);
 
       // Modify it
       char temp_buffer[12];
       snprintf(temp_buffer, sizeof(temp_buffer), "index %lu", index);
-      Str_push_str(&temp_str, temp_buffer);
+      HS_push_str(&temp_str, temp_buffer);
 
       //
       // ...Another complex logic here
       // ...Another complex logic here
       // ...Another complex logic here
       //
-      printf("\n>>> Index in complicated logic: %s", Str_as_str(&temp_str));
+      printf("\n>>> Index in complicated logic: %s", HS_as_str(&temp_str));
 
       //
       // Make sure free it manually!!!
-      // You should call `Str_free_buffer_only` instead of `Str_free`, as
+      // You should call `HS_free_buffer_only` instead of `HS_free`, as
       // you don't need to free `temp_str`, it's stack-allocated instance,
       // it's NOT a pointer!!!
       //
-      Str_free_buffer_only(&temp_str);
+      HS_free_buffer_only(&temp_str);
   }
 #+END_SRC
 
@@ -277,13 +277,13 @@ Use to print the single variable's value, only for debugging purposes.
   #include "utils/log.h"
   #include "utils/string.h"
 
-  String my_str = Str_from_str("This macro is so cool:)");
+  String my_str = HS_from_str("This macro is so cool:)");
   DEBUG_LOG(Main, main, "add(2, 3): %d", add(2, 3));
   DEBUG_LOG(Main, main, "2 + 2 :%d", 2 + 2);
-  DEBUG_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-  INFO_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-  WARN_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
-  ERROR_LOG(Main, main, "my_str value is: %s", Str_as_str(my_str));
+  DEBUG_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str));
+  INFO_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str));
+  WARN_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str));
+  ERROR_LOG(Main, main, "my_str value is: %s", HS_as_str(my_str));
 
   // (D) [ Main ] > main - add(2, 3): 5
   // (D) [ Main ] > main - 2 + 2 :4
@@ -479,8 +479,8 @@ It works like the same with the ~PRINT_MEMORY_BLOCK~ macro but focuses on the ~S
 **** Example:
 
 #+BEGIN_SRC c
-  defer_string(str1) = Str_from_str("String in vector");
-  PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, Str_struct_size());
+  defer_string(str1) = HS_from_str("String in vector");
+  PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, HS_struct_size());
 
   // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
   // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
@@ -686,7 +686,7 @@ High resolution timer utils
 
 #+BEGIN_SRC c
   String return_string_on_the_heap() {
-      String str_on_the_heap = Str_from_str("String allocated on the heap:)");
+      String str_on_the_heap = HS_from_str("String allocated on the heap:)");
       return str_on_the_heap;
   }
 
@@ -710,7 +710,7 @@ High resolution timer utils
       MAKE_UNIQUE_PTR(Vector return_vec = return_vector_on_the_heap(), auto_free_vector);
 
       DEBUG_LOG(Main, test_smart_ptr, "return_str: %p, value: %s", return_str,
-                Str_as_str(return_str));
+                HS_as_str(return_str));
       DEBUG_LOG(Main, test_smart_ptr,
                 "return_vec: %p, len: %lu, first elemnt: %f", return_vec,
                 Vector_len(return_vec),
@@ -1093,14 +1093,14 @@ Compile and run:
   #
   # Direct leak of 16 byte(s) in 1 object(s) allocated from:
   #     #0 0x10d795000 in wrap_malloc+0xa0 (libclang_rt.asan_osx_dynamic.dylib:x86_64+0x4a000) (BuildId: eb137767d72432a1a6e32c107b9c74d42400000010000000000a0a0000010c00)
-  #     #1 0x10d71c549 in Str_from_str string.c:80
+  #     #1 0x10d71c549 in HS_from_str string.c:80
   #     #2 0x10d71f2bd in test_string main.c:74
   #     #3 0x10d722768 in main main.c:556
   #     #4 0x7fff204faf3c in start+0x0 (libdyld.dylib:x86_64+0x15f3c) (BuildId: 5fbd0e1aacce36dbb11c622f26c8513232000000200000000100000000060b00)
   #
   # Indirect leak of 11 byte(s) in 1 object(s) allocated from:
   #     #0 0x10d795000 in wrap_malloc+0xa0 (libclang_rt.asan_osx_dynamic.dylib:x86_64+0x4a000) (BuildId: eb137767d72432a1a6e32c107b9c74d42400000010000000000a0a0000010c00)
-  #     #1 0x10d71c593 in Str_from_str string.c:88
+  #     #1 0x10d71c593 in HS_from_str string.c:88
   #     #2 0x10d71f2bd in test_string main.c:74
   #     #3 0x10d722768 in main main.c:556
   #     #4 0x7fff204faf3c in start+0x0 (libdyld.dylib:x86_64+0x15f3c) (BuildId: 5fbd0e1aacce36dbb11c622f26c8513232000000200000000100000000060b00)
