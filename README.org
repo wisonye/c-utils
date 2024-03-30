@@ -154,11 +154,11 @@ Move from the given ~String~ instance and move ownership of the heap-allocated m
 
 *** 1.9 Create ~String~ on the stack and free it manually
 
-Usually, it's convenient to use ~defer_string~ to create a ~String~ instance,  it's an opaque pointer to ~struct Str~. The variable created via ~defer_string~ will be freed automatically when the variable goes out of scope.
+Usually, it's convenient to use ~defer_string~ to create a ~String~ instance,  it's an opaque pointer to ~struct HeapString~. The variable created via ~defer_string~ will be freed automatically when the variable goes out of scope.
 
 Here is what ~defer_string(abc) = HS_from_empty();~ does under the hood:
 
-1. Create ~struct Str~ instance on the heap, attach the ~cleanup~ attribute to that variable, then the ~auto_free_string~ function gets call when it out of scope.
+1. Create ~struct HeapString~ instance on the heap, attach the ~cleanup~ attribute to that variable, then the ~auto_free_string~ function gets call when it out of scope.
 
    #+BEGIN_SRC c
      __attribute__((cleanup(auto_free_string))) String abc = HS_from_empty();
@@ -169,16 +169,16 @@ Here is what ~defer_string(abc) = HS_from_empty();~ does under the hood:
     - One for creating ~String~ (struct str *) itself
     - One for the internal ~_buffer~ member to hold the auctal ~char *~ on the heap
 
-So you might choose to create ~struct Str~ on the stack when you need to create a lot of instances and know their lifetime won't go out of the current scope, it avoids a lot of unnecessary ~malloc~ calls.
+So you might choose to create ~struct HeapString~ on the stack when you need to create a lot of instances and know their lifetime won't go out of the current scope, it avoids a lot of unnecessary ~malloc~ calls.
 
 Here is the example:
 
-You need to create 1000 ~struct Str~ to handle a complicated logic in a loop. By creating ~struct Str~ on the stack, you will save 1000 calls on ~malloc~ and ~free~!!!
+You need to create 1000 ~struct HeapString~ to handle a complicated logic in a loop. By creating ~struct HeapString~ on the stack, you will save 1000 calls on ~malloc~ and ~free~!!!
 
 #+BEGIN_SRC c
   for (usize index = 0; index < 1000; index++) {
       // Create on stack and init
-      struct Str temp_str;
+      struct HeapString temp_str;
       HS_init(&temp_str);
 
       // Modify it
@@ -480,10 +480,10 @@ It works like the same with the ~PRINT_MEMORY_BLOCK~ macro but focuses on the ~S
 
 #+BEGIN_SRC c
   defer_string(str1) = HS_from_str("String in vector");
-  PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct Str, str1, HS_struct_size());
+  PRINT_MEMORY_BLOCK_FOR_SMART_TYPE(struct HeapString, str1, HS_struct_size());
 
   // (D) [ String ] > from_str - self ptr: 0x82346a000, malloc ptr: 0x82346b000, from_str: String in vector
-  // (D) [ Memory ] > print_memory_block - [ struct Str str1, size: 16 ]
+  // (D) [ Memory ] > print_memory_block - [ struct HeapString str1, size: 16 ]
   // (D) [ Memory ] > print_memory_block - --------------------------------
   // (D) [ Memory ] > print_memory_block - 100000000000000000B0462308000000
   // (D) [ Memory ] > print_memory_block - --------------------------------
@@ -496,7 +496,7 @@ It works like the same with the ~PRINT_MEMORY_BLOCK~ macro but focuses on the ~S
   (lldb) v str1
   # (String) str1 = 0x000000082346a000
 
-  (lldb) memory read -s `sizeof(struct Str)` -c1 -fX `str1`
+  (lldb) memory read -s `sizeof(struct HeapString)` -c1 -fX `str1`
   # 0x82346a000: 0x000000082346B0000000000000000010
 #+END_SRC
 
