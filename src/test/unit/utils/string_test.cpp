@@ -5,7 +5,7 @@ extern "C" {
 }
 
 TEST(String, StrInit) {
-    struct Str str;
+    struct HeapString str;
     HS_init(&str);
     ASSERT_EQ(HS_length(&str), 0);
     ASSERT_EQ(HS_capacity(&str), 0);
@@ -19,7 +19,7 @@ TEST(String, StrInit) {
 }
 
 TEST(String, StrInitWithCapacity) {
-    struct Str str;
+    struct HeapString str;
     HS_init_with_capacity(&str, 10);
     ASSERT_EQ(HS_length(&str), 0);
     ASSERT_EQ(HS_capacity(&str), 10);
@@ -45,14 +45,14 @@ TEST(String, StrInitWithCapacity) {
 }
 
 TEST(String, EmptyString) {
-    SMART_STRING(empty_str) = HS_from_str(nullptr);
+    defer_string(empty_str) = HS_from_str(nullptr);
     ASSERT_EQ(HS_length(empty_str), 0);
     ASSERT_EQ(HS_capacity(empty_str), 0);
     ASSERT_EQ(HS_as_str(empty_str), nullptr);
 }
 
 TEST(String, EmptyStringWithCapacity) {
-    SMART_STRING(empty_str) = HS_from_empty_with_capacity(10);
+    defer_string(empty_str) = HS_from_empty_with_capacity(10);
     ASSERT_EQ(HS_length(empty_str), 0);
     ASSERT_EQ(HS_capacity(empty_str), 10);
     ASSERT_NE(HS_as_str(empty_str), nullptr);
@@ -76,7 +76,7 @@ TEST(String, EmptyStringWithCapacity) {
 
 TEST(String, StringFromArray) {
     char arr[]        = "Unit Test:)";
-    SMART_STRING(str) = HS_from_arr(arr);
+    defer_string(str) = HS_from_arr(arr);
     ASSERT_EQ(HS_length(str), strlen(arr));
     ASSERT_EQ(HS_capacity(str), HS_length(str) + 1);
     ASSERT_EQ(strcmp(HS_as_str(str), arr), 0);
@@ -84,22 +84,22 @@ TEST(String, StringFromArray) {
 
 TEST(String, StringFromStrWithPosAndCount) {
     const char temp_str[]  = "ABCD";
-    SMART_STRING(from_str) = HS_from_str_with_pos(temp_str, 0, 4);
+    defer_string(from_str) = HS_from_str_with_pos(temp_str, 0, 4);
     ASSERT_EQ(HS_length(from_str), strlen(temp_str));
     ASSERT_EQ(HS_capacity(from_str), HS_length(from_str) + 1);
     ASSERT_EQ(strcmp(HS_as_str(from_str), temp_str), 0);
 
-    SMART_STRING(from_str_2) = HS_from_str_with_pos(temp_str, 2, 2);
+    defer_string(from_str_2) = HS_from_str_with_pos(temp_str, 2, 2);
     ASSERT_EQ(HS_length(from_str_2), 2);
     ASSERT_EQ(HS_capacity(from_str_2), 3);
     ASSERT_EQ(strcmp(HS_as_str(from_str_2), "CD"), 0);
 
-    SMART_STRING(from_str_3) = HS_from_str_with_pos(temp_str, -1, 2);
+    defer_string(from_str_3) = HS_from_str_with_pos(temp_str, -1, 2);
     ASSERT_EQ(HS_length(from_str_3), 0);
     ASSERT_EQ(HS_capacity(from_str_3), 0);
     ASSERT_EQ(HS_as_str(from_str_3), nullptr);
 
-    SMART_STRING(from_str_4) = HS_from_str_with_pos(temp_str, 0, -1);
+    defer_string(from_str_4) = HS_from_str_with_pos(temp_str, 0, -1);
     ASSERT_EQ(HS_length(from_str_4), 0);
     ASSERT_EQ(HS_capacity(from_str_4), 0);
     ASSERT_EQ(HS_as_str(from_str_4), nullptr);
@@ -107,25 +107,25 @@ TEST(String, StringFromStrWithPosAndCount) {
 
 TEST(String, StringClone) {
     char arr[]        = "Unit Test:)";
-    SMART_STRING(str) = HS_from_arr(arr);
+    defer_string(str) = HS_from_arr(arr);
     ASSERT_EQ(HS_length(str), strlen(arr));
     ASSERT_EQ(HS_capacity(str), HS_length(str) + 1);
     ASSERT_EQ(strcmp(HS_as_str(str), arr), 0);
 
-    SMART_STRING(clone_1) = HS_clone_from(str);
+    defer_string(clone_1) = HS_clone_from(str);
     ASSERT_EQ(HS_length(clone_1), strlen(arr));
     ASSERT_EQ(HS_capacity(clone_1), HS_length(clone_1) + 1);
     ASSERT_EQ(strcmp(HS_as_str(clone_1), arr), 0);
 
-    SMART_STRING(empty_str)        = HS_from_str("");
-    SMART_STRING(clone_from_empty) = HS_clone_from(empty_str);
+    defer_string(empty_str)        = HS_from_str("");
+    defer_string(clone_from_empty) = HS_clone_from(empty_str);
     ASSERT_EQ(HS_length(clone_from_empty), 0);
     ASSERT_EQ(HS_capacity(clone_from_empty), 0);
     ASSERT_EQ(HS_as_str(clone_from_empty), nullptr);
 }
 
 TEST(String, FindSubString) {
-    SMART_STRING(original_str) = HS_from_str("Wison Ye:)");
+    defer_string(original_str) = HS_from_str("Wison Ye:)");
 
     ASSERT_EQ(HS_index_of(original_str, ""), -1);
     ASSERT_EQ(HS_index_of(original_str, " "), 5);
@@ -138,7 +138,7 @@ TEST(String, FindSubString) {
 }
 
 TEST(String, CheckContainsSubString) {
-    SMART_STRING(original_str) = HS_from_str("Wison Ye:)");
+    defer_string(original_str) = HS_from_str("Wison Ye:)");
 
     ASSERT_EQ(HS_contains(original_str, (char *)""), false);
     ASSERT_EQ(HS_contains(original_str, (char *)" "), true);
@@ -150,7 +150,7 @@ TEST(String, CheckContainsSubString) {
 }
 
 TEST(String, ResetToEmpty) {
-    SMART_STRING(temp_str) = HS_from_str("Wison Ye:)");
+    defer_string(temp_str) = HS_from_str("Wison Ye:)");
     HS_reset_to_empty(temp_str);
 
     ASSERT_EQ(HS_length(temp_str), 0);
@@ -159,7 +159,7 @@ TEST(String, ResetToEmpty) {
 }
 
 TEST(String, ResetToEmptyWithoutFreeingBuffer) {
-    SMART_STRING(temp_str) = HS_from_str("Wison Ye:)");
+    defer_string(temp_str) = HS_from_str("Wison Ye:)");
     HS_reset_to_empty_without_freeing_buffer(temp_str);
 
     ASSERT_EQ(HS_length(temp_str), 0);
@@ -168,10 +168,10 @@ TEST(String, ResetToEmptyWithoutFreeingBuffer) {
 }
 
 TEST(String, Push) {
-    SMART_STRING(empty_str)      = HS_from_empty();
-    SMART_STRING(init_empty_str) = HS_from_empty();
-    SMART_STRING(original_str)   = HS_from_str("Wison Ye:)");
-    SMART_STRING(other_str)      = HS_from_str("Other string.");
+    defer_string(empty_str)      = HS_from_empty();
+    defer_string(init_empty_str) = HS_from_empty();
+    defer_string(original_str)   = HS_from_str("Wison Ye:)");
+    defer_string(other_str)      = HS_from_str("Other string.");
 
     HS_push_str(init_empty_str, HS_as_str(original_str));
     ASSERT_EQ(HS_length(init_empty_str), HS_length(original_str));
@@ -186,7 +186,7 @@ TEST(String, Push) {
     HS_push_other(original_str, other_str);
     HS_push_other(original_str, other_str);
     /* printf( */
-    /*     "\n>>> SMART_STRING(Push - orignal aftger push with other, len: %lu,
+    /*     "\n>>> defer_string(Push - orignal aftger push with other, len: %lu,
      * value:
      * " */
     /*     "%s", */
@@ -196,9 +196,9 @@ TEST(String, Push) {
 }
 
 TEST(String, InsertAtBegin) {
-    SMART_STRING(empty_str)      = HS_from_empty();
-    SMART_STRING(init_empty_str) = HS_from_empty_with_capacity(14);
-    SMART_STRING(other_str)      = HS_from_str("12345");
+    defer_string(empty_str)      = HS_from_empty();
+    defer_string(init_empty_str) = HS_from_empty_with_capacity(14);
+    defer_string(other_str)      = HS_from_str("12345");
 
     ASSERT_EQ(HS_capacity(empty_str), 0);
     ASSERT_EQ(HS_capacity(init_empty_str), 14);
@@ -213,13 +213,13 @@ TEST(String, InsertAtBegin) {
 }
 
 TEST(String, MoveSemantic) {
-    SMART_STRING(s1)            = HS_from_str("123456");
-    SMART_STRING(clone_from_s1) = HS_clone_from(s1);
+    defer_string(s1)            = HS_from_str("123456");
+    defer_string(clone_from_s1) = HS_clone_from(s1);
     ASSERT_EQ(HS_length(clone_from_s1), HS_length(s1));
     ASSERT_EQ(HS_capacity(clone_from_s1), HS_length(clone_from_s1) + 1);
     ASSERT_EQ(strcmp(HS_as_str(clone_from_s1), HS_as_str(s1)), 0);
 
-    SMART_STRING(move_from_clone_s1) = HS_move_from(clone_from_s1);
+    defer_string(move_from_clone_s1) = HS_move_from(clone_from_s1);
     ASSERT_EQ(HS_length(move_from_clone_s1), HS_length(s1));
     ASSERT_EQ(HS_capacity(move_from_clone_s1),
               HS_length(move_from_clone_s1) + 1);
