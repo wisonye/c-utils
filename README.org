@@ -765,6 +765,7 @@ Handy macros to handle bits, only available when ~ENABLE_DEBUG_LOG~ macro is def
 
 Check whether the given bit is 1 or not
 
+
 *** Interface
 
 #+BEGIN_SRC c
@@ -886,143 +887,81 @@ Examples:
 #+END_SRC
 
 
-[[file:src/utils/collections/README.org][9. Collection]]
+** [[file:src/utils/collections/README.org][9. Collection]]
 
 
 ** Project Setup
 
-*** PS-1. =CMake= configurations
+*** =CMake= configurations
 
 This project has 2 ~cmake~ setups for different purposes:
 
-- ~use_c_compiler_to_run_main/CMakeLists.txt~
+- =cmake/CMakelists.txt=
 
-   Use =C= compiler to compile ~main.c~ and then use =memory leaking tools= to check memory leaking issue on the pure =C= binary. Otherwise, if I use =CPP= compiler to compile the binary which links to =gtest=, then faulty memory leaking is detected!!!
+   Use =C= compiler to compile ~main.c~ and support to use =memory leaking tools= to check memory leaking issue on the pure =C= binary.
 
-- ~use_cpp_compiler_to_run_googletest/CMakeLists.txt~
+- =cmake/unit_test/CMakelists.txt=
 
-    As =GoogleTest= only work for =CPP=, that's why you need the separated =CPP= compilation setup.
+    Use =Unity= to do unit test.
 
+    
+*** For unit test
 
-*** PS-2. Make sure you compile and install =GoogleTest=
+This project uses =Unity= as test framework, you need to run the following commands to install =Unity=:
 
 #+BEGIN_SRC bash
   cd ~/temp
-  git clone https://github.com/google/googletest.git -b release-1.12.1
-  cd googletest        # Main directory of the cloned repository.
-  mkdir build          # Create a directory to hold the build output.
-  cd build
-  cmake .. -DBUILD_GMOCK=OFF
+  git clone --depth=1 https://github.com/ThrowTheSwitch/Unity.git
+  cd Unity
+  mkdir build && cd build
 
-  # -- The C compiler identification is Clang 14.0.5
-  # -- The CXX compiler identification is Clang 14.0.5
-  # -- Detecting C compiler ABI info
-  # -- Detecting C compiler ABI info - done
-  # -- Check for working C compiler: /usr/bin/cc - skipped
-  # -- Detecting C compile features
-  # -- Detecting C compile features - done
-  # -- Detecting CXX compiler ABI info
-  # -- Detecting CXX compiler ABI info - done
-  # -- Check for working CXX compiler: /usr/bin/c++ - skipped
-  # -- Detecting CXX compile features
-  # -- Detecting CXX compile features - done
-  # -- Found Python: /usr/local/bin/python3.9 (found version "3.9.16") found components: Interpreter
-  # -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
-  # -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
-  # -- Looking for pthread_create in pthreads
-  # -- Looking for pthread_create in pthreads - not found
-  # -- Looking for pthread_create in pthread
-  # -- Looking for pthread_create in pthread - found
-  # -- Found Threads: TRUE
-  # -- Configuring done
-  # -- Generating done
-#+END_SRC
+  #
+  # Make sure to change the install path if you don't like the default one
+  #
+  cmake .. -DCMAKE_INSTALL_INCLUDEDIR=~/my-installed/include -DCMAKE_INSTALL_LIBDIR=~/my-installed/lib
 
-
-Install headers and libs:
-
-#+BEGIN_SRC bash
-  doas make install
-
-  # [ 25%] Building CXX object googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
-  # [ 50%] Linking CXX static library ../lib/libgtest.a
-  # [ 50%] Built target gtest
-  # [ 75%] Building CXX object googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-  # [100%] Linking CXX static library ../lib/libgtest_main.a
-  # [100%] Built target gtest_main
+  #
+  # Compile and insteall
+  #
+  make install
+  # [ 50%] Building C object CMakeFiles/unity.dir/src/unity.c.o
+  # [100%] Linking C static library libunity.a
+  # [100%] Built target unity
   # Install the project...
   # -- Install configuration: ""
-  # -- Installing: /usr/local/lib/cmake/GTest/GTestTargets.cmake
-  # -- Installing: /usr/local/lib/cmake/GTest/GTestTargets-noconfig.cmake
-  # -- Installing: /usr/local/lib/cmake/GTest/GTestConfigVersion.cmake
-  # -- Installing: /usr/local/lib/cmake/GTest/GTestConfig.cmake
-  # -- Up-to-date: /usr/local/include
-  # -- Installing: /usr/local/include/gtest
-  # -- Installing: /usr/local/include/gtest/internal
-  # -- Installing: /usr/local/include/gtest/internal/gtest-death-test-internal.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-port.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-type-util.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-string.h
-  # -- Installing: /usr/local/include/gtest/internal/custom
-  # -- Installing: /usr/local/include/gtest/internal/custom/gtest-port.h
-  # -- Installing: /usr/local/include/gtest/internal/custom/README.md
-  # -- Installing: /usr/local/include/gtest/internal/custom/gtest-printers.h
-  # -- Installing: /usr/local/include/gtest/internal/custom/gtest.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-param-util.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-filepath.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-port-arch.h
-  # -- Installing: /usr/local/include/gtest/internal/gtest-internal.h
-  # -- Installing: /usr/local/include/gtest/gtest-matchers.h
-  # -- Installing: /usr/local/include/gtest/gtest-assertion-result.h
-  # -- Installing: /usr/local/include/gtest/gtest-typed-test.h
-  # -- Installing: /usr/local/include/gtest/gtest_pred_impl.h
-  # -- Installing: /usr/local/include/gtest/gtest-message.h
-  # -- Installing: /usr/local/include/gtest/gtest.h
-  # -- Installing: /usr/local/include/gtest/gtest-printers.h
-  # -- Installing: /usr/local/include/gtest/gtest-test-part.h
-  # -- Installing: /usr/local/include/gtest/gtest_prod.h
-  # -- Installing: /usr/local/include/gtest/gtest-spi.h
-  # -- Installing: /usr/local/include/gtest/gtest-death-test.h
-  # -- Installing: /usr/local/include/gtest/gtest-param-test.h
-  # -- Installing: /usr/local/lib/libgtest.a
-  # -- Installing: /usr/local/lib/libgtest_main.a
-  # -- Installing: /usr/local/lib/pkgconfig/gtest.pc
-  # -- Installing: /usr/local/lib/pkgconfig/gtest_main.pc
+  # -- Installing: /home/wison/my-installed/lib/libunity.a
+  # -- Installing: /home/wison/my-installed/include/unity/unity.h
+  # -- Installing: /home/wison/my-installed/include/unity/unity_internals.h
+  # -- Installing: /home/wison/my-installed/lib/cmake/unity/unityTargets.cmake
+  # -- Installing: /home/wison/my-installed/lib/cmake/unity/unityTargets-noconfig.cmake
+  # -- Installing: /home/wison/my-installed/lib/cmake/unity/unityConfig.cmake
+  # -- Installing: /home/wison/my-installed/lib/cmake/unity/unityConfigVersion.cmake
 #+END_SRC
 
 
-*** PS-3. =CMake= setup and run
+*** =CMake= setup and run
 
-
-**** PS-3.1 Use C compiler
+**** Default configuration
 
 You should only use this configuration when you try to installing =c_utils=!!!
 
-If you're trying to development, then you should use one of the rest configured ways to enable checking memory leaking!!!
-
-It uses ~cmake/CMakeLists.txt~ and compiles ~src/main.c~.
-
-Also, it set the default prefix install path to ~/home/${USER}/my-installed~, feel free to change it if want to install to somewhere else.
+You should use one of the rest configured ways to check memory leaking during development!!!
+You should use one of the rest configured ways to check memory leaking during development!!!
+You should use one of the rest configured ways to check memory leaking during development!!!
 
 #+BEGIN_SRC bash
-  # Make sure you're in the project root folder
   ./configure.sh
 #+END_SRC
 
 
-**** PS-3.2 Use C compiler and =valgrind= for checking memory leaking
-
-It uses ~cmake/CMakeLists.txt~ and compiles ~src/main.c~.
-
+**** Use =valgrind= for checking memory leaking, only works for Linux
 
 #+BEGIN_SRC bash
-  # Make sure you're in the project root folder
   ./configure_valgrind.sh
 #+END_SRC
 
-It Generates everything needs into ~temp_build/build_memory_leak_checking~ folder. The ~temp_build/build_memory_leak_checking /compile_commands.json~ is for =clangd_extensions= editor plugin.
 
-Compile and run:
+Then, compile =src/main.c= and run =temp_build/build_memory_leak_checking/c-utils-demo=.
 
 #+BEGIN_SRC bash
   ./run_valgrind.sh
@@ -1055,31 +994,30 @@ Compile and run:
 #+END_SRC
 
 
-**** PS-3.3 Use C compiler and =Google AddressSanitizer= for checking memory leaking
+**** Use =Google AddressSanitizer= for checking memory leaking
 
-[[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]]
+[[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]] (aka ASan) is a memory error detector for C/C++. It finds:
 
-It uses ~cmake/CMakeLists.txt~ and compiles ~src/main.c~.
+- Use after free (dangling pointer dereference)
+- Heap buffer overflow
+- Stack buffer overflow
+- Global buffer overflow
+- Use after return
+- Use after scope
+- Initialization order bugs
+- Memory leaks: Doesn't support =FreeBSD=!!!
+
 
 #+BEGIN_SRC bash
-  # Make sure you're in the project root folder
   ./configure_address_sanitizer.sh
 #+END_SRC
 
-It Generates everything needs into ~temp_build/build_memory_leak_checking~ folder. The ~temp_build/build_memory_leak_checking/compile_commands.json~ is for ~clangd_extensions~ editor plugin.
 
 By default, =BSD= builtin =clang/clang++= doesn't support =AddressSanitizer=.
 
 If you want to enable =AddressSanitizer= in BSD (=MacOS= or =FreeBSD=), then have to use installed =llvm clang/clang++= instead of the builtin =clang/clang++=!!!
 
-Also, you need to add the following env var setting when running your binary:
-
-#+BEGIN_SRC bash
-  ASAN_OPTIONS=detect_leaks=1 YOUR_BINARY_HERE
-#+END_SRC
-
-
-Compile and run:
+Then, compile =src/main.c= and run =temp_build/build_memory_leak_checking/c-utils-demo=.
 
 #+BEGIN_SRC bash
   ./run_address_sanitizer.sh
@@ -1109,63 +1047,59 @@ Compile and run:
 #+END_SRC
 
 
-**** PS-3.4 Use C compiler and =Google AddressSanitizer= for checking memory leaking on FreeBSD
-
-[[https://github.com/google/sanitizers/wiki/AddressSanitizer][AddressSanitizer]]
-
-Same settings with =PS-3.2= but use =LLVM-Clang= explicity and remove =ASAN_OPTIONS=detect_leaks=1= as =LLVM-clang FreeBSD= doesnt' support that!
+**** Use =Unity= to run unit test
 
 #+BEGIN_SRC bash
-  # Make sure you're in the project root folder
-  ./configure_address_sanitizer_freebsd.sh
-
-  # Make sure you're in the project root folder
-  ./run_address_sanitizer_freebsd.sh
-#+END_SRC
-
-
-**** PS-3.4 Use CPP compiler to run unit test
-
-It uses ~cmake/unit_test/CMakeLists.txt~ and compiles ~src/main.cpp~.
-
-#+BEGIN_SRC bash
-  # Make sure you're in the project root folder
   ./configure_unit_test.sh
 #+END_SRC
 
-It Generates everything needs into ~temp_build/unit_test~ folder. The ~temp_build/unit_test/compile_commands.json~ is for =clangd_extensions= editor plugin.
 
-Pay attention to the following output:
-
-#+BEGIN_SRC bash
-  # -- Found GTest: /usr/local/lib/cmake/GTest/GTestConfig.cmake (found version "1.12.1")
-  # >>> GTest_FOUND: TRUE
-#+END_SRC
-
-That means =cmake= find the installed =GoogleTest= and it knows where to find the header files and link =GTest::gtest= and =GTest::gtest_main= libraries.
-
-
-Compile and run all unit test:
+Then, compile =src/unit_test.c= and run =temp_build/unit_test=.
 
 #+BEGIN_SRC bash
   ./run_unit_test.sh
 
-  # [100%] Linking CXX executable c-utils-unit-test
+  # [  9%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/utils/log.c.o
+  # [ 18%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/utils/memory.c.o
+  # [ 27%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/utils/heap_string.c.o
+  # [ 36%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/utils/hex_buffer.c.o
+  # [ 45%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/utils/file.c.o
+  # [ 54%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/test/utils/hex_buffer_test.c.o
+  # [ 63%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/test/utils/data_types_test.c.o
+  # [ 72%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/test/utils/file_test.c.o
+  # [ 81%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/test/utils/string_test.c.o
+  # [ 90%] Building C object CMakeFiles/c-utils-unit-test.dir/home/wison/c/c-utils/src/unit_test.c.o
+  # [100%] Linking C executable c-utils-unit-test
   # [100%] Built target c-utils-unit-test
-  # [==========] Running 3 tests from 1 test suite.
-  # [----------] Global test environment set-up.
-  # [----------] 3 tests from SingleLinkList
-  # [ RUN      ] SingleLinkList.CreateEmptyList
-  # [       OK ] SingleLinkList.CreateEmptyList (0 ms)
-  # [ RUN      ] SingleLinkList.IntegerList
-  # [       OK ] SingleLinkList.IntegerList (0 ms)
-  # [ RUN      ] SingleLinkList.DoubleList
-  # [       OK ] SingleLinkList.DoubleList (0 ms)
-  # [----------] 3 tests from SingleLinkList (0 ms total)
+  # /home/wison/c/c-utils/src/unit_test.c:25:test_hex_buffer_empty_hex_buffer:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:26:test_hex_buffer_invalid_buffer:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:27:test_hex_buffer_valid_buffer:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:29:test_data_types_type_name:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:30:test_data_types_is_the_same_type:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:31:test_data_types_type_name_to_string:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:32:test_data_types_type_size:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:33:test_data_types_type_size_from_type:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:35:test_file_open_should_fail:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:36:test_file_open_should_success:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:37:test_file_read_should_success:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:39:test_string_init:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:40:test_string_init_with_capacity:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:41:test_string_empty_string:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:42:test_string_empty_string_with_capacity:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:43:test_string_from_array:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:44:test_string_from_str_with_pos_and_count:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:45:test_string_clone:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:46:test_string_find_substring:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:47:test_string_contain_substring:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:48:test_string_reset_to_empty:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:49:test_string_reset_to_empty_without_freeing_buffer:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:50:test_string_push:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:51:test_string_insert_at_begin:PASS
+  # /home/wison/c/c-utils/src/unit_test.c:52:test_string_move_semantic:PASS
   # 
-  # [----------] Global test environment tear-down
-  # [==========] 3 tests from 1 test suite ran. (0 ms total)
-  # [  PASSED  ] 3 tests.
+  # -----------------------
+  # 25 Tests 0 Failures 0 Ignored
+  # OK
 #+END_SRC
 
 
@@ -1190,40 +1124,43 @@ Example:
 #+END_SRC
 
 
-**** PS-3.5 Install =c_utils= share library
+**** Install =c_utils= share library
 
-Install the =cutils= share library to your system
+The default prefix install path to ~/${HOME}/my-installed~,  but you can change the =INSTALL_PREFIX= setting in =configure.sh= or =configure_address_sanitizer.sh=.
+
+Install the =cutils= share library to your system:
 
 #+BEGIN_SRC bash
-  ./install-lib.sh
+  ./configure.sh
 
-  # [100%] Linking C shared library libcutils.dylib
-  # [100%] Built target cutils
+  ./install-lib.sh
+  # [ 57%] Built target c-utils-demo
+  # [ 63%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/file.c.o
+  # [ 68%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/hex_buffer.c.o
+  # [ 73%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/log.c.o
+  # [ 78%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/memory.c.o
+  # [ 84%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/random.c.o
+  # [ 89%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/heap_string.c.o
+  # [ 94%] Building C object CMakeFiles/c_utils.dir/home/wison/c/c-utils/src/utils/timer.c.o
+  # [100%] Linking C shared library libc_utils.so
+  # [100%] Built target c_utils
   # Install the project...
   # -- Install configuration: "Debug"
-  # -- Installing: /usr/local/lib/libc_utils.dylib
-  # -- Up-to-date: /usr/local/include/c_utils/bits.h
-  # -- Installing: /usr/local/include/c_utils/data_types.h
-  # -- Installing: /usr/local/include/c_utils/file.h
-  # -- Installing: /usr/local/include/c_utils/hex_buffer.h
-  # -- Installing: /usr/local/include/c_utils/log.h
-  # -- Installing: /usr/local/include/c_utils/memory.h
-  # -- Installing: /usr/local/include/c_utils/random.h
-  # -- Installing: /usr/local/include/c_utils/smart_ptr.h
-  # -- Installing: /usr/local/include/c_utils/string.h
-  # -- Installing: /usr/local/include/c_utils/timer.h
-#+END_SRC
-
-After that, make sure to add =-I/usr/local/include= when needed. Then you can include like this:
-
-#+BEGIN_SRC c
-  #include "c_utils/data_types.h"
-  #include "c_utils/log.h"
-  // ...ignore another include
+  # -- Installing: /home/wison/my-installed/lib/libc_utils.so
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/bits.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/data_types.h
+  # -- Installing: /home/wison/my-installed/include/c_utils/file.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/hex_buffer.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/log.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/memory.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/random.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/smart_ptr.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/heap_string.h
+  # -- Up-to-date: /home/wison/my-installed/include/c_utils/timer.h
 #+END_SRC
 
 
-**** PS-4. How to preview preprocess step source code
+**** How to preview preprocess step source code
 
 It's beneficial if you can print out the source code content after the preprocessor step (but before throwing it into the compiler)
 
@@ -1234,7 +1171,7 @@ It's beneficial if you can print out the source code content after the preproces
 #+END_SRC
 
 
-**** PS-5. How to print all supported macros on current computer and OS
+**** How to print all supported macros on current computer and OS
 
 #+BEGIN_SRC bash
   clang -dM -E - < /dev/null

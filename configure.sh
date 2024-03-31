@@ -1,19 +1,13 @@
 #!/bin/sh
 
 OS_TYPE=`uname -s`
+echo ""
 echo ">>> OS_TYPE: ${OS_TYPE}"
 
-INSTALL_PREFIX="/home/${USER}/my-installed"
-
-if [ "${OS_TYPE}" = "Darwin" ]; then
-    INSTALL_PREFIX="/Users/${USER}/my-installed"
-fi
-
-if [ "${OS_TYPE}" = "FreeBSD" ]; then
-    INSTALL_PREFIX="/home/${USER}/my-installed"
-fi
+INSTALL_PREFIX="${HOME}/my-installed"
 
 echo ">>> INSTALL_PREFIX: ${INSTALL_PREFIX}"
+echo ""
 
 #
 # Remove everything exists
