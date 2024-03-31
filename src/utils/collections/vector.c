@@ -7,9 +7,9 @@
 #ifdef ENABLE_DEBUG_LOG
     #include <stdio.h>
 
+    #include "../heap_string.h"
     #include "../log.h"
     #include "../memory.h"
-    #include "../heap_string.h"
 #endif
 
 /*
@@ -28,7 +28,8 @@ struct Vec {
  *
  */
 bool is_string_type(const char *type) {
-    return ((strcmp(type, "struct HeapString") == 0) || (strcmp(type, "String") == 0));
+    return ((strcmp(type, "struct HeapString") == 0) ||
+            (strcmp(type, "String") == 0));
 }
 
 /*
@@ -178,7 +179,7 @@ usize Vec_capacity(Vector self) {
 /*
  *
  */
-VectorIteractor Vec_iter(const Vector self) {
+const VectorIteractor Vec_iter(const Vector self) {
     return self == NULL ? (VectorIteractor){.length = 0, .items = NULL}
                         : (VectorIteractor){.length = self->_length,
                                             .items  = self->_items};

@@ -77,13 +77,14 @@ TEST(Vector, PushElement_Integer) {
     ASSERT_EQ(Vec_len(vec), 3);
     ASSERT_EQ(Vec_capacity(vec), 4);
 
-    VectorIteractor iter = Vec_iter(vec);
+    const VectorIteractor iter = Vec_iter(vec);
     ASSERT_EQ(iter.length, Vec_len(vec));
-    int *temp_arr = (int *)iter.items;
+    const int *temp_arr = (const int *)iter.items;
     ASSERT_NE(temp_arr, nullptr);
     ASSERT_EQ(temp_arr[0], 100);
     ASSERT_EQ(temp_arr[1], 200);
     ASSERT_EQ(temp_arr[2], 300);
+	temp_arr[2] = 400;
 
     int int_arr_2[] = {666, 777, 888, 999};
     SMART_VECTOR(vec_2, int, NULL);

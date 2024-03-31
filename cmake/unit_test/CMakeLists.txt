@@ -8,40 +8,30 @@ project("c-utils")
 #
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_C_FLAGS "-pedantic-errors -std=gnu17")
-set(CMAKE_CXX_FLAGS "-pedantic-errors -Wc99-extensions -Wvla-extension -Wc11-extensions -Wc11-extensions -std=gnu++11")
+set(CMAKE_C_FLAGS "-pedantic -ansi -Wall -Werror -Wextra -std=gnu17")
 
-enable_testing()
-find_package(GTest REQUIRED)
+#
+# Extra include path for `unity` test framework
+#
+include_directories("~/my-installed/include/unity")
+link_directories("~/my-installed/lib")
 
 add_executable("${PROJECT_NAME}-unit-test"
     "../../src/utils/log.c"
-    "../../src/utils/collections/single_link_list.c"
-    "../../src/utils/collections/vector.c"
     "../../src/utils/memory.c"
     "../../src/utils/heap_string.c"
     "../../src/utils/hex_buffer.c"
     "../../src/utils/file.c"
-    "../../src/test/unit/utils/file_test.cpp"
-    "../../src/test/unit/utils/hex_buffer_test.cpp"
-    "../../src/test/unit/utils/data_types_test.cpp"
-    "../../src/test/unit/utils/collections/single_link_list_test.cpp"
-    "../../src/test/unit/utils/collections/vector_test.cpp"
-    "../../src/test/unit/utils/string_test.cpp"
-    "../../src/main.cpp")
+    "../../src/test/utils/hex_buffer_test.c"
+    "../../src/test/utils/data_types_test.c"
+    "../../src/test/utils/file_test.c"
+    "../../src/test/utils/string_test.c"
+    "../../src/unit_test.c")
 
-target_link_libraries("${PROJECT_NAME}-unit-test" GTest::gtest GTest::gtest_main)
+target_link_libraries("${PROJECT_NAME}-unit-test" unity)
 
 # target_compile_definitions("${PROJECT_NAME}-unit-test" PRIVATE ENABLE_DEBUG_LOG)
 
-# -----------------------------------------------------------------------------
-# Add a test to the project to be run by `ctest(1).`
-#
-# More details from here:
-# https://cmake.org/cmake/help/latest/command/add_test.html?highlight=add_test
-# -----------------------------------------------------------------------------
-# add_test(RunAllTest "${PROJECT_NAME}")
-# add_test(RunsingleLinkTest single_link_list_test)
 
 message(">>> CMAKE_EXPORT_COMPILE_COMMANDS: ${CMAKE_EXPORT_COMPILE_COMMANDS}")
 message(">>> CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
@@ -54,4 +44,7 @@ message(">>> CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 message(">>> CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(">>> CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
 message(">>> CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
-message(">>> GTest_FOUND: ${GTest_FOUND}")
+message(">>> UTILS_LIBRARY_NAME: ${UTILS_LIBRARY_NAME}")
+message(">>> UTILS_LIBRARY_SOURCE_FILE: ${UTILS_LIBRARY_SOURCE_FILE}")
+message(">>> UTILS_LIBRARY_HEADER_FILE: ${UTILS_LIBRARY_HEADER_FILE}")
+message(">>> CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
