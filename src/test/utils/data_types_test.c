@@ -14,12 +14,10 @@ void test_data_types_type_name(void) {
     u8 u8_value                   = 255;
     u16 u16_value                 = 65535;
     u32 u32_value                 = 99999;
-    u64 u64_value                 = 99999;
     usize usize_value             = 99999;
     i8 i8_value                   = 127;
     i16 i16_value                 = 65535 / 2;
     i32 i32_value                 = -99999;
-    i64 i64_value                 = -2299999;
     int int_value                 = 999999;
     long long_value               = 999999;
     long long long_long_value     = 999999;
@@ -33,8 +31,10 @@ void test_data_types_type_name(void) {
     TEST_ASSERT_EQUAL_STRING("unsigned short int", TYPE_NAME(u16_value));
     TEST_ASSERT_EQUAL_STRING("unsigned int", TYPE_NAME(u32_value));
 #if defined(__APPLE__)
+    u64 u64_value = 99999;
     TEST_ASSERT_EQUAL_STRING("unsigned long long int", TYPE_NAME(u64_value));
 #elif defined(__FreeBSD__)
+    u64 u64_value = 99999;
     TEST_ASSERT_EQUAL_STRING("unsigned long int", TYPE_NAME(u64_value));
 #endif
     TEST_ASSERT_EQUAL_STRING("unsigned long int", TYPE_NAME(usize_value));
@@ -42,8 +42,10 @@ void test_data_types_type_name(void) {
     TEST_ASSERT_EQUAL_STRING("short int", TYPE_NAME(i16_value));
     TEST_ASSERT_EQUAL_STRING("int", TYPE_NAME(i32_value));
 #if defined(__APPLE__)
+    i64 i64_value = -2299999;
     TEST_ASSERT_EQUAL_STRING("long long int", TYPE_NAME(i64_value));
 #elif defined(__FreeBSD__)
+    i64 i64_value = -2299999;
     TEST_ASSERT_EQUAL_STRING("long int", TYPE_NAME(i64_value));
 #endif
     TEST_ASSERT_EQUAL_STRING("int", TYPE_NAME(int_value));
