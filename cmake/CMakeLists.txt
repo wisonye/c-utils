@@ -15,20 +15,11 @@ set(CMAKE_C_FLAGS "-pedantic -ansi -Wall -Werror -Wextra -std=gnu17")
 #
 # Use different `C` compilation flags based on different optional settings
 #
-option(USE_VALGRIND "Enable 'valgrind' for memory leaking detection" OFF)
-option(USE_ADDRESS_SANITIZER "Enable 'address_sanitizer' for memory leaking detection" OFF)
-option(USE_ADDRESS_SANITIZER_FOR_FREE_BSD "Enable 'address_sanitizer' (FreeBSD) for memory leaking detection" OFF)
+option(USE_ADDRESS_SANITIZER "Enable 'address_sanitizer' for memory error detection" OFF)
 
-if (USE_VALGRIND)
-    set(CMAKE_BUILD_TYPE "Release")
-    message(">>>\n>>> Use 'Valgrind' for memory leaking detection and switch to Release build\n>>>")
-# elseif ((USE_ADDRESS_SANITIZER) OR (USE_ADDRESS_SANITIZER_FOR_FREE_BSD))
-elseif (USE_ADDRESS_SANITIZER )
+if (USE_ADDRESS_SANITIZER )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
-    message(">>>\n>>> Use 'Address Sanitizer' for memory leaking detection\n>>>")
-elseif (USE_ADDRESS_SANITIZER_FOR_FREE_BSD)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer")
-    message(">>>\n>>> Use 'Address Sanitizer' (FreeBSD) for memory leacking detection\n>>>")
+    message(">>>\n>>> Use 'Address Sanitizer' for memory error detection\n>>>")
 endif()
 
 add_executable("${PROJECT_NAME}"
