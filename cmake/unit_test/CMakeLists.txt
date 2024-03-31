@@ -13,8 +13,21 @@ set(CMAKE_C_FLAGS "-pedantic -ansi -Wall -Werror -Wextra -std=gnu17")
 #
 # Extra include path for `unity` test framework
 #
-include_directories("~/my-installed/include/unity")
-link_directories("~/my-installed/lib")
+option(USE_CUSTOM_UNITY_INSTALL_PATH "Enable custom 'unity' install path" OFF)
+
+if (USE_CUSTOM_UNITY_INSTALL_PATH)
+	set(MY_UNITY_INSTALL_INCLUDE_PATH ${MY_UNITY_INSTALL_INCLUDE_PATH})
+	set(MY_UNITY_INSTALL_LIB_PATH ${MY_UNITY_INSTALL_LIB_PATH})
+
+	include_directories("${MY_UNITY_INSTALL_INCLUDE_PATH}")
+	link_directories("${MY_UNITY_INSTALL_LIB_PATH}")
+
+	message(">>>")
+    message(">>> [ Use custom Unity install path ].")
+    message(">>> \tMY_UNITY_INSTALL_INCLUDE_PATH: ${MY_UNITY_INSTALL_INCLUDE_PATH}")
+    message(">>> \tMY_UNITY_INSTALL_LIB_PATH: ${MY_UNITY_INSTALL_LIB_PATH}")
+	message(">>>\n")
+endif()
 
 add_executable("${PROJECT_NAME}-unit-test"
     "../../src/utils/log.c"
@@ -44,7 +57,3 @@ message(">>> CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 message(">>> CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(">>> CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
 message(">>> CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
-message(">>> UTILS_LIBRARY_NAME: ${UTILS_LIBRARY_NAME}")
-message(">>> UTILS_LIBRARY_SOURCE_FILE: ${UTILS_LIBRARY_SOURCE_FILE}")
-message(">>> UTILS_LIBRARY_HEADER_FILE: ${UTILS_LIBRARY_HEADER_FILE}")
-message(">>> CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")

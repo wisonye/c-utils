@@ -179,7 +179,7 @@ usize Vec_capacity(Vector self) {
 /*
  *
  */
-const VectorIteractor Vec_iter(const Vector self) {
+VectorIteractor Vec_iter(const Vector self) {
     return self == NULL ? (VectorIteractor){.length = 0, .items = NULL}
                         : (VectorIteractor){.length = self->_length,
                                             .items  = self->_items};

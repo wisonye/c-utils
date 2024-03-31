@@ -177,7 +177,7 @@ usize Vec_capacity(const Vector self);
  * Return the item iterator with a `length` and an `items` that associated with
  * the vector instance
  */
-const VectorIteractor Vec_iter(const Vector self);
+VectorIteractor Vec_iter(const Vector self);
 
 /*
  * Return the given index item, return `NULL` is not exists.
