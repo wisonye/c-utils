@@ -4,10 +4,10 @@
 // #define UNITY_DOUBLE_PRECISION 0.00001f
 #define UNITY_DOUBLE_PRECISION 1e-12f
 
-#include "unity.h"
 #include <string.h>
 
 #include "../../../utils/collections/vector.h"
+#include "unity.h"
 
 void test_vector_empty_vector(void) {
     defer_vector(empty_vec, int, NULL);
@@ -124,6 +124,26 @@ typedef struct {
     u8 age;
 } Person;
 
+String Person_to_string(void *person_ref) {
+    String desc = HS_from_empty_with_capacity(100);
+
+    HS_push_str(desc, "{firstName:");
+    HS_push_str(desc, ((Person *)person_ref)->first_name);
+    HS_push_str(desc, ",lastName:");
+    HS_push_str(desc, ((Person *)person_ref)->last_name);
+    HS_push_str(desc, ",age:");
+
+    const char age_str[4] = {0};
+    snprintf((char *)age_str,
+             sizeof(age_str),
+             "%d",
+             ((Person *)person_ref)->age);
+    HS_push_str(desc, age_str);
+    HS_push_str(desc, "}");
+
+    return desc;
+}
+
 void test_vector_push_element_with_custom_strcut(void) {
     Person wison  = {.first_name = "Wison", .last_name = "Ye", .age = 88};
     Person fion   = {.first_name = "Fion", .last_name = "Li", .age = 99};
@@ -154,6 +174,15 @@ void test_vector_push_element_with_custom_strcut(void) {
     TEST_ASSERT_EQUAL_STRING(temp_arr[2].first_name, "Nobody");
     TEST_ASSERT_EQUAL_STRING(temp_arr[2].last_name, "Nothing");
     TEST_ASSERT_EQUAL_UINT(temp_arr[2].age, 100);
+
+    //
+    // Test join string
+    //
+    defer_string(join_string) = Vec_join(vec, ";", Person_to_string);
+    TEST_ASSERT_EQUAL_STRING(
+        HS_as_str(join_string),
+        "{firstName:Wison,lastName:Ye,age:88};{firstName:Fion,lastName:Li,age:"
+        "99};{firstName:Nobody,lastName:Nothing,age:100}");
 }
 
 double double_arr[]    = {11.11, 22.22, 33.33};
