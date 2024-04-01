@@ -1,6 +1,12 @@
 #include <string.h>
+
+#define UNITY_INCLUDE_DOUBLE
+// #define UNITY_DOUBLE_PRECISION 0.00001f
+#define UNITY_DOUBLE_PRECISION 1e-12f
+
 #include <unity.h>
 
+#include "./test/utils/collections/vector_test.h"
 #include "./test/utils/data_types_test.h"
 #include "./test/utils/file_test.h"
 #include "./test/utils/hex_buffer_test.h"
@@ -50,6 +56,13 @@ int main(void) {
     RUN_TEST(test_string_push);
     RUN_TEST(test_string_insert_at_begin);
     RUN_TEST(test_string_move_semantic);
+
+    RUN_TEST(test_vector_empty_vector);
+    RUN_TEST(test_vector_empty_vector_with_capacity);
+    RUN_TEST(test_vector_push_element);
+    RUN_TEST(test_vector_push_element_with_custom_strcut);
+    RUN_TEST(test_vector_immutable_get);
+    RUN_TEST(test_vector_null);
 
     UNITY_END();
     return 0;

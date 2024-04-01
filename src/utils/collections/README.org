@@ -139,9 +139,9 @@ Examples:
   //
   // String vec
   //
-  SMART_STRING(temp_str_1) = HS_from_str("Vector works:)");
-  SMART_STRING(temp_str_2) = HS_from_str("Generic vector works:)");
-  SMART_STRING(temp_str_3) =
+  defer_string(temp_str_1) = HS_from_str("Vector works:)");
+  defer_string(temp_str_2) = HS_from_str("Generic vector works:)");
+  defer_string(temp_str_3) =
       HS_from_str("My Generic vector works, yeah!!!:)>>>>:(");
 
   defer_vector_with_capacity(string_vec, struct HeapString, 3, NULL);
@@ -238,7 +238,7 @@ Examples:
 *** 1.6 Not use ~defer_vector~ macro
 
 #+BEGIN_SRC c
-  SMART_STRING(temp_str_1) = HS_from_str("Not use macro to create vector");
+  defer_string(temp_str_1) = HS_from_str("Not use macro to create vector");
 
   // Not use `defer_vector` to create vector
   Vector string_vec = Vec_with_capacity(HS_struct_size(), "String", 3, NULL);

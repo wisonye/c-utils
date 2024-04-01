@@ -52,8 +52,8 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * variable is out of the scope
  *
  * ```c
- * SMART_VECTOR(vec, int, NULL);
- * SMART_VECTOR_WITH_CAPACITY(usize_vec, usize, 10, NULL);
+ * defer_vector(vec, int, NULL);
+ * defer_vector_with_capacity(usize_vec, usize, 10, NULL);
  *
  * (D) [ Vector ] > new - self pointer: 0x5472040, element_type_size: 4
  * (D) [ Vector ] > with_capacity - self pointer: 0x54730f0, element_type_size:
@@ -62,13 +62,13 @@ typedef void (*ElementHeapMemberDestructor)(void *ptr);
  * auto_free_vector - out of scope with vector ptr: 0x5472040, length: 0
  * ```
  */
-#define SMART_VECTOR(v_name, element_type, element_destructor)                 \
+#define defer_vector(v_name, element_type, element_destructor)                 \
     __attribute__((cleanup(auto_free_vector))) Vector v_name =                 \
         Vec_new(TYPE_SIZE_FROM_TYPE(element_type),                             \
                 TYPE_NAME_TO_STRING(element_type),                             \
                 element_destructor)
 
-#define SMART_VECTOR_WITH_CAPACITY(v_name,                                     \
+#define defer_vector_with_capacity(v_name,                                     \
                                    element_type,                               \
                                    capacity,                                   \
                                    element_destructor)                         \
