@@ -35,10 +35,12 @@ add_executable("${PROJECT_NAME}-unit-test"
     "../../src/utils/heap_string.c"
     "../../src/utils/hex_buffer.c"
     "../../src/utils/file.c"
+    "../../src/utils/collections/vector.c"
     "../../src/test/utils/hex_buffer_test.c"
     "../../src/test/utils/data_types_test.c"
     "../../src/test/utils/file_test.c"
     "../../src/test/utils/string_test.c"
+    "../../src/test/utils/collections/vector_test.c"
     "../../src/unit_test.c")
 
 target_link_libraries("${PROJECT_NAME}-unit-test" unity)
