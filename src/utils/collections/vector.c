@@ -102,8 +102,10 @@ void Vec_push(Vector self, void *element) {
     // ensure the vector has enough space to save all elements;
     // capacity >= self->length + 1
     if (self->_capacity < self->_length + 1) {
+#ifdef ENABLE_DEBUG_LOG
         usize old_capacity = self->_capacity;
-        self->_capacity    = (self->_capacity == 0) ? 1 : self->_capacity * 2;
+#endif
+        self->_capacity = (self->_capacity == 0) ? 1 : self->_capacity * 2;
         self->_items =
             realloc(self->_items, self->_element_type_size * self->_capacity);
 
