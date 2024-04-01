@@ -99,7 +99,10 @@
     //
     //
     //
-    #define BIT_IS_1(V, WHICH_BIT) (V & (1 << WHICH_BIT))
+    #define BIT_IS_1(V, WHICH_BIT) ((V & (1 << WHICH_BIT)) && (1 << WHICH_BIT))
+
+    #define BIT_IS_0(V, WHICH_BIT)                                             \
+        (((V ^ (1 << WHICH_BIT)) & (1 << WHICH_BIT)) && (1 << WHICH_BIT))
 
 #else
 
@@ -107,6 +110,7 @@
     #define _FILL_BITS(V)
     #define PRINT_BITS(V)
     #define BIT_IS_1(V, WHICH_BIT)
+    #define BIT_IS_0(V, WHICH_BIT)
 
 #endif
 
