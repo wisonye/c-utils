@@ -916,9 +916,14 @@ This project uses =Unity= as test framework, you need to run the following comma
   mkdir build && cd build
 
   #
-  # Make sure to change the install path if you don't like the default one
+  # `-DCMAKE_C_FLAGS="-DUNITY_INCLUDE_DOUBLE"`: Compile Unity to support double!!!
   #
-  cmake .. -DCMAKE_INSTALL_INCLUDEDIR=~/my-installed/include -DCMAKE_INSTALL_LIBDIR=~/my-installed/lib
+  # `-DCMAKE_INSTALL_INCLUDEDIR` and `-DCMAKE_INSTALL_LIBDIR`: install path
+  #
+  cmake .. \
+      -DCMAKE_C_FLAGS="-DUNITY_INCLUDE_DOUBLE" \
+      -DCMAKE_INSTALL_INCLUDEDIR=~/my-installed/include \
+      -DCMAKE_INSTALL_LIBDIR=~/my-installed/lib
 
   #
   # Compile and insteall
