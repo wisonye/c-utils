@@ -8,6 +8,19 @@
 #include "./test/utils/hex_buffer_test.h"
 #include "./test/utils/string_test.h"
 
+///
+/// This is run before EACH TEST
+///
+void setUp(void) {
+    // printf("\n>>> [ setUp ] - run.");
+}
+
+///
+/// This is run after EACH TEST
+///
+void tearDown(void) {
+    // printf("\n>>> [ tearDown ] - run.");
+}
 
 //
 //
