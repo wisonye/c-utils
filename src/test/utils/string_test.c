@@ -5,6 +5,20 @@
 
 #include "../../utils/heap_string.h"
 
+///
+/// This is run before EACH TEST
+///
+void setUp(void) {
+    printf("\n>>> [ string_test_setUp ] - run.");
+}
+
+///
+/// This is run after EACH TEST
+///
+void tearDown(void) {
+    printf("\n>>> [ string_test_tearDown ] - run.");
+}
+
 void test_string_init(void) {
     struct HeapString str;
     HS_init(&str);

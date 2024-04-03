@@ -1,9 +1,5 @@
 #include <string.h>
 
-#define UNITY_INCLUDE_DOUBLE
-// #define UNITY_DOUBLE_PRECISION 0.00001f
-#define UNITY_DOUBLE_PRECISION 1e-12f
-
 #include <unity.h>
 
 #include "./test/utils/collections/vector_test.h"
@@ -12,15 +8,6 @@
 #include "./test/utils/hex_buffer_test.h"
 #include "./test/utils/string_test.h"
 
-///
-/// This is run before EACH TEST
-///
-void setUp(void) {}
-
-///
-/// This is run after EACH TEST
-///
-void tearDown(void) {}
 
 //
 //

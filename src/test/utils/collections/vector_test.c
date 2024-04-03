@@ -9,6 +9,20 @@
 #include "../../../utils/collections/vector.h"
 #include "unity.h"
 
+///
+/// This is run before EACH TEST
+///
+void setUp(void) {
+    printf("\n>>> [ vector_test_setUp ] - run.");
+}
+
+///
+/// This is run after EACH TEST
+///
+void tearDown(void) {
+    printf("\n>>> [ vector_test_tearDown ] - run.");
+}
+
 void test_vector_empty_vector(void) {
     defer_vector(empty_vec, int, NULL);
     TEST_ASSERT_EQUAL_UINT(Vec_len(empty_vec), 0);
