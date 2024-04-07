@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include <unity.h>
 
 #include "./test/utils/collections/vector_test.h"
